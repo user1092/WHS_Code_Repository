@@ -82,7 +82,7 @@ public class Client {
 	 * A connection must be made prior to using this method.
 	 * @return itemReceived		This is the object that the client should have received from the client
 	 */
-	public static Object receiveData() {
+	protected static Object receiveData() {
 		ObjectInputStream inputFromServer = null;
 				
 		// Create an input stream from the connected server

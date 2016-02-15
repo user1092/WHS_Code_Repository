@@ -20,54 +20,6 @@ public class ClientTests {
 	Object itemReceived = null;
 	
 	/**
-	 * 
-	 */
-	private void connectToClient() {
-		// Opens socket and listens to the socket for the client to connect and then accepts.
-		Thread socketThread = new Thread("socket") {
-			public void run() {
-				
-				severSocketInitialise();
-				
-				clientSocketListener();
-			}
-		};
-		socketThread.start();
-		
-		Client.openSocket();
-		
-		// wait until the thread is finished to ensure server has received the data
-		while(socketThread.isAlive());
-	}
-
-	/**
-	 * Method to initialise server socket to listen for clients.  
-	 */
-	private void severSocketInitialise() {
-		try {
-			serverSocket = new ServerSocket(port);
-			System.out.println("Connected to port: " + port + " successfully" + "\n");
-		}
-		catch (IOException e) {
-			System.out.println("Could not listen to port : " + port + "\n");
-			System.exit(-1);
-		}
-	}
-
-	/**
-	 * Method to listen to client socket, and accept a connection if one is attempted. 
-	 */
-	private void clientSocketListener() {
-		try {
-			clientSocket = serverSocket.accept();
-		}
-		catch (IOException e) {
-			System.out.println("Could not accept client");
-			System.exit(-1);
-		}
-	}
-
-	/**
 	 * Test that client can open a socket and successfully close it.
 	 */
 	@Test 
@@ -214,6 +166,54 @@ public class ClientTests {
 		
 		assertEquals(itemToSend, itemReceived);
 		
+	}
+
+	/**
+	 * 
+	 */
+	private void connectToClient() {
+		// Opens socket and listens to the socket for the client to connect and then accepts.
+		Thread socketThread = new Thread("socket") {
+			public void run() {
+				
+				severSocketInitialise();
+				
+				clientSocketListener();
+			}
+		};
+		socketThread.start();
+		
+		Client.openSocket();
+		
+		// wait until the thread is finished to ensure server has received the data
+		while(socketThread.isAlive());
+	}
+
+	/**
+	 * Method to initialise server socket to listen for clients.  
+	 */
+	private void severSocketInitialise() {
+		try {
+			serverSocket = new ServerSocket(port);
+			System.out.println("Connected to port: " + port + " successfully" + "\n");
+		}
+		catch (IOException e) {
+			System.out.println("Could not listen to port : " + port + "\n");
+			System.exit(-1);
+		}
+	}
+
+	/**
+	 * Method to listen to client socket, and accept a connection if one is attempted. 
+	 */
+	private void clientSocketListener() {
+		try {
+			clientSocket = serverSocket.accept();
+		}
+		catch (IOException e) {
+			System.out.println("Could not accept client");
+			System.exit(-1);
+		}
 	}
 
 }

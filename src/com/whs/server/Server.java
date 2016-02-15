@@ -19,6 +19,14 @@ public class Server {
 	private static Socket clientSocket;
 
 	/**
+	 * 
+	 */
+	public Server() {
+		
+	}
+	
+	
+	/**
 	 * Method to open socket to allow communications with a client.
 	 * 
 	 */
@@ -50,13 +58,9 @@ public class Server {
 	}
 	
 	/**
-	 * Method to send data to a client.
-	 * A connection must be made prior to using this method.
-	 * @param itemToSend 	This is the object that the server should send to the client
+	 * 
 	 */
-	protected static void sendData(Object itemToSend) {
-		ObjectOutputStream outputToClient = null;
-		
+	protected static void acceptClientConnection() {
 		// Accept connection request from client
 		try {
 			clientSocket = serverSocket.accept();
@@ -64,6 +68,17 @@ public class Server {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * Method to send data to a client.
+	 * A connection must be made prior to using this method.
+	 * @param itemToSend 	This is the object that the server should send to the client
+	 */
+	protected static void sendData(Object itemToSend) {
+		ObjectOutputStream outputToClient = null;
+		
+		acceptClientConnection();
 		
 		// Create an object stream to send to client
 		try {
@@ -87,16 +102,10 @@ public class Server {
 	 * A connection must be made prior to using this method.
 	 * @return itemReceived		This is the object that the server should have received from the client
 	 */
-	public static Object receiveData() {
+	protected static Object receiveData() {
 		ObjectInputStream inputFromClient = null;
 		
-		// Accept connection request from client
-		try {
-			clientSocket = serverSocket.accept();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		acceptClientConnection();
 		
 		// Create an input stream from the connected client
 		try {

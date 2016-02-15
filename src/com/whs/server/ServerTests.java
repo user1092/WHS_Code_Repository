@@ -29,48 +29,19 @@ public class ServerTests {
 	Object itemReceived = null;
 		
 	/**
-	 * Method run after every test to close the server socket.
-	 */
-	@After
-	public void closeSockets() {
-		Server.closeSockets();
-	}
-	
-	/**
 	 * Method run before every test to open the server socket.
 	 */
 	@Before
 	public void openSockets() {
 		Server.openSockets();
 	}
-	
+
 	/**
-	 * Method used to connect to server. 
+	 * Method run after every test to close the server socket.
 	 */
-	public void connectToServer() {
-		// Connect to the server	
-		try {
-			serverSocket = new Socket(host, port);
-			assertTrue(serverSocket.isConnected());
-		} catch (IOException e) {
-			System.out.println("Client never Connected to Server, are the sockets open?");
-			fail("Client never Connected to Server");
-		}
-	}
-	
-	/**
-	 * Method to initialise a new output stream.
-	 * @param outputStream 		The object output stream to be initialised. 
-	 * @return outputStream 	The initialised object output stream. 
-	 */
-	private ObjectOutputStream initialiseOutputStream(ObjectOutputStream outputStream) {
-		try {
-			outputStream = new ObjectOutputStream(serverSocket.getOutputStream());
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		return outputStream;
+	@After
+	public void closeSockets() {
+		Server.closeSockets();
 	}
 
 	/**
@@ -124,6 +95,8 @@ public class ServerTests {
 		// Send the string hello from the server
 		Object itemToSend = "hello";
 		Server.sendData(itemToSend);
+		
+		while(listenThread.isAlive());
 		
 		// Check the item received is the same as what was sent
 		try {
@@ -179,6 +152,36 @@ public class ServerTests {
 		assertEquals(itemToSend, itemReceived);
 		
 		
+	}
+	
+
+	/**
+	 * Method used to connect to server. 
+	 */
+	public void connectToServer() {
+		// Connect to the server	
+		try {
+			serverSocket = new Socket(host, port);
+			assertTrue(serverSocket.isConnected());
+		} catch (IOException e) {
+			System.out.println("Client never Connected to Server, are the sockets open?");
+			fail("Client never Connected to Server");
+		}
+	}
+
+	/**
+	 * Method to initialise a new output stream.
+	 * @param outputStream 		The object output stream to be initialised. 
+	 * @return outputStream 	The initialised object output stream. 
+	 */
+	private ObjectOutputStream initialiseOutputStream(ObjectOutputStream outputStream) {
+		try {
+			outputStream = new ObjectOutputStream(serverSocket.getOutputStream());
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return outputStream;
 	}
 
 }
