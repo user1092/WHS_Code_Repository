@@ -15,14 +15,27 @@ import java.net.Socket;
  */
 public class Server {
 	
-	private static ServerSocket serverSocket;
-	private static Socket clientSocket;
+	/**
+	 * @author ch1092
+	 *
+	 */
+	public interface ServerInterfacer {
+
+	}
+
+	protected ServerSocket serverSocket;
+	
+	private int currentClientNumber = 0;
+	private final int connectedClientsMaxNumber = 3;
+	private ConnectedClient[] clients;
+	
+	
 
 	/**
 	 * 
 	 */
 	public Server() {
-		
+		clients = new ConnectedClient[connectedClientsMaxNumber];
 	}
 	
 	
@@ -30,7 +43,7 @@ public class Server {
 	 * Method to open socket to allow communications with a client.
 	 * 
 	 */
-	protected static void openSockets() {
+	protected void openSocket() {
 		int port = 1138;
 		
 		try {
@@ -47,27 +60,75 @@ public class Server {
 	 * Method to close socket to stop communications with a client.
 	 * 
 	 */
-	protected static void closeSockets() {
+	protected void closeSocket() {
 		try {
+			for(currentClientNumber = 0; currentClientNumber < connectedClientsMaxNumber - 1; currentClientNumber++) {
+				System.out.println("attempt to close client: " + currentClientNumber);
+				System.out.println("Null?: " + (null == clients[currentClientNumber]));
+				//System.out.println(-1 != clients[currentClientNumber].getID());
+				
+				if(null != clients[currentClientNumber]) {
+					System.out.println("closing clients: " + currentClientNumber);
+					clients[currentClientNumber].closeClientSocket();
+				}
+			}
 			serverSocket.close();
-			System.out.println("Sockets successfully closed \n");
+			System.out.println("Server Socket successfully closed \n");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
+	protected void checkAndAcceptClientConnections() {
+		
+		System.out.println("Server socket is open? " + !serverSocket.isClosed());
+		
+		Thread listenThread = new Thread("Listen") {
+			public void run() {
+				while(!serverSocket.isClosed()) {
+					ConnectedClient currentClient = new ConnectedClient();
+					System.out.println("currentClient: " + currentClientNumber);
+					
+					currentClient.setID(currentClientNumber);
+					
+					currentClient = acceptClientConnection(currentClient);
+					try {
+							if(currentClient.socketIsConnected()) {
+							clients[currentClientNumber] = currentClient;
+							System.out.println("Current Client" + currentClient.getID());
+							sendData(currentClient.getID(), currentClient.getID());
+						}
+					} catch(NullPointerException e) {
+						//TODO
+						// Comes here if sockets closed.
+						e.printStackTrace();
+					}
+					
+					if(currentClientNumber < connectedClientsMaxNumber - 1) {
+						currentClientNumber++;
+					}
+				}
+			}
+		};
+					
+		listenThread.start();	
+		
+	}
+	
 	/**
+	 * @return 
 	 * 
 	 */
-	protected static void acceptClientConnection() {
-		// Accept connection request from client
+	private ConnectedClient acceptClientConnection(ConnectedClient currentClient) {
 		try {
-			clientSocket = serverSocket.accept();
+			currentClient.setClientSocket(serverSocket.accept());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// Comes here if sockets closed.
+			//e.printStackTrace();
 		}
+		return currentClient;		
 	}
 
 	/**
@@ -75,14 +136,12 @@ public class Server {
 	 * A connection must be made prior to using this method.
 	 * @param itemToSend 	This is the object that the server should send to the client
 	 */
-	protected static void sendData(Object itemToSend) {
+	protected void sendData(Object itemToSend, int clientID) {
 		ObjectOutputStream outputToClient = null;
-		
-		acceptClientConnection();
 		
 		// Create an object stream to send to client
 		try {
-			outputToClient = new ObjectOutputStream(clientSocket.getOutputStream());
+			outputToClient = new ObjectOutputStream(clients[clientID].getClientSocket().getOutputStream());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -102,14 +161,12 @@ public class Server {
 	 * A connection must be made prior to using this method.
 	 * @return itemReceived		This is the object that the server should have received from the client
 	 */
-	protected static Object receiveData() {
+	protected Object receiveData(int clientID) {
 		ObjectInputStream inputFromClient = null;
-		
-		acceptClientConnection();
-		
+				
 		// Create an input stream from the connected client
 		try {
-			inputFromClient = new ObjectInputStream(clientSocket.getInputStream());
+			inputFromClient = new ObjectInputStream(clients[clientID].getClientSocket().getInputStream());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -14,35 +14,38 @@ import java.net.Socket;
  */
 public class Client {
 	
-	static Socket serverSocket = null;
+	Socket serverSocket;
+	String host = "127.0.0.1";
+	int port = 1138;
+	
+	int iD;
+	
 	
 	/**
 	 * Method to open socket, in order to connect to the server. 
 	 */
-	protected static void openSocket() {
+	protected void openSocket() {
 	
-		String host = "127.0.0.1";
-		int port = 1138;
-
-		
 		// Connect to the server	
 		try {			
-			serverSocket = new Socket(host, port);			
+			serverSocket = new Socket(host, port);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-						
+		
+		receiveID();
+		
 	}
 
 	/**
 	 * Method to close socket, in order to disconnect from the server. 
 	 */
-	protected static void closeSocket() {
+	protected void closeSocket() {
 		
 		try {
 			serverSocket.close();
-			System.out.println("Sockets successfully closed \n");
+			System.out.println("Socket successfully closed \n");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -54,26 +57,17 @@ public class Client {
 	 * Method to send an object to the server. 
 	 * A connection must be made prior to using this method.  
 	 * @param itemToSend		The object that is to be sent to the server.
+	 * @throws IOException 
 	 */
-	protected static void sendData(Object itemToSend) {
+	protected void sendData(Object itemToSend) throws IOException {
 	
 		ObjectOutputStream outputToServer = null;
 
 		// Create an object stream to send to server
-		try {
-			outputToServer = new ObjectOutputStream(serverSocket.getOutputStream());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		outputToServer = new ObjectOutputStream(serverSocket.getOutputStream());
 		
 		// Write the object to the server
-		try {
-			outputToServer.writeObject(itemToSend);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		outputToServer.writeObject(itemToSend);
 		
 	}
 
@@ -81,17 +75,14 @@ public class Client {
 	 * Method to receive data from the server.
 	 * A connection must be made prior to using this method.
 	 * @return itemReceived		This is the object that the client should have received from the client
+	 * @throws IOException 
 	 */
-	protected static Object receiveData() {
+	protected Object receiveData() throws IOException {
 		ObjectInputStream inputFromServer = null;
 				
 		// Create an input stream from the connected server
-		try {
-			inputFromServer = new ObjectInputStream(serverSocket.getInputStream());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		
+		inputFromServer = new ObjectInputStream(serverSocket.getInputStream());
 		
 		// Return the object received from the server
 		try {
@@ -106,7 +97,20 @@ public class Client {
 			return null;
 		}
 	}
+	
+	private void receiveID() {
+		try {
+			iD = (int) receiveData();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
-
-
+	/**
+	 * @return the iD
+	 */
+	protected int getID() {
+		return iD;
+	}
 }
