@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Presentation xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="PWS.xsd">
+
+    <documentInfo>
+	
+        <Title>Your Choice</Title>
+		
+        <Author>Woolly Hat Software</Author>
+		
+        <Version>v1.0</Version>
+			
+        <Comment>Hello</Comment>
+		
+    </documentInfo>
+	
+    <defaults>
+	
+        <backgroundColour>DDFFDD</backgroundColour>
+		
+        <font>Arial</font>
+		
+        <fontsize>12</fontsize>
+		
+        <fontColour>000000</fontColour>
+		
+        <lineColour>FF0000</lineColour>
+		
+        <fillColour>225533</fillColour>
+		
+    </defaults>
+	
+    <slide slideID="0" duration="5" nextSlide="2">
+	
+        <text duration="-1" ystart="1" starttime="0" xstart="0.1" fontsize="30" font="Impact" fontColour="000000">This is our <b>module choice</b> software for SWEng module <i>2016</i></text>
+			
+        <shape width="0.4" duration="-1" ystart="0.6" type="circle" starttime="2" xstart="0.55" height="0.3">
+            <shading x2="0.80" x1="0.60" y2="0.65" y1="0.90" colour2="FF0000" colour1="00FF00" />
+        </shape>
+		
+        <text duration="1" ystart="0.55" starttime="3" xstart="0.55">Click here to show the module choices</text>
+		
+    </slide>
+	
+    <slide slideID="1">
+	
+        <video ystart="0.2" loop="true" xstart="0.3" sourceFile="video\Film.mp4" duration="-1" starttime="0" />
+		
+    </slide>
+	
+    <slide slideID="2">
+	
+        <text duration="-1" ystart="0.4" starttime="0" xstart="0.3">This Andy Marvin module was rated 5 stars!</text>
+		
+        <image width="0.6" duration="-1" ystart="0.2" sourceFile="imgs\companyLogo.jpg" starttime="0" xstart="0.2" height="0.6" />
+				
+        <polygon duration="-1" starttime="0" sourceFile="starShape.csv" />
+		
+    </slide>
+	
+    <slide slideID="3" duration="8" nextSlide="-1">
+	
+        <audio loop="false" sourceFile="ping.wav" duration="6" starttime="2" />
+		
+    </slide>
+	
+    <slide slideID="4" duration="10" nextSlide="-1">
+	
+        <video ystart="0.2" loop="false" xstart="0.1" sourceFile="sample.mp4" duration="5" starttime="3" />
+		
+    </slide>
+	
+</Presentation>
