@@ -1,3 +1,8 @@
+/**
+* JavaFxClientGui.java v0.1 26/01/16
+*
+* Copyright and Licensing Information if applicable
+*/
 package com.whs.client;
 
 import java.io.File;
@@ -21,14 +26,23 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
-
+/**
+* Class for creation of the Client GUI and adding functionality
+*
+* @author user828
+* @version v0.1 26/01/16
+*/
 public class JavaFxClientGui extends Application {
-	
+	// object for the file chooser for getting the XML file
 	private final FileChooser xmlFileChooser = new FileChooser();
+	// stage object for setting up the window
 	private Stage primaryStage;
+	// text box to show the file browse status
 	private Text actionStatus;
+	// text field used for inputting the ip address and port of the server
 	private TextField ipAddressTextField_1, ipAddressTextField_2, ipAddressTextField_3, 
 							ipAddressTextField_4, portTextField;
+	// object for formatting the text fields to only accept integers
 	private StringConverter<Integer> integerFormatter;
 	
 	public static void main(String[] args) {
@@ -66,27 +80,42 @@ public class JavaFxClientGui extends Application {
 		primaryStage.show();
 	}
 	
-	/* method for setting the text fields to only accept integers */
-	private void setIntegerTextFormat() {
-		integerFormatter = new StringConverter<Integer>()
-        {
-           @Override
-           public Integer fromString(String string)
-           {
-              return Integer.parseInt(string);
-           }
+	/** 
+	 * class for setting the text fields to only accept integers 
+	 * and have a range of 0-255 for the ip address and 0-65535 for the port
+	 */
+	public static class IntRangeStringConverter extends StringConverter<Integer> {
 
-           @Override
-           public String toString(Integer object)
-           {
-              if (object == null)
-                 return "";
-              return object.toString();
-           }
-        };
+	    private final int min;
+	    private final int max;
+	    private final int length;
+
+	    public IntRangeStringConverter(int min, int max, int length) {
+	        this.min = min;
+	        this.max = max;
+	        this.length = length;
+	    }
+
+	    @Override
+	    public String toString(Integer object) {
+	        return String.format("%0"+length+"d", object);
+	    }
+
+	    @Override
+	    public Integer fromString(String string) {
+	        int integer = Integer.parseInt(string);
+	        if (integer > max || integer < min) {
+	            throw new IllegalArgumentException();
+	        }
+
+	        return integer;
+	    }
+
 	}
-	
-	/* method for the creation of the HBox that contains the buttons */
+
+	/**
+	 * method for the creation of the HBox that contains the buttons 
+	 */
 	private HBox buttonHBoxCreation() {
 		HBox buttonHBox = new HBox();
 		buttonHBox.setPadding(new Insets(0, 0, 10, 235));
@@ -104,7 +133,9 @@ public class JavaFxClientGui extends Application {
 		return buttonHBox;	
 	}
 	
-	/* method for the creation of the HBox that contains the buttons */
+	/**
+	 * method for the creation of the HBox that contains the buttons 
+	 */
 	private HBox ipHBoxCreation() {
 		//HBox instantiation
 		HBox ipHBox = new HBox();
@@ -115,31 +146,33 @@ public class JavaFxClientGui extends Application {
 		//set the HBox to have the background colour
 		ipHBox.setStyle("-fx-background-colour: #336699;");
 		//call method for setting the format of text fields
-		setIntegerTextFormat();
+		integerFormatter = new IntRangeStringConverter(0, 255, 3);
 		//labels and text boxes instantiation for the ip address
 		Label ipAddressLabel = new Label("IP Address");
 		ipAddressTextField_1 = new TextField();
 		ipAddressTextField_1.setPrefWidth(40);
-		ipAddressTextField_1.setTextFormatter(new TextFormatter<Integer>(integerFormatter));
+		ipAddressTextField_1.setTextFormatter(new TextFormatter<>(integerFormatter, 127));
 		Label dot_1 = new Label(".");
 		ipAddressTextField_2 = new TextField();
 		ipAddressTextField_2.setPrefWidth(40);
-		ipAddressTextField_2.setTextFormatter(new TextFormatter<Integer>(integerFormatter));
+		ipAddressTextField_2.setTextFormatter(new TextFormatter<>(integerFormatter, 0));
 		Label dot_2 = new Label(".");
 		ipAddressTextField_3 = new TextField();
 		ipAddressTextField_3.setPrefWidth(40);
-		ipAddressTextField_3.setTextFormatter(new TextFormatter<Integer>(integerFormatter));
+		ipAddressTextField_3.setTextFormatter(new TextFormatter<>(integerFormatter, 0));
 		Label dot_3 = new Label(".");
 		ipAddressTextField_4 = new TextField();
 		ipAddressTextField_4.setPrefWidth(40);
-		ipAddressTextField_4.setTextFormatter(new TextFormatter<Integer>(integerFormatter));
+		ipAddressTextField_4.setTextFormatter(new TextFormatter<>(integerFormatter, 1));
 		//place the objects for the ip address in the HBox
 		ipHBox.getChildren().addAll(ipAddressLabel, ipAddressTextField_1, dot_1, ipAddressTextField_2,
 				dot_2, ipAddressTextField_3, dot_3, ipAddressTextField_4);
 		return ipHBox;	
 	}
 	
-	/* method for the creation of the HBox that contains the buttons */
+	/**
+	 * method for the creation of the HBox that contains the buttons
+	 */
 	private HBox logHBoxCreation() {
 		HBox logHBox = new HBox();
 		logHBox.setPadding(new Insets(10, 10, 10, 10));
@@ -153,22 +186,26 @@ public class JavaFxClientGui extends Application {
 		return logHBox;
 	}
 	
-	/* method for the creation of the HBox that contains the buttons */
+	/**  
+	 * method for the creation of the HBox that contains the buttons
+	 */
 	private HBox portHBoxCreation() {
 		HBox portHBox = new HBox();
 		portHBox.setPadding(new Insets(10, 10, 10, 20));
 		portHBox.setSpacing(5);
 		portHBox.setStyle("-fx-background-colour: #336699;");
-		setIntegerTextFormat();
+		integerFormatter = new IntRangeStringConverter(0, 65535, 5);
 		Label portLabel = new Label("Port");
 		portTextField = new TextField();
 		portTextField.setPrefWidth(50);
-		portTextField.setTextFormatter(new TextFormatter<Integer>(integerFormatter));
+		portTextField.setTextFormatter(new TextFormatter<>(integerFormatter, 1138));
 		portHBox.getChildren().addAll(portLabel, portTextField);
 		return portHBox;
 	}
 	
-	/* VBox that contains the two HBoxes, one for the ip address and one for the port */
+	/**
+	 * VBox that contains the two HBoxes, one for the ip address and one for the port
+	 */
 	private VBox ipAndPortVBoxCreation() {
 	    VBox ipAndPortVbox = new VBox();
 	    ipAndPortVbox.setPadding(new Insets(10));
@@ -181,7 +218,9 @@ public class JavaFxClientGui extends Application {
 	    return ipAndPortVbox;
 	}
 	
-	/* action listener method for the browse button */
+	/**
+	 * action listener method for the browse button
+	 */
 	private class BrowseButtonListener implements EventHandler<ActionEvent> {
 		@Override
 		public void handle(ActionEvent e) {
@@ -189,7 +228,9 @@ public class JavaFxClientGui extends Application {
 		}
 	}
 	
-	/* action listener function for the connect button */
+	/**
+	 * action listener function for the connect button
+	 */
 	private class ConnectButtonListener implements EventHandler<ActionEvent> {
 		@Override
 		public void handle(ActionEvent e) {
@@ -197,23 +238,27 @@ public class JavaFxClientGui extends Application {
 		}
 	}
 	
-	/* method for getting the ip address and the port from the text boxes */
+	/**
+	 * method for getting the ip address and the port from the text boxes
+	 */
 	private void getIpAddressAndPort() {
 		Integer ipAddressText_1 = Integer.parseInt(ipAddressTextField_1.getText());
 		Integer ipAddressText_2 = Integer.parseInt(ipAddressTextField_2.getText());
 		Integer ipAddressText_3 = Integer.parseInt(ipAddressTextField_3.getText());
 		Integer ipAddressText_4 = Integer.parseInt(ipAddressTextField_4.getText());
-		Integer portNum = Integer.parseInt(portTextField.getText());
+		Integer port = Integer.parseInt(portTextField.getText());
 		
 		String ipAddress = (ipAddressText_1 + "." + ipAddressText_2 + "." + ipAddressText_3
 								+ "." + ipAddressText_4);
-		String port = ("" + portNum);
+	
 		System.out.println("IP Address: " + ipAddress + "");
 		System.out.println("Port: " + port + "");
 		
 	}
 	
-	/* method for opening the file explorer to open an XML file */
+	/**
+	 * method for opening the file explorer to open an XML file
+	 */
 	private void openFileButton() {
 		File xmlFile = xmlFileChooser.showOpenDialog(primaryStage);
 		if (xmlFile != null) {
