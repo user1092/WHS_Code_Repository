@@ -1,6 +1,9 @@
 /**
+ * ServerGui.java		v0.6 23/02/2016
+ * 
  * 
  */
+
 package com.whs.server;
 
 import java.awt.BorderLayout;
@@ -13,8 +16,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 /**
- * @author ch1092
- *
+ * Class for the server's front end controlling the back end through buttons. 
+ * 
+ * @author		user1092, guest501
+ * @version		v0.6 23/02/2016
  */
 public class ServerGui {
 	
@@ -42,15 +47,15 @@ public class ServerGui {
 	}
 
 	/**
+	 * Main Method to start a new ServerGui. 
 	 * @param args
 	 */
 	public static void main(String[] args) {
 		new ServerGui();
-	
 	}
 
 	/**
-	 * This method will create a new JFrame and set the relevant options
+	 * Method to create a new JFrame and set the relevant options
 	 */
 	private void setupGui() {
 		//Create a new frame
@@ -61,13 +66,10 @@ public class ServerGui {
 		serverFrame.setSize(600, 400);
 		serverFrame.setVisible(true);
 		serverFrame.setResizable(false);
-		//JPanel contentPanel = new JPanel();
-		//serverFrame.add(contentPanel);
-		//contentPanel.setLayout(new BorderLayout());
 	}
 
 	/**
-	 * This method will setup all buttons on the server window
+	 * Method to setup all buttons on the server window
 	 */
 	private void setupButtons() {
 		// Create button panel for the open and close socket buttons
@@ -126,8 +128,9 @@ public class ServerGui {
 	}
 
 	/**
-	 * This method will return the state of the server sockets
-	 * @return 
+	 * This method will return the state of the server sockets.
+	 * 
+	 * @return serverSocketIsOpen	-	True if the socket is open, else false.
 	 */
 	protected Boolean areSocketsOpen() {
 		return serverSocketIsOpen;

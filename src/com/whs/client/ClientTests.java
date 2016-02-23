@@ -1,28 +1,49 @@
+/**
+ * ClientTests.java		v0.6 23/02/2016
+ * 
+ * 
+ */
+
 package com.whs.client;
 
 import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.net.ServerSocket;
-import java.net.Socket;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.whs.server.ServerInterfacer;
 
+/**
+ * Class for testing the clients back end handling communications to the server.
+ * 
+ * NOT FOR RELEASE!
+ * 
+ * @author		user1092, guest501
+ * @version		v0.6 23/02/2016
+ */
 public class ClientTests {
 
+	// Declare a client to be used
 	Client client;
 	
-	ServerSocket serverSocket = null;
-	Socket clientSocket = null;
-	final int port = 1138;	
-	ObjectInputStream inputStream = null;
-	Object itemReceived = null;
+	/*
+	 *  Declare a server to be used, must use the ServerInterfacer class
+	 *  in order to access the internal methods. 
+	 */
 	ServerInterfacer server;
 	
+	// Declare object relating to the item receive as access from within a thread.
+	ObjectInputStream inputStream = null;
+	Object itemReceived = null;
+	
+	/**
+	 * Before every test, a server should be instantiated and sockets opened then
+	 * wait for a clients connection.
+	 * A client should then be instantiated and the sockets opened.
+	 */
 	@Before
 	public void setup() {
 		server = new ServerInterfacer();
@@ -33,11 +54,15 @@ public class ClientTests {
 		client.openSocket();
 	}
 	
+	/**
+	 * After every test, the client's sockets should close
+	 * then the server's sockets should close. 
+	 */
 	@After
 	public void closeSockets() {
-		server.closeSocket();
-		
 		client.closeSocket();
+		
+		server.closeSocket();
 	}
 		
 	
@@ -51,7 +76,7 @@ public class ClientTests {
 		// Thread for test to listen to Client
 		Thread listenThread = new Thread("Listen") {
 			public void run() {
-				itemReceived = server.receiveData(0);
+				itemReceived = server.receiveData(client.getID());
 			}
 		};
 		listenThread.start();
@@ -64,6 +89,7 @@ public class ClientTests {
 			e2.printStackTrace();
 		}
 		
+		// wait until the server has received the data.
 		while(listenThread.isAlive());
 		
 		assertEquals(itemToSend, itemReceived);
@@ -101,7 +127,7 @@ public class ClientTests {
 		
 	}
 	
-	/*
+	/**
 	 * 
 	 */
 //	@Test
@@ -109,8 +135,8 @@ public class ClientTests {
 //		fail("Not Implemented");
 //	}
 	
-	/*
-	 * 
+	/**
+	 * Test that the client gets assigned the ID 0 as it should be the only client connected.
 	 */
 	@Test
 	public void clientShouldReceieveAnID() {

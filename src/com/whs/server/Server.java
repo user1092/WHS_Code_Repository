@@ -1,38 +1,33 @@
 /**
+ * Server.java		v0.6 23/02/2016
+ * 
  * 
  */
+
 package com.whs.server;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
-import java.net.Socket;
 
 /**
- * @author ch1092
- *
+ * Class for the server's back end handling communications to the clients. 
+ * 
+ * @author		user1092, guest501
+ * @version		v0.6 23/02/2016
  */
 public class Server {
 	
-	/**
-	 * @author ch1092
-	 *
-	 */
-	public interface ServerInterfacer {
-
-	}
-
 	protected ServerSocket serverSocket;
 	
+	// Variable to store information about the clients connected.
+	private ConnectedClient[] clients;
 	private int currentClientNumber = 0;
 	private final int connectedClientsMaxNumber = 3;
-	private ConnectedClient[] clients;
-	
-	
-
+		
 	/**
-	 * 
+	 * Constructor to create a new array of connected clients.
 	 */
 	public Server() {
 		clients = new ConnectedClient[connectedClientsMaxNumber];
@@ -41,7 +36,6 @@ public class Server {
 	
 	/**
 	 * Method to open socket to allow communications with a client.
-	 * 
 	 */
 	protected void openSocket() {
 		int port = 1138;
@@ -58,18 +52,20 @@ public class Server {
 
 	/**
 	 * Method to close socket to stop communications with a client.
-	 * 
 	 */
 	protected void closeSocket() {
 		try {
-			for(currentClientNumber = 0; currentClientNumber < connectedClientsMaxNumber - 1; currentClientNumber++) {
-				System.out.println("attempt to close client: " + currentClientNumber);
-				System.out.println("Null?: " + (null == clients[currentClientNumber]));
-				//System.out.println(-1 != clients[currentClientNumber].getID());
-				
+			//Check the connection state of all clients and close the sockets if required
+			for(currentClientNumber = 0; 
+					currentClientNumber < connectedClientsMaxNumber - 1; 
+													currentClientNumber++) {
+				// Check if the client entry exists
 				if(null != clients[currentClientNumber]) {
-					System.out.println("closing clients: " + currentClientNumber);
-					clients[currentClientNumber].closeClientSocket();
+					// Check if the socket is connected 
+					if(clients[currentClientNumber].socketIsConnected()){
+						System.out.println("Closing socket of client: " + currentClientNumber);
+						clients[currentClientNumber].closeClientSocket();
+					}
 				}
 			}
 			serverSocket.close();
@@ -80,10 +76,11 @@ public class Server {
 		}
 	}
 	
-	protected void checkAndAcceptClientConnections() {
-		
-		System.out.println("Server socket is open? " + !serverSocket.isClosed());
-		
+	/**
+	 * Method to listen for new clients and accept their connection 
+	 * then store their details in a connectedClients array.
+	 */
+	protected void checkAndAcceptClientConnections() {		
 		Thread listenThread = new Thread("Listen") {
 			public void run() {
 				while(!serverSocket.isClosed()) {
@@ -117,8 +114,10 @@ public class Server {
 	}
 	
 	/**
-	 * @return 
+	 * Method to accept a clients connection.
 	 * 
+	 * @param currentClient - The client whose connection is to be accepted.
+	 * @return currentClient - The Client who is now connected.
 	 */
 	private ConnectedClient acceptClientConnection(ConnectedClient currentClient) {
 		try {
@@ -134,7 +133,9 @@ public class Server {
 	/**
 	 * Method to send data to a client.
 	 * A connection must be made prior to using this method.
-	 * @param itemToSend 	This is the object that the server should send to the client
+	 * 
+	 * @param itemToSend -	This is the object that the server should send to the client
+	 * @param clientID	- This is the ID of the client the data should be sent to.
 	 */
 	protected void sendData(Object itemToSend, int clientID) {
 		ObjectOutputStream outputToClient = null;
@@ -159,7 +160,9 @@ public class Server {
 	/**
 	 * Method to receive data from a client.
 	 * A connection must be made prior to using this method.
-	 * @return itemReceived		This is the object that the server should have received from the client
+	 * 
+	 * @param clientID	- This is the ID of the client the server should be listening to to receive data.
+	 * @return itemReceived	-	This is the object that the server should have received from the client, returns null if invalid object or disconnected.
 	 */
 	protected Object receiveData(int clientID) {
 		ObjectInputStream inputFromClient = null;

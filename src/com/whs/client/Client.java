@@ -1,4 +1,6 @@
 /**
+ * Client.java		v0.6 23/02/2016
+ * 
  * 
  */
 package com.whs.client;
@@ -9,15 +11,19 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 /**
- * @author ch1092
- *
+ * Class for the client's back end handling communications to the server 
+ * 
+ * @author		user1092, guest501
+ * @version		v0.6 23/02/2016
  */
 public class Client {
 	
+	// Variables storing information about the servers socket
 	Socket serverSocket;
 	String host = "127.0.0.1";
 	int port = 1138;
 	
+	// Variable assigned by the server to identify the client
 	int iD;
 	
 	
@@ -55,12 +61,13 @@ public class Client {
 
 	/**
 	 * Method to send an object to the server. 
-	 * A connection must be made prior to using this method.  
-	 * @param itemToSend		The object that is to be sent to the server.
-	 * @throws IOException 
+	 * A connection must be made prior to using this method. 
+	 * 
+	 * @param itemToSend	-	The object that is to be sent to the server.
+	 * @throws IOException	-	Throws an exception if not connected to the server.
 	 */
 	protected void sendData(Object itemToSend) throws IOException {
-	
+		
 		ObjectOutputStream outputToServer = null;
 
 		// Create an object stream to send to server
@@ -74,14 +81,15 @@ public class Client {
 	/**
 	 * Method to receive data from the server.
 	 * A connection must be made prior to using this method.
-	 * @return itemReceived		This is the object that the client should have received from the client
-	 * @throws IOException 
+	 * 
+	 * @return itemReceived	-	This is the object that the client should have received from the client, returns null if invalid object or disconnected.
+	 * @throws IOException	-	Throws an exception if not connected to the server.
 	 */
 	protected Object receiveData() throws IOException {
+		
 		ObjectInputStream inputFromServer = null;
 				
-		// Create an input stream from the connected server
-		
+		// Create an input stream from the connected server		
 		inputFromServer = new ObjectInputStream(serverSocket.getInputStream());
 		
 		// Return the object received from the server
@@ -98,6 +106,9 @@ public class Client {
 		}
 	}
 	
+	/**
+	 * Method to receive an ID should be called once the connection to the server has been made.
+	 */
 	private void receiveID() {
 		try {
 			iD = (int) receiveData();
@@ -108,7 +119,9 @@ public class Client {
 	}
 
 	/**
-	 * @return the iD
+	 * Method to retrieve the ID that has been assigned by the server.
+	 * 
+	 * @return iD	-	The ID assigned to the client by the server.
 	 */
 	protected int getID() {
 		return iD;

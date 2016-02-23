@@ -1,6 +1,9 @@
 /**
+ * Server.java		v0.6 23/02/2016
+ * 
  * 
  */
+
 package com.whs.server;
 
 import static org.junit.Assert.*;
@@ -16,12 +19,20 @@ import com.whs.client.ClientInterfacer;
 
 
 /**
- * @author ch1092
- *
+ * Class for testing the server's back end handling communications to the clients. 
+ * 
+ * @author		user1092, guest501
+ * @version		v0.6 23/02/2016
  */
 public class ServerTests {
 
+	// Declare a server to be used.
 	Server server;
+	
+	/*
+	 *  Declare a client to be used, must use the ClientInterfacer class
+	 *  in order to access the internal methods. 
+	 */
 	ClientInterfacer client;
 	Socket serverSocket;
 	String host = "127.0.0.1";
