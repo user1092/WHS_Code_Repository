@@ -34,9 +34,11 @@ import javafx.util.StringConverter;
 */
 public class JavaFxClientGui extends Application {
 	// object for the file chooser for getting the XML file
-	private final FileChooser xmlFileChooser = new FileChooser();
+	private FileChooser xmlFileChooser;
 	// stage object for setting up the window
 	private Stage primaryStage;
+	
+	private File xmlFile;
 	// text box to show the file browse status
 	private Text actionStatus;
 	// text field used for inputting the ip address and port of the server
@@ -89,18 +91,34 @@ public class JavaFxClientGui extends Application {
 	    private final int min;
 	    private final int max;
 	    private final int length;
-
+	    
+	    /**
+	     * Method for instantiating the max min values and length of the text fields
+	     * @param min  -  Minimum value of text field
+	     * @param max  -  Maximum value of text field
+	     * @param length  -  Length of the text field
+	     */
 	    public IntRangeStringConverter(int min, int max, int length) {
 	        this.min = min;
 	        this.max = max;
 	        this.length = length;
 	    }
-
+	    
+	    /**
+	     * Method for setting the length of the text field
+	     * @param object  -  the number of the length of the text field
+	     * @return string  -  
+	     */
 	    @Override
 	    public String toString(Integer object) {
 	        return String.format("%0"+length+"d", object);
 	    }
 
+	    /**
+	     * Method for setting the maximum and minimum value of the text field
+	     * @param string
+	     * @return integer  -  the integer value of the max and min
+	     */
 	    @Override
 	    public Integer fromString(String string) {
 	        int integer = Integer.parseInt(string);
@@ -114,7 +132,8 @@ public class JavaFxClientGui extends Application {
 	}
 
 	/**
-	 * method for the creation of the HBox that contains the buttons 
+	 * method for the creation of the HBox that contains the buttons
+	 * @return HBox  -  The box that contains the buttons 
 	 */
 	private HBox buttonHBoxCreation() {
 		HBox buttonHBox = new HBox();
@@ -123,10 +142,41 @@ public class JavaFxClientGui extends Application {
 		buttonHBox.setStyle("-fx-background-colour: #336699;");
 		Button browseButton = new Button("Browse");
 		browseButton.setPrefSize(100, 20);
-		browseButton.setOnAction(new BrowseButtonListener());
+		//action event that happens when the browse button is pressed
+		//open file dialog box appears for the user to choose and xml file
+		browseButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent e) {
+				xmlFileChooser = new FileChooser();
+				xmlFile = xmlFileChooser.showOpenDialog(primaryStage);
+				if (xmlFile != null) {
+					actionStatus.setText("File selected: " + xmlFile.getName());
+				}
+				else {
+					actionStatus.setText("File selection cancelled.");
+				}
+			}
+		});
 		Button connectButton = new Button("Connect");
 		connectButton.setPrefSize(100, 20);
-		connectButton.setOnAction(new ConnectButtonListener());
+		//action event that happens when the connect button is pressed
+		//ip address and port from text boxes is stored and shown in the console
+		connectButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent e) {
+				Integer ipAddressText_1 = Integer.parseInt(ipAddressTextField_1.getText());
+				Integer ipAddressText_2 = Integer.parseInt(ipAddressTextField_2.getText());
+				Integer ipAddressText_3 = Integer.parseInt(ipAddressTextField_3.getText());
+				Integer ipAddressText_4 = Integer.parseInt(ipAddressTextField_4.getText());
+				Integer port = Integer.parseInt(portTextField.getText());
+				
+				String ipAddress = (ipAddressText_1 + "." + ipAddressText_2 + "." + ipAddressText_3
+										+ "." + ipAddressText_4);
+			
+				System.out.println("IP Address: " + ipAddress + "");
+				System.out.println("Port: " + port + "");
+			}
+		});
 		Button disconnectButton = new Button("Discconect");
 		disconnectButton.setPrefSize(100, 20);
 		buttonHBox.getChildren().addAll(browseButton, connectButton, disconnectButton);
@@ -134,7 +184,8 @@ public class JavaFxClientGui extends Application {
 	}
 	
 	/**
-	 * method for the creation of the HBox that contains the buttons 
+	 * method for the creation of the HBox that contains the ip address labels and text boxes
+	 * @return HBox  -  The box that contains the ip address labels and text boxes
 	 */
 	private HBox ipHBoxCreation() {
 		//HBox instantiation
@@ -171,7 +222,8 @@ public class JavaFxClientGui extends Application {
 	}
 	
 	/**
-	 * method for the creation of the HBox that contains the buttons
+	 * method for the creation of the HBox that contains the log for the file explorer
+	 * @return HBox  -  The box that contains the log for the file explorer
 	 */
 	private HBox logHBoxCreation() {
 		HBox logHBox = new HBox();
@@ -187,7 +239,8 @@ public class JavaFxClientGui extends Application {
 	}
 	
 	/**  
-	 * method for the creation of the HBox that contains the buttons
+	 * method for the creation of the HBox that contains the port label and text box
+	 * @return HBox  -  The box that contains the port label and text box
 	 */
 	private HBox portHBoxCreation() {
 		HBox portHBox = new HBox();
@@ -205,6 +258,7 @@ public class JavaFxClientGui extends Application {
 	
 	/**
 	 * VBox that contains the two HBoxes, one for the ip address and one for the port
+	 * @return VBox  --  The box that contains the ip address and port HBoxes
 	 */
 	private VBox ipAndPortVBoxCreation() {
 	    VBox ipAndPortVbox = new VBox();
@@ -217,55 +271,4 @@ public class JavaFxClientGui extends Application {
 	    ipAndPortVbox.getChildren().addAll(ipHBox, portHBox);
 	    return ipAndPortVbox;
 	}
-	
-	/**
-	 * action listener method for the browse button
-	 */
-	private class BrowseButtonListener implements EventHandler<ActionEvent> {
-		@Override
-		public void handle(ActionEvent e) {
-			openFileButton();
-		}
-	}
-	
-	/**
-	 * action listener function for the connect button
-	 */
-	private class ConnectButtonListener implements EventHandler<ActionEvent> {
-		@Override
-		public void handle(ActionEvent e) {
-			getIpAddressAndPort();
-		}
-	}
-	
-	/**
-	 * method for getting the ip address and the port from the text boxes
-	 */
-	private void getIpAddressAndPort() {
-		Integer ipAddressText_1 = Integer.parseInt(ipAddressTextField_1.getText());
-		Integer ipAddressText_2 = Integer.parseInt(ipAddressTextField_2.getText());
-		Integer ipAddressText_3 = Integer.parseInt(ipAddressTextField_3.getText());
-		Integer ipAddressText_4 = Integer.parseInt(ipAddressTextField_4.getText());
-		Integer port = Integer.parseInt(portTextField.getText());
-		
-		String ipAddress = (ipAddressText_1 + "." + ipAddressText_2 + "." + ipAddressText_3
-								+ "." + ipAddressText_4);
-	
-		System.out.println("IP Address: " + ipAddress + "");
-		System.out.println("Port: " + port + "");
-		
-	}
-	
-	/**
-	 * method for opening the file explorer to open an XML file
-	 */
-	private void openFileButton() {
-		File xmlFile = xmlFileChooser.showOpenDialog(primaryStage);
-		if (xmlFile != null) {
-			actionStatus.setText("File selected: " + xmlFile.getName());
-		}
-		else {
-			actionStatus.setText("File selection cancelled.");
-		}
-	}	
 }
