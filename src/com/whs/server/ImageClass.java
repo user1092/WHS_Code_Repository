@@ -80,5 +80,4 @@ public class ImageClass
 	{
 		return imageHeight;
 	}
-
 }
