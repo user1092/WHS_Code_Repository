@@ -35,9 +35,8 @@ import javafx.util.StringConverter;
 public class JavaFxClientGui extends Application {
 	// object for the file chooser for getting the XML file
 	private FileChooser xmlFileChooser;
-	// stage object for setting up the window
+
 	private Stage primaryStage;
-	
 	private File xmlFile;
 	// text box to show the file browse status
 	private Text actionStatus;
@@ -125,10 +124,8 @@ public class JavaFxClientGui extends Application {
 	        if (integer > max || integer < min) {
 	            throw new IllegalArgumentException();
 	        }
-
 	        return integer;
 	    }
-
 	}
 
 	/**
