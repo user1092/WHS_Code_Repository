@@ -1,8 +1,9 @@
 /**
-* JavaFxClientGui.java v0.1 26/01/16
+* ClientGui.java v0.1 26/01/16
 *
 * Copyright and Licensing Information if applicable
 */
+
 package com.whs.client;
 
 import java.io.File;
@@ -32,11 +33,15 @@ import javafx.util.StringConverter;
 * @author user828
 * @version v0.1 26/01/16
 */
-public class JavaFxClientGui extends Application {
+public class ClientGui extends Application {
 	// object for the file chooser for getting the XML file
 	private FileChooser xmlFileChooser;
 	// stage object for setting up the window
 	private Stage primaryStage;
+
+	private Button browseButton;
+	private Button connectButton;
+	private Button disconnectButton;
 	
 	private File xmlFile;
 	// text box to show the file browse status
@@ -47,8 +52,15 @@ public class JavaFxClientGui extends Application {
 	// object for formatting the text fields to only accept integers
 	private StringConverter<Integer> integerFormatter;
 	
+	// Declare a backend for the client
+	private Client client;
+	
+	public ClientGui() {
+		client = new Client();
+	}
+	
 	public static void main(String[] args) {
-		launch(JavaFxClientGui.class, args);
+		launch(ClientGui.class, args);
 	}
 	
 	@Override
@@ -57,7 +69,7 @@ public class JavaFxClientGui extends Application {
 		Scene scene = new Scene(guiLayout);
 		
 		//import and set background image
-		String background = JavaFxClientGui.class.getResource("SlideBackground.jpg").toExternalForm();
+		String background = ClientGui.class.getResource("SlideBackground.jpg").toExternalForm();
 		guiLayout.setStyle("-fx-background-image: url('" + background + "'); " +
 		           "-fx-background-position: center center; " +
 		           "-fx-background-repeat: stretch;");
@@ -86,7 +98,7 @@ public class JavaFxClientGui extends Application {
 	 * class for setting the text fields to only accept integers 
 	 * and have a range of 0-255 for the ip address and 0-65535 for the port
 	 */
-	public static class IntRangeStringConverter extends StringConverter<Integer> {
+	private static class IntRangeStringConverter extends StringConverter<Integer> {
 
 	    private final int min;
 	    private final int max;
@@ -140,7 +152,23 @@ public class JavaFxClientGui extends Application {
 		buttonHBox.setPadding(new Insets(0, 0, 10, 235));
 		buttonHBox.setSpacing(10);
 		buttonHBox.setStyle("-fx-background-colour: #336699;");
-		Button browseButton = new Button("Browse");
+		
+		browseButtonSetup();
+		
+		connectButtonSetup();
+		
+		disconnectButtonSetup();
+		
+		buttonHBox.getChildren().addAll(browseButton, connectButton, disconnectButton);
+		
+		return buttonHBox;	
+	}
+
+	/**
+	 * Method to setup the browse button
+	 */
+	private void browseButtonSetup() {
+		browseButton = new Button("Browse");
 		browseButton.setPrefSize(100, 20);
 		//action event that happens when the browse button is pressed
 		//open file dialog box appears for the user to choose and xml file
@@ -148,6 +176,11 @@ public class JavaFxClientGui extends Application {
 			@Override
 			public void handle(ActionEvent e) {
 				xmlFileChooser = new FileChooser();
+				
+				// Restrict choice of files to xml
+				FileChooser.ExtensionFilter extensionFilter = new FileChooser.ExtensionFilter("XML files (*.xml, *.XML)", "*.xml", "*.XML");
+				xmlFileChooser.getExtensionFilters().add(extensionFilter);
+				
 				xmlFile = xmlFileChooser.showOpenDialog(primaryStage);
 				if (xmlFile != null) {
 					actionStatus.setText("File selected: " + xmlFile.getName());
@@ -157,7 +190,14 @@ public class JavaFxClientGui extends Application {
 				}
 			}
 		});
-		Button connectButton = new Button("Connect");
+	}
+
+	/**
+	 * Method to setup the connect button
+	 */
+	private void connectButtonSetup() {
+		connectButton = new Button("Connect");
+		connectButton.setDisable(false);
 		connectButton.setPrefSize(100, 20);
 		//action event that happens when the connect button is pressed
 		//ip address and port from text boxes is stored and shown in the console
@@ -168,21 +208,39 @@ public class JavaFxClientGui extends Application {
 				Integer ipAddressText_2 = Integer.parseInt(ipAddressTextField_2.getText());
 				Integer ipAddressText_3 = Integer.parseInt(ipAddressTextField_3.getText());
 				Integer ipAddressText_4 = Integer.parseInt(ipAddressTextField_4.getText());
-				Integer port = Integer.parseInt(portTextField.getText());
+				int port = Integer.parseInt(portTextField.getText());
 				
 				String ipAddress = (ipAddressText_1 + "." + ipAddressText_2 + "." + ipAddressText_3
 										+ "." + ipAddressText_4);
 			
-				System.out.println("IP Address: " + ipAddress + "");
-				System.out.println("Port: " + port + "");
+				client.openSocket(ipAddress, port);
+				if(!client.serverSocket.isClosed()) {
+					connectButton.setDisable(true);
+					disconnectButton.setDisable(false);
+				}
 			}
 		});
-		Button disconnectButton = new Button("Discconect");
-		disconnectButton.setPrefSize(100, 20);
-		buttonHBox.getChildren().addAll(browseButton, connectButton, disconnectButton);
-		return buttonHBox;	
 	}
-	
+
+	/**
+	 * Method to setup the disconnect button
+	 */
+	private void disconnectButtonSetup() {
+		disconnectButton = new Button("Disconnect");
+		disconnectButton.setDisable(true);
+		disconnectButton.setPrefSize(100, 20);
+		disconnectButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent e) {
+				client.closeSocket();
+				if(client.serverSocket.isClosed()) {
+					connectButton.setDisable(false);
+					disconnectButton.setDisable(true);
+				}
+			}
+		});
+	}
+
 	/**
 	 * method for the creation of the HBox that contains the ip address labels and text boxes
 	 * @return HBox  -  The box that contains the ip address labels and text boxes
@@ -270,5 +328,10 @@ public class JavaFxClientGui extends Application {
 	   
 	    ipAndPortVbox.getChildren().addAll(ipHBox, portHBox);
 	    return ipAndPortVbox;
+	}
+
+	protected Object getID() {
+		// TODO Auto-generated method stub
+		return client.getID();
 	}
 }

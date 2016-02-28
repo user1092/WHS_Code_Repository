@@ -32,8 +32,8 @@ public class ClientInterfacer {
 	/**
 	 * Method to open socket, in order to connect to the server. 
 	 */
-	public void openSocket() {
-		client.openSocket();
+	public void openSocket(String host, int port) {
+		client.openSocket(host, port);
 	}
 
 	/**

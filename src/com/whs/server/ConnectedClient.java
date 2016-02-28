@@ -27,7 +27,8 @@ public class ConnectedClient {
 	 * @return clientSocket.isConnected()	-	Returns true if connected, else returns false.
 	 */
 	protected boolean socketIsConnected() {
-		return clientSocket.isConnected();
+		//return clientSocket.isConnected();
+		return !clientSocket.isClosed();
 	}
 
 	/**

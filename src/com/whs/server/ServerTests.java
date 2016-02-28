@@ -52,7 +52,7 @@ public class ServerTests {
 		server.checkAndAcceptClientConnections();
 		
 		client = new ClientInterfacer();
-		client.openSocket();
+		client.openSocket(host, port);
 	}
 	
 	/**
@@ -115,7 +115,15 @@ public class ServerTests {
 		 */
 		Thread listenThread = new Thread("Listen") {
 			public void run() {
-				itemReceived = server.receiveData(0);
+				try {
+					itemReceived = server.receiveData(0);
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				System.out.println("BLUGHHH");
 			}
 		};
@@ -143,7 +151,7 @@ public class ServerTests {
 		Object itemToSend = "STRING" ;
 		
 		ClientInterfacer client2 = new ClientInterfacer();
-		client2.openSocket();
+		client2.openSocket(host, port);
 
 		server.checkAndAcceptClientConnections(); 
 		
@@ -152,7 +160,15 @@ public class ServerTests {
 		 */
 		Thread listenThread = new Thread("Listen") {
 			public void run() {
-				itemReceived = server.receiveData(0);
+				try {
+					itemReceived = server.receiveData(0);
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		};
 		listenThread.start();
@@ -175,7 +191,15 @@ public class ServerTests {
 		 */
 		Thread listenThread2 = new Thread("Listen") {
 			public void run() {
-				itemReceived = server.receiveData(1);
+				try {
+					itemReceived = server.receiveData(1);
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		};
 		listenThread2.start();

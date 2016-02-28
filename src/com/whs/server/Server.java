@@ -24,7 +24,7 @@ public class Server {
 	// Variable to store information about the clients connected.
 	private ConnectedClient[] clients;
 	private int currentClientNumber = 0;
-	private final int connectedClientsMaxNumber = 3;
+	private final int connectedClientsMaxNumber = 2;
 		
 	/**
 	 * Constructor to create a new array of connected clients.
@@ -80,37 +80,59 @@ public class Server {
 	 * Method to listen for new clients and accept their connection 
 	 * then store their details in a connectedClients array.
 	 */
-	protected void checkAndAcceptClientConnections() {		
-		Thread listenThread = new Thread("Listen") {
+	protected void checkAndAcceptClientConnections() {	
+		
+		// Thread to check if a client disconnects so a new one can be added
+		final Thread checkThread = new Thread("Check for closed sockets for new clients") {
 			public void run() {
 				while(!serverSocket.isClosed()) {
-					ConnectedClient currentClient = new ConnectedClient();
-					System.out.println("currentClient: " + currentClientNumber);
-					
-					currentClient.setID(currentClientNumber);
-					
-					currentClient = acceptClientConnection(currentClient);
-					try {
-							if(currentClient.socketIsConnected()) {
-							clients[currentClientNumber] = currentClient;
-							System.out.println("Current Client" + currentClient.getID());
-							sendData(currentClient.getID(), currentClient.getID());
+					// Only check if current entry is connected
+					if(clients[currentClientNumber].socketIsConnected()) {
+						// Cycle through clients array to see if one has disconnected
+						for(int clientNumber = 0; clientNumber < connectedClientsMaxNumber; clientNumber++) {
+							if(!clients[clientNumber].socketIsConnected()) {
+								currentClientNumber = clientNumber;
+								System.out.println("client number: " + clientNumber + "isn't connected");
+								break;
+							}
 						}
-					} catch(NullPointerException e) {
-						//TODO
-						// Comes here if sockets closed.
-						e.printStackTrace();
-					}
-					
-					if(currentClientNumber < connectedClientsMaxNumber - 1) {
-						currentClientNumber++;
 					}
 				}
 			}
 		};
-					
-		listenThread.start();	
 		
+		// Thread to listen for new clients and accept if there is space or reject if connections are full
+		Thread listenThread = new Thread("Listen for new clients") {
+			public void run() {
+				while(!serverSocket.isClosed()) {
+					ConnectedClient currentClient = new ConnectedClient();
+					// Initial Population of clients array
+					if(null == clients[currentClientNumber]) {
+						if((currentClientNumber < connectedClientsMaxNumber)) {
+							
+							currentClient = acceptClientConnection(currentClient);
+							currentClient.setID(currentClientNumber);
+							manageClient(currentClient, currentClientNumber);
+							
+							if(currentClientNumber < connectedClientsMaxNumber - 1){
+								System.out.println("Incresing client number");
+								currentClientNumber++;
+							}
+						}
+					} else {
+						// Start looking for disconnected clients 
+						if(!checkThread.isAlive()){
+							checkThread.start();
+						}
+						// Attempt to accept client
+						currentClient = acceptClientConnection(currentClient);
+						currentClient.setID(currentClientNumber);	
+						manageClient(currentClient, currentClientNumber);
+					}
+				}
+			}
+		};	
+		listenThread.start();
 	}
 	
 	/**
@@ -128,6 +150,49 @@ public class Server {
 			//e.printStackTrace();
 		}
 		return currentClient;		
+	}
+	
+	/**
+	 * Method to accept or refuse clients depending on if there is space
+	 * if accepted the client is then listened to for data requests.
+	 * 
+	 * @param currentClient
+	 * @param clientNumber
+	 */
+	private void manageClient(ConnectedClient currentClient, int clientNumber) {
+		try {
+			/*
+			 *  If entry in clients array doesn't exist create it 
+			 *  and accept then listen to client
+			 */
+			if(currentClient.socketIsConnected() && (null == clients[clientNumber])) {
+				clients[clientNumber] = currentClient;
+				System.out.println("(null)Current Client" + currentClient.getID());
+				sendData(currentClient.getID(), currentClient.getID());
+				listenToClient(currentClient);
+			} else {
+				/*
+				 *  If entry in clients array does exist and is not connected 
+				 *  accept then listen to client
+				 */
+				if(currentClient.socketIsConnected() && (!clients[clientNumber].socketIsConnected())) {
+					clients[clientNumber] = currentClient;
+					System.out.println("(not connected)Current Client" + currentClient.getID());
+					sendData(currentClient.getID(), currentClient.getID());
+					listenToClient(currentClient);
+				} else {
+					/*
+					 *  If entry in clients array does exist and is connected
+					 *  inform client the server is full
+					 */
+					informThatServerFull(currentClient);
+				}
+			}
+		} catch(NullPointerException e) {
+			//TODO
+			// Comes here if sockets closed.
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -163,30 +228,71 @@ public class Server {
 	 * 
 	 * @param clientID	- This is the ID of the client the server should be listening to to receive data.
 	 * @return itemReceived	-	This is the object that the server should have received from the client, returns null if invalid object or disconnected.
+	 * @throws IOException 
+	 * @throws ClassNotFoundException 
 	 */
-	protected Object receiveData(int clientID) {
+	protected Object receiveData(int clientID) throws IOException, ClassNotFoundException {
 		ObjectInputStream inputFromClient = null;
 				
 		// Create an input stream from the connected client
+		inputFromClient = new ObjectInputStream(clients[clientID].getClientSocket().getInputStream());
+		
+		// Return the object received from the client
+		return inputFromClient.readObject();
+	}
+	
+	private void informThatServerFull(ConnectedClient client) {
+		ObjectOutputStream outputToClient = null;
+		
+		// Create an object stream to send to client
 		try {
-			inputFromClient = new ObjectInputStream(clients[clientID].getClientSocket().getInputStream());
+			outputToClient = new ObjectOutputStream(client.getClientSocket().getOutputStream());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		// Return the object received from the client
+		// Write the object to the client
 		try {
-			return inputFromClient.readObject();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
+			outputToClient.writeObject(-1);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return null;
 		}
+	}
+	
+	/**
+	 * Method to listen to client for data requests
+	 * 
+	 * @param client
+	 */
+	private void listenToClient(final ConnectedClient client) {
+		Thread[] listenToClientThread;
+		listenToClientThread = new Thread[connectedClientsMaxNumber];
+		listenToClientThread[client.getID()] = new Thread("Listen to connected clients") {
+			public void run() {
+				while (!serverSocket.isClosed() && client.socketIsConnected()) {
+					Object object;
+					try {
+						// Wait for the client to send some data
+						object = receiveData(client.getID());
+					} catch (ClassNotFoundException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (IOException e1) {
+						//e1.printStackTrace();
+						// Client Disconnected so close the socket.
+						try {
+							client.closeClientSocket();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+		};
+		listenToClientThread[client.getID()].start();
 	}
 
 }

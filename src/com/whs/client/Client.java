@@ -24,24 +24,26 @@ public class Client {
 	int port = 1138;
 	
 	// Variable assigned by the server to identify the client
-	int iD;
+	int iD = -1;
 	
 	
 	/**
 	 * Method to open socket, in order to connect to the server. 
+	 * @param host - 
+	 * @param port - 
 	 */
-	protected void openSocket() {
+	protected void openSocket(String host, int port) {
 	
 		// Connect to the server	
 		try {			
 			serverSocket = new Socket(host, port);
+			System.out.println("Connected to Server, host: " + host + ",port: " + port);
+			receiveID();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
+			System.out.println("Could not connected to Server, host: " + host + ",port: " + port);
 		}
-		
-		receiveID();
-		
 	}
 
 	/**
@@ -111,7 +113,13 @@ public class Client {
 	 */
 	private void receiveID() {
 		try {
+			System.out.println("Waiting for ID");
 			iD = (int) receiveData();
+			System.out.println("received ID: " + iD);
+			if(-1 == iD) {
+				System.out.println("Server Full, Try Again later");
+				closeSocket();
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
