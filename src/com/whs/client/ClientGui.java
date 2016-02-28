@@ -36,13 +36,16 @@ import javafx.util.StringConverter;
 public class ClientGui extends Application {
 	// object for the file chooser for getting the XML file
 	private FileChooser xmlFileChooser;
-	// stage object for setting up the window
+
 	private Stage primaryStage;
+<<<<<<< HEAD:src/com/whs/client/ClientGui.java
 
 	private Button browseButton;
 	private Button connectButton;
 	private Button disconnectButton;
 	
+=======
+>>>>>>> 26909a029b0e246e848f18c04b37f85c5fbd449a:src/com/whs/client/JavaFxClientGui.java
 	private File xmlFile;
 	// text box to show the file browse status
 	private Text actionStatus;
@@ -137,10 +140,8 @@ public class ClientGui extends Application {
 	        if (integer > max || integer < min) {
 	            throw new IllegalArgumentException();
 	        }
-
 	        return integer;
 	    }
-
 	}
 
 	/**
