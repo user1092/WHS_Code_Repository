@@ -5,6 +5,8 @@
  */
 package com.whs.server;
 
+import java.io.IOException;
+
 /**
  * Class for the test classes to interface with the server's back end
  * in order to handling communications to the server from a external package.
@@ -66,8 +68,10 @@ public class ServerInterfacer {
 	 * 
 	 * @param clientID	- This is the ID of the client the server should be listening to to receive data.
 	 * @return itemReceived	-	This is the object that the server should have received from the client, returns null if invalid object or disconnected.
+	 * @throws IOException 
+	 * @throws ClassNotFoundException 
 	 */
-	public Object receiveData(int clientSocketNumber) {
+	public Object receiveData(int clientSocketNumber) throws ClassNotFoundException, IOException {
 		return server.receiveData(clientSocketNumber);
 	}
 	

@@ -30,6 +30,7 @@ public class ServerGuiTests {
 	public void socketShouldOpenAndCloseOnClickingButtons() {
 		ServerGui serverGui;
 		serverGui = new ServerGui();
+		
 		Robot bot = null;
 		
 		try {

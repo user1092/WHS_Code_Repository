@@ -29,6 +29,10 @@ public class ClientTests {
 	// Declare a client to be used
 	Client client;
 	
+	//Declare the host and port of the server
+	String host = "127.0.0.1";
+	int port = 1138;
+	
 	/*
 	 *  Declare a server to be used, must use the ServerInterfacer class
 	 *  in order to access the internal methods. 
@@ -51,7 +55,7 @@ public class ClientTests {
 		server.checkAndAcceptClientConnections();
 		
 		client = new Client();
-		client.openSocket();
+		client.openSocket(host, port);
 	}
 	
 	/**
@@ -76,7 +80,15 @@ public class ClientTests {
 		// Thread for test to listen to Client
 		Thread listenThread = new Thread("Listen") {
 			public void run() {
-				itemReceived = server.receiveData(client.getID());
+				try {
+					itemReceived = server.receiveData(client.getID());
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		};
 		listenThread.start();

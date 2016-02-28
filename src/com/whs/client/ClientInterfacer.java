@@ -1,5 +1,5 @@
 /**
- * ClientInterfacer.java		v0.4 23/02/2016
+ * ClientInterfacer.java		v0.5 28/02/2016
  * 
  * 
  */
@@ -14,7 +14,7 @@ import java.io.IOException;
  * NOT FOR RELEASE!
  * 
  * @author		user1092, guest501
- * @version		v0.4 23/02/2016
+ * @version		v0.5 28/02/2016
  */
 public class ClientInterfacer {
 
@@ -32,8 +32,8 @@ public class ClientInterfacer {
 	/**
 	 * Method to open socket, in order to connect to the server. 
 	 */
-	public void openSocket() {
-		client.openSocket();
+	public void openSocket(String host, int port) {
+		client.openSocket(host, port);
 	}
 
 	/**
