@@ -1,5 +1,5 @@
 /**
-* ClientGui.java v0.1 26/01/16
+* ClientGui.java v0.2 28/01/16
 *
 * Copyright and Licensing Information if applicable
 */
@@ -30,22 +30,19 @@ import javafx.util.StringConverter;
 /**
 * Class for creation of the Client GUI and adding functionality
 *
-* @author user828
-* @version v0.1 26/01/16
+* @author user828 & user1092
+* @version v0.2 28/01/16
 */
 public class ClientGui extends Application {
 	// object for the file chooser for getting the XML file
 	private FileChooser xmlFileChooser;
 
 	private Stage primaryStage;
-<<<<<<< HEAD:src/com/whs/client/ClientGui.java
 
 	private Button browseButton;
 	private Button connectButton;
 	private Button disconnectButton;
 	
-=======
->>>>>>> 26909a029b0e246e848f18c04b37f85c5fbd449a:src/com/whs/client/JavaFxClientGui.java
 	private File xmlFile;
 	// text box to show the file browse status
 	private Text actionStatus;

@@ -1,5 +1,5 @@
 /**
- * Client.java		v0.6 23/02/2016
+ * Client.java		v0.7 28/02/2016
  * 
  * 
  */
@@ -14,7 +14,7 @@ import java.net.Socket;
  * Class for the client's back end handling communications to the server 
  * 
  * @author		user1092, guest501
- * @version		v0.6 23/02/2016
+ * @version		v0.7 28/02/2016
  */
 public class Client {
 	

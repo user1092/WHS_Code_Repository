@@ -1,5 +1,5 @@
 /**
- * Server.java		v0.6 23/02/2016
+ * Server.java		v0.7 28/02/2016
  * 
  * 
  */
@@ -15,7 +15,7 @@ import java.net.ServerSocket;
  * Class for the server's back end handling communications to the clients. 
  * 
  * @author		user1092, guest501
- * @version		v0.6 23/02/2016
+ * @version		v07 28/02/2016
  */
 public class Server {
 	
