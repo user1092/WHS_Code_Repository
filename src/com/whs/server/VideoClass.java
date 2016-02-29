@@ -9,6 +9,18 @@ public class VideoClass
 	protected String videoSourceFile = null;
 	protected String videoLoop = null;
 	
+	private boolean interactable = false;
+	
+	
+	protected void setVideoInteractable(boolean b)
+	{
+		interactable = b;
+	}
+	
+	protected boolean getVideoInteractable()
+	{
+		return interactable;
+	}
 	
 	protected void setVideoStartTime(String contents) 
 	{

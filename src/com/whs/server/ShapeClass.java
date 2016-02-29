@@ -19,6 +19,18 @@ public class ShapeClass
 	protected String shapeShadeY2 = null;
 	protected String shapeShadeColour2 = null;
 	
+	private boolean interactable = false;
+	
+	
+	protected void setShapeInteractable(boolean b)
+	{
+		interactable = b;
+	}
+	
+	protected boolean getShapeInteractable()
+	{
+		return interactable;
+	}
 	
 	protected void setShapeStartTime(String contents) 
 	{

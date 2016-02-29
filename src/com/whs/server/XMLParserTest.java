@@ -54,7 +54,8 @@ public class XMLParserTest
 		assertEquals("Impact", currentText.getTextFont());
 		assertEquals("30", currentText.getTextFontSize());
 		assertEquals("000000", currentText.getTextFontColour());		
-		assertEquals("This is our module choice software for SWEng module 2016", currentText.getTextContent());
+		assertEquals("Hello World  How are you", currentText.getTextContent());
+		assertEquals(false, currentText.getTextInteractable());
 		
 		currentShape = currentSlide.shapeList.get(0);
 		
@@ -124,7 +125,7 @@ public class XMLParserTest
 		assertEquals("0", currentPolygon.getPolygonStartTime());
 		assertEquals("starShape.csv", currentPolygon.getPolygonSourceFile());
 		assertEquals("-1", currentPolygon.getPolygonDuration());
-		assertEquals("0.6", currentPolygon.getPolygonLineColour());
-		assertEquals("0.6", currentPolygon.getPolygonFillColour());
+		assertEquals("FF5500", currentPolygon.getPolygonLineColour());
+		assertEquals("007766", currentPolygon.getPolygonFillColour());
 	}
 }

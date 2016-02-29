@@ -8,6 +8,18 @@ public class PolygonClass
 	protected String polygonLineColour = null;
 	protected String polygonFillColour = null;
 	
+	private boolean interactable = false;
+	
+	
+	protected void setPolygonInteractable(boolean b)
+	{
+		interactable = b;
+	}
+	
+	protected boolean getPolygonInteractable()
+	{
+		return interactable;
+	}
 	
 	protected void setPolygonStartTime(String contents) 
 	{

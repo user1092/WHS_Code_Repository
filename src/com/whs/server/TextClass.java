@@ -11,6 +11,18 @@ public class TextClass
 	private String textFontColour = null;
 	private String textContent = null;
 	
+	private boolean interactable = false;
+	
+	
+	protected void setTextInteractable(boolean b)
+	{
+		interactable = b;
+	}
+	
+	protected boolean getTextInteractable()
+	{
+		return interactable;
+	}
 	
 	protected void setTextStartTime(String contents) 
 	{

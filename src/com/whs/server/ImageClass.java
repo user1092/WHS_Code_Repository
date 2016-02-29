@@ -10,6 +10,18 @@ public class ImageClass
 	protected String imageWidth = null;
 	protected String imageHeight = null;
 	
+	private boolean interactable = false;
+	
+	
+	protected void setImageInteractable(boolean b)
+	{
+		interactable = b;
+	}
+	
+	protected boolean getImageInteractable()
+	{
+		return interactable;
+	}
 	
 	protected void setImageStartTime(String contents) 
 	{
