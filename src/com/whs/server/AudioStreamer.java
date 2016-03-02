@@ -20,13 +20,13 @@ import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 public class AudioStreamer {
 
 	// Location of where VLC is installed
-	private final String VLC_LIBRARY_LOCATION = "M:/VLC";
+	private final String VLC_LIBRARY_LOCATION = "M:/vlc-2.2.2";
 	// Set VLC video output to a dummy
-	private final String[] VLC_ARGS = {"--vout", "dummy"};
+	private final String[] VLC_ARGS = {"--vout", "dummy", "-vvv"};
 	
 	private MediaPlayerFactory mediaPlayerFactory;
 	private HeadlessMediaPlayer headlessPlayer;
-	
+		
 	public AudioStreamer() {
 		// Find and load VLC libraries
 		NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), VLC_LIBRARY_LOCATION);
@@ -51,7 +51,16 @@ public class AudioStreamer {
 		String options = formatRtpStream(iP, rtpPort);
 		
 		System.out.println(audioRequested + " attempting to play");
-		headlessPlayer.playMedia(audioRequested, ":sout=#rtp{dst=127.0.0.1,port=5555,mux=ts}", ":no-sout-rtp-sap", ":no-sout-standard-sap", ":sout-all", ":sout-keep");
+		headlessPlayer.playMedia(audioRequested,
+									":file-caching=0",
+									":network-caching=300",
+									options, 
+									":no-sout-rtp-sap", 
+									":no-sout-standard-sap", 
+									":sout-all", 
+									":sout-keep",
+									":sout-mux-caching=1000"
+									);
 	}
 
 	/**
@@ -62,8 +71,11 @@ public class AudioStreamer {
 	 * @return
 	 */
 	private String formatRtpStream(String serverAddress, int serverPort) {
-		StringBuilder sb = new StringBuilder(60);
-		sb.append(":sout=#rtp{dst=");
+		StringBuilder sb = new StringBuilder(200);
+		sb.append(":sout=#transcode{acodec=mp3,ab=192,channels=2,samplerate=48000}:rtp{dst=");
+		//sb.append("::sout=#transcode{vcodec=mp4v,vb=3000,fps=30,scale=1,acodec=mp4a,ab=128,channels=2,samplerate=48000,width=800,height=600}:rtp{dst=");
+		
+		//sb.append(":sout=#rtp{dst=");
 		sb.append(serverAddress);
 		sb.append(",port=");
 		sb.append(serverPort);

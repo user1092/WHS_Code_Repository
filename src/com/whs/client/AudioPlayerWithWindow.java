@@ -62,7 +62,7 @@ public class AudioPlayerWithWindow extends Application {
 		
 		
 		//audioPlayer.loadLocalAudio("jetairplane16sec.wav");
-		audioPlayer.loadStreamedAudio();
+		//audioPlayer.loadStreamedAudio();
 	}
 
 	
@@ -89,7 +89,8 @@ public class AudioPlayerWithWindow extends Application {
 		playButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
-				audioPlayer.playAudio();
+				//audioPlayer.playAudio();
+				audioPlayer.loadStreamedAudio();
 			}
 		});
 		

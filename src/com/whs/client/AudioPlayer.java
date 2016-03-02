@@ -20,7 +20,7 @@ import com.sun.jna.NativeLibrary;
 public class AudioPlayer {
 	
 	// Location of where VLC is installed
-	private final String VLC_LIBRARY_LOCATION = "M:/VLC";
+	private final String VLC_LIBRARY_LOCATION = "M:/vlc-2.2.2";
 	// Set VLC video output to a dummy
 	private final String[] VLC_ARGS = {"--vout", "dummy"};
 	
@@ -54,7 +54,8 @@ public class AudioPlayer {
 	public void loadStreamedAudio() {
 		String host = "127.0.0.1";
 		int rtpPort = 5555;
-		headlessPlayer.prepareMedia("rtp://@"+ host + ":" + rtpPort);
+		//headlessPlayer.prepareMedia("rtp://@"+ host + ":" + rtpPort);
+		headlessPlayer.playMedia("rtp://@"+ host + ":" + rtpPort);
 	}
 	
 	/**
