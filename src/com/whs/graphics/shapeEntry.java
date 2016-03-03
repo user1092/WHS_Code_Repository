@@ -5,7 +5,7 @@
 package com.whs.graphics;
 
 import javafx.scene.Group;
-import javafx.scene.shape.Shape;
+import javafx.scene.shape.*;
 
 /**
  * @author ws659
@@ -48,47 +48,64 @@ public class shapeEntry {
 		}
 		else {
 			valid = false;
+			throw new IllegalArgumentException("Invalid type, expected one of: 'circle', 'rectangle' or 'roundedRectangle'");
 		}
 		
 		return valid;
 	}
 
-	private int getPixel(String axis) {
-		int pixel;
+	private float getPixel(String axis) {
+		float pixel;
 		
 		if (axis.equals("H")) {
-			pixel = (int) (GUI_HEIGHT * yStart);
+			pixel = (GUI_HEIGHT * yStart);
 		}
 		else if (axis.equals("W")) {
-			pixel = (int) (GUI_WIDTH * xStart);
+			pixel = (GUI_WIDTH * xStart);
 		}
 		else {
 			pixel = 0;
-			// maybe throw some exception here
+			throw new IllegalArgumentException("Invalid axs type, expected on of: 'H' or 'W'");
 		}
 		
 		return pixel;
 	}
 	
 	public void drawShape(Group group) {
+		float x = getPixel("W");
+		float y = getPixel("H");
+		
 		switch (type) {
 		case "circle":
-			//draw a circle dum dum
+			drawCircle(group, x, y);
 			break;
 		case "rectangle":
-			//draw a rectangle dum dum
+			drawRectangle(group, false, x, y);
 			break;
 		case "roundedRectangle":
-			//draw a rounded rectangle dum dum
+			drawRectangle(group, true, x, y);
 			break;
 		default:
-			//figure something out
-			break;
+			throw new IllegalArgumentException("Invalid type, expected one of: 'circle', 'rectangle' or 'roundedRectangle'");
 		}
-		
 	}
 
+	private void drawRectangle(Group group, boolean rounded, float x, float y) {
+		Rectangle r = new Rectangle(x, y, width, height);
+		
+		if (rounded) {
+			r.setArcHeight(20);
+			r.setArcWidth(20);
+		}
+		
+		group.getChildren().add(r);	
+	}
 	
+	private void drawCircle(Group group, float x, float y) {
+		Circle c = new Circle(x, y, width);
+		
+		group.getChildren().add(c);
+	}
 	
 	
 }
