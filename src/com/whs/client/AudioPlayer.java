@@ -3,13 +3,8 @@
  */
 package com.whs.client;
 
-import uk.co.caprica.vlcj.binding.LibVlc;
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;
 import uk.co.caprica.vlcj.player.headless.HeadlessMediaPlayer;
-import uk.co.caprica.vlcj.runtime.RuntimeUtil;
-
-import com.sun.jna.Native;
-import com.sun.jna.NativeLibrary;
 
 /**
  * Class for the client's back end handling playing audio files 
@@ -19,12 +14,6 @@ import com.sun.jna.NativeLibrary;
  */
 public class AudioPlayer {
 	
-	// Location of where VLC is installed
-	private final String VLC_LIBRARY_LOCATION = "M:/vlc-2.2.2";
-	// Set VLC video output to a dummy
-	private final String[] VLC_ARGS = {"--vout", "dummy"};
-	
-	private MediaPlayerFactory mediaPlayerFactory;
 	private HeadlessMediaPlayer headlessPlayer;
 	
 	/**
@@ -32,13 +21,7 @@ public class AudioPlayer {
 	 * 
 	 * Point to the VLC library path and create a new player.
 	 */
-	public AudioPlayer() {
-		// Find and load VLC libraries
-		NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), VLC_LIBRARY_LOCATION);
-		System.setProperty("jna.library.path", VLC_LIBRARY_LOCATION);
-		Native.loadLibrary(RuntimeUtil.getLibVlcLibraryName(), LibVlc.class);
-		
-		mediaPlayerFactory = new MediaPlayerFactory(VLC_ARGS);		
+	public AudioPlayer(MediaPlayerFactory mediaPlayerFactory) {
 		headlessPlayer = mediaPlayerFactory.newHeadlessMediaPlayer();
 	}
 	
@@ -51,10 +34,9 @@ public class AudioPlayer {
 		headlessPlayer.prepareMedia(audioFilename);
 	}
 	
-	public void loadStreamedAudio() {
+	public void playStreamedAudio() {
 		String host = "127.0.0.1";
 		int rtpPort = 5555;
-		//headlessPlayer.prepareMedia("rtp://@"+ host + ":" + rtpPort);
 		headlessPlayer.playMedia("rtp://@"+ host + ":" + rtpPort);
 	}
 	
@@ -143,7 +125,7 @@ public class AudioPlayer {
 	 * 
 	 * Must be called on destruction of window
 	 */
-	public void releasePlayer() {
+	public void releasePlayer(MediaPlayerFactory mediaPlayerFactory) {
 		headlessPlayer.stop();
 		headlessPlayer.release();
 		mediaPlayerFactory.release();
