@@ -23,6 +23,7 @@ public class shapeEntry {
 	protected String type;
 	protected float width, height;
 	protected String lineColour, fillColour;
+	protected Group group = new Group();
 	
 	//constructor for required fields only
 	/*
@@ -37,6 +38,9 @@ public class shapeEntry {
 		this.width = inW;
 		
 		//fill out some defaults
+		
+		//default type circle?
+		this.type = "circle";
 		
 	}
 	
@@ -67,43 +71,42 @@ public class shapeEntry {
 			pixel = 0;
 			throw new IllegalArgumentException("Invalid axs type, expected on of: 'H' or 'W'");
 		}
-		
 		return pixel;
 	}
 	
-	public void drawShape(Group group) {
+	public Group drawShape() {
 		float x = getPixel("W");
 		float y = getPixel("H");
 		
 		switch (type) {
 		case "circle":
-			drawCircle(group, x, y);
+			drawCircle(x, y);
 			break;
 		case "rectangle":
-			drawRectangle(group, false, x, y);
+			drawRectangle(false, x, y);
 			break;
 		case "roundedRectangle":
-			drawRectangle(group, true, x, y);
+			drawRectangle(true, x, y);
 			break;
 		default:
 			throw new IllegalArgumentException("Invalid type, expected one of: 'circle', 'rectangle' or 'roundedRectangle'");
 		}
+		
+		return this.group;
 	}
 
-	private void drawRectangle(Group group, boolean rounded, float x, float y) {
+	private void drawRectangle(boolean rounded, float x, float y) {
 		Rectangle r = new Rectangle(x, y, width, height);
 		
 		if (rounded) {
 			r.setArcHeight(20);
 			r.setArcWidth(20);
 		}
-		
 		group.getChildren().add(r);	
 	}
 	
-	private void drawCircle(Group group, float x, float y) {
-		Circle c = new Circle(x, y, width);
-		
+	private void drawCircle(float x, float y) {
+		Circle c = new Circle(x, y, width*GUI_HEIGHT);
 		group.getChildren().add(c);
 	}
 	
