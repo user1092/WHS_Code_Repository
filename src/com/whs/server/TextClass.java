@@ -12,7 +12,17 @@ public class TextClass
 	private String textContent = null;
 	
 	private boolean interactable = false;
+	private int targetSlide = -10;
 	
+	protected void setTextTargetSlide(String i)
+	{
+		targetSlide = Integer.parseInt(i);
+	}
+	
+	protected int getTextTargetSlide()
+	{
+		return targetSlide;
+	}
 	
 	protected void setTextInteractable(boolean b)
 	{

@@ -54,8 +54,9 @@ public class XMLParserTest
 		assertEquals("Impact", currentText.getTextFont());
 		assertEquals("30", currentText.getTextFontSize());
 		assertEquals("000000", currentText.getTextFontColour());		
-		assertEquals("Hello <b>World</b> How are <i>you</i>", currentText.getTextContent());
-		assertEquals(false, currentText.getTextInteractable());
+		assertEquals("I am so happy, the <b>Bold</b> text is finaly working. And so is the <i>Italic one</i>.", currentText.getTextContent());
+		assertEquals(true, currentText.getTextInteractable());
+		assertEquals(43, currentText.getTextTargetSlide());
 		
 		currentShape = currentSlide.shapeList.get(0);
 		
@@ -68,6 +69,8 @@ public class XMLParserTest
 		assertEquals("0.3", currentShape.getShapeHeight());
 		assertEquals(null, currentShape.getShapeLineColour());
 		assertEquals(null, currentShape.getShapeFillColour());
+		assertEquals(false, currentShape.getShapeInteractable());
+		assertEquals(-10, currentShape.getShapeTargetSlide());
 		
 		currentText = currentSlide.textList.get(1);
 		
@@ -78,7 +81,9 @@ public class XMLParserTest
 		assertEquals(null, currentText.getTextFont());
 		assertEquals(null, currentText.getTextFontSize());
 		assertEquals(null, currentText.getTextFontColour());		
-		assertEquals("Click here to show the module choices", currentText.getTextContent());
+		assertEquals("Click <i>here</i> to show the module choices", currentText.getTextContent());
+		assertEquals(false, currentText.getTextInteractable());
+		assertEquals(-10, currentText.getTextTargetSlide());
 		
 		currentSlide = presentation.slideList.get(1);
 		

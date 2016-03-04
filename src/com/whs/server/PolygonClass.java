@@ -9,7 +9,18 @@ public class PolygonClass
 	protected String polygonFillColour = null;
 	
 	private boolean interactable = false;
+	private int targetSlide = -10;
 	
+	
+	protected void setPolygonTargetSlide(String i)
+	{
+		targetSlide = Integer.parseInt(i);
+	}
+	
+	protected int getTextTargetSlide()
+	{
+		return targetSlide;
+	}
 	
 	protected void setPolygonInteractable(boolean b)
 	{

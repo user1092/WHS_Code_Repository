@@ -31,9 +31,9 @@
 	
     <slide slideID="0" duration="5" nextSlide="2">
 	
-		<interactable targetSlide="1">
+		<interactable targetSlide="43">
 	
-			<text duration="-1" ystart="1" starttime="0" xstart="0.1" fontsize="30" font="Impact" fontColour="000000">Hello <b>World</b> How are <i>you</i></text>
+			<text duration="-1" ystart="1" starttime="0" xstart="0.1" fontsize="30" font="Impact" fontColour="000000">I am so happy, the <b>Bold</b> text is finaly working. And so is the <i>Italic one</i>.</text>
 			
 		</interactable>
 			
@@ -41,7 +41,7 @@
             <shading x2="0.80" x1="0.60" y2="0.65" y1="0.90" colour2="FF0000" colour1="00FF00" />
         </shape>
 		
-        <text duration="1" ystart="0.55" starttime="3" xstart="0.55">Click here to show the module choices</text>
+        <text duration="1" ystart="0.55" starttime="3" xstart="0.55">Click <i>here</i> to show the module choices</text>
 		
     </slide>
 	

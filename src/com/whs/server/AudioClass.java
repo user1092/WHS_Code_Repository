@@ -6,19 +6,7 @@ public class AudioClass
 	protected String audioDuration = null;
 	protected String audioSourceFile = null;
 	protected String audioLoop = null;
-	
-	private boolean interactable = false;
-	
-	
-	protected void setAudioInteractable(boolean b)
-	{
-		interactable = b;
-	}
-	
-	protected boolean getAudioInteractable()
-	{
-		return interactable;
-	}
+
 	
 	protected void setAudioStartTime(String contents) 
 	{

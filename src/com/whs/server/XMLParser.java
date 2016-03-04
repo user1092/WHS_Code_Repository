@@ -16,7 +16,6 @@ import org.w3c.dom.NodeList;
 public class XMLParser 
 {	
 	PresentationClass presentation = new PresentationClass();
-	boolean interactable = false;
 	
 	// Main method. It initialises the parsing process.
 	public static void main(String[] args)
@@ -78,8 +77,6 @@ public class XMLParser
 	{
 		String nodeName = temp.getNodeName();
 		String nodeContents = temp.getTextContent();
-		
-		System.out.println("FIRST NODE NAME: " + nodeName);
 		
 		switch(nodeName)
 		{
@@ -200,7 +197,7 @@ public class XMLParser
 				for (int count = 0; count < temp.getChildNodes().getLength(); count++) 
 				{
 					Node currentNode = temp.getChildNodes().item(count);
-					String currentNodeName = temp.getChildNodes().item(count).getNodeName();
+					String currentNodeName = currentNode.getNodeName();
 					//String currentNodeContents = temp.getChildNodes().item(count).getTextContent();
 					//NamedNodeMap currentNodeAttributes = temp.getChildNodes().item(count).getAttributes();
 					
@@ -208,100 +205,92 @@ public class XMLParser
 					{
 						case "text" :
 							
-							ParseText(currentSlide, currentNode, interactable);
+							ParseText(currentSlide, currentNode, false, "-10");
 							
 						break;
 						
 						case "shape" :
 							
-							ParseShape(currentSlide, currentNode, interactable);
+							ParseShape(currentSlide, currentNode, false, "-10");
 							
 						break;
 						
 						case "polygon" :
 							
-							ParsePolygon(currentSlide, currentNode, interactable);
+							ParsePolygon(currentSlide, currentNode, false, "-10");
 							
 						break;
 						
 						case "image" :
 							
-							ParseImage(currentSlide, currentNode, interactable);
+							ParseImage(currentSlide, currentNode, false, "-10");
 							
 						break;
 						
 						case "video" :
 							
-							ParseVideo(currentSlide, currentNode, interactable);
+							ParseVideo(currentSlide, currentNode, false, "-10");
 							
 						break;
 						
 						case "audio" :
 							
-							ParseAudio(currentSlide, currentNode, interactable);
+							ParseAudio(currentSlide, currentNode);
 							
 						break;
 						
 						case "interactable" :
 							
+							String targetSlide = "";
+							
 							NodeList currentNode2 = currentNode.getChildNodes();
 							Node insideNode = currentNode2.item(1);
 							
+							Node interactableAttribute = currentNode.getAttributes().item(0);
+									
 							String currentNodeName2 = insideNode.getNodeName();
 							
-							
-							//String currentNodeContents2 = currentNode.getChildNodes().item(count).getTextContent();
-							//NamedNodeMap currentNodeAttributes2 = insideNode.getAttributes();
-							
-							System.out.println("What name?: " + currentNodeName2);
+							if (interactableAttribute.getNodeName() == "targetSlide")
+							{
+								targetSlide = interactableAttribute.getNodeValue();
+								System.out.println("WHAT ATTRIBUTE : " + targetSlide);
+							}
 							
 							switch(currentNodeName2)
 							{
 								case "text" :
 									
-									interactable = true;
-									ParseText(currentSlide, insideNode, interactable);
-									interactable = false;
+									ParseText(currentSlide, insideNode, true, targetSlide);
 									
 								break;
 								
 								case "shape" :
 									
-									interactable = true;
-									ParseShape(currentSlide, insideNode, interactable);
-									interactable = false;
+									ParseShape(currentSlide, insideNode, true, targetSlide);
 									
 								break;
 								
 								case "polygon" :
 									
-									interactable = true;
-									ParsePolygon(currentSlide, insideNode, interactable);
-									interactable = false;
+									ParsePolygon(currentSlide, insideNode, true, targetSlide);
 									
 								break;
 								
 								case "image" :
 									
-									interactable = true;
-									ParseImage(currentSlide, insideNode, interactable);
-									interactable = false;
+									ParseImage(currentSlide, insideNode, true, targetSlide);
 									
 								break;
 								
 								case "video" :
 									
-									interactable = true;
-									ParseVideo(currentSlide, insideNode, interactable);
-									interactable = false;
+									ParseVideo(currentSlide, insideNode, true, targetSlide);
 									
 								break;
 								
 								case "audio" :
 									
-									interactable = true;
-									ParseAudio(currentSlide, insideNode, interactable);
-									interactable = false;
+									ParseAudio(currentSlide, insideNode);
 									
 								break;
 							}
@@ -319,12 +308,14 @@ public class XMLParser
 	
 	// Method to parse a Text node.
 	// It takes the node itself and the current slide it belongs to, and adds the contents of the node to the TextClass inside the current Slide.
-	protected void ParseText (SlideClass currentSlide, Node currentNode, boolean interactable)
+	protected void ParseText (SlideClass currentSlide, Node currentNode, boolean interactable, String targetSlide)
 	{
-		String currentNodeContents = currentNode.getTextContent();
 		NamedNodeMap currentNodeAttributes = currentNode.getAttributes();
 		
 		TextClass tempText = currentSlide.CreateNewText();
+		
+		tempText.setTextInteractable(interactable);
+		tempText.setTextTargetSlide(targetSlide);
 		
 		String completeTextWithTags = "";
 		
@@ -422,11 +413,13 @@ public class XMLParser
 	
 	// Method to parse a Shape node.
 	// It takes the node itself and the current slide it belongs to, and adds the contents of the node to the ShapeClass inside the current Slide.
-	protected void ParseShape (SlideClass currentSlide, Node currentNode, boolean interactable)
+	protected void ParseShape (SlideClass currentSlide, Node currentNode, boolean interactable, String targetSlide)
 	{
 		NamedNodeMap currentNodeAttributes = currentNode.getAttributes();
 		
 		ShapeClass tempShape = currentSlide.CreateNewShape();
+		
+		tempShape.setShapeInteractable(interactable);
 		
 		for (int i = 0; i < currentNodeAttributes.getLength(); i++) 
 		{
@@ -490,11 +483,13 @@ public class XMLParser
 	
 	// Method to parse a Polygon node.
 	// It takes the node itself and the current slide it belongs to, and adds the contents of the node to the PolygonClass inside the current Slide.
-	protected void ParsePolygon (SlideClass currentSlide, Node currentNode, boolean interactable)
+	protected void ParsePolygon (SlideClass currentSlide, Node currentNode, boolean interactable, String string)
 	{
 		NamedNodeMap currentNodeAttributes = currentNode.getAttributes();
 		
 		PolygonClass tempPolygon = currentSlide.CreateNewPolygon();
+		
+		tempPolygon.setPolygonInteractable(interactable);
 		
 		for (int i = 0; i < currentNodeAttributes.getLength(); i++) 
 		{
@@ -534,11 +529,13 @@ public class XMLParser
 	
 	// Method to parse a Image node.
 	// It takes the node itself and the current slide it belongs to, and adds the contents of the node to the ImageClass inside the current Slide.
-	protected void ParseImage (SlideClass currentSlide, Node currentNode, boolean interactable)
+	protected void ParseImage (SlideClass currentSlide, Node currentNode, boolean interactable, String targetSlide)
 	{
 		NamedNodeMap currentNodeAttributes = currentNode.getAttributes();
 		
 		ImageClass tempImage = currentSlide.CreateNewImage();
+		
+		tempImage.setImageInteractable(interactable);
 		
 		for (int i = 0; i < currentNodeAttributes.getLength(); i++) 
 		{
@@ -590,11 +587,13 @@ public class XMLParser
 	
 	// Method to parse a Video node.
 	// It takes the node itself and the current slide it belongs to, and adds the contents of the node to the VideoClass inside the current Slide.
-	protected void ParseVideo (SlideClass currentSlide, Node currentNode, boolean interactable)
+	protected void ParseVideo (SlideClass currentSlide, Node currentNode, boolean interactable, String targetSlide)
 	{
 		NamedNodeMap currentNodeAttributes = currentNode.getAttributes();
 		
 		VideoClass tempVideo = currentSlide.CreateNewVideo();
+		
+		tempVideo.setVideoInteractable(interactable);
 		
 		for (int i = 0; i < currentNodeAttributes.getLength(); i++) 
 		{
@@ -640,7 +639,7 @@ public class XMLParser
 	
 	// Method to parse a Audio node.
 	// It takes the node itself and the current slide it belongs to, and adds the contents of the node to the AudioClass inside the current Slide.
-	protected void ParseAudio (SlideClass currentSlide, Node currentNode, boolean interactable)
+	protected void ParseAudio (SlideClass currentSlide, Node currentNode)
 	{
 		NamedNodeMap currentNodeAttributes = currentNode.getAttributes();
 		

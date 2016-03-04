@@ -11,6 +11,17 @@ public class ImageClass
 	protected String imageHeight = null;
 	
 	private boolean interactable = false;
+	private int targetSlide = -10;
+	
+	protected void setImageTargetSlide(String i)
+	{
+		targetSlide = Integer.parseInt(i);
+	}
+	
+	protected int getImageTargetSlide()
+	{
+		return targetSlide;
+	}
 	
 	
 	protected void setImageInteractable(boolean b)

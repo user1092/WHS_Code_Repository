@@ -20,6 +20,17 @@ public class ShapeClass
 	protected String shapeShadeColour2 = null;
 	
 	private boolean interactable = false;
+	private int targetSlide = -10;
+	
+	protected void setShapeTargetSlide(String i)
+	{
+		targetSlide = Integer.parseInt(i);
+	}
+	
+	protected int getShapeTargetSlide()
+	{
+		return targetSlide;
+	}
 	
 	
 	protected void setShapeInteractable(boolean b)

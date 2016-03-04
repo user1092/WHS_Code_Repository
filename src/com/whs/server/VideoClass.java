@@ -10,6 +10,17 @@ public class VideoClass
 	protected String videoLoop = null;
 	
 	private boolean interactable = false;
+	private int targetSlide = -10;
+	
+	protected void setVideoTargetSlide(String i)
+	{
+		targetSlide = Integer.parseInt(i);
+	}
+	
+	protected int getVideoTargetSlide()
+	{
+		return targetSlide;
+	}
 	
 	
 	protected void setVideoInteractable(boolean b)
