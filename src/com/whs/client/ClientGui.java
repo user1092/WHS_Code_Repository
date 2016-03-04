@@ -9,12 +9,17 @@ package com.whs.client;
 import java.io.File;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.*;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.BorderPane;
@@ -33,13 +38,13 @@ import javafx.util.StringConverter;
 * @author user828 & user1092
 * @version v0.2 28/01/16
 */
-public class ClientGui extends Application {
+public class ClientGui extends Application{
 	// object for the file chooser for getting the XML file
 	private FileChooser xmlFileChooser;
 
 	private Stage primaryStage;
 
-	private Button browseButton;
+	private Button requestButton;
 	private Button connectButton;
 	private Button disconnectButton;
 	
@@ -81,7 +86,10 @@ public class ClientGui extends Application {
 		//Box that contains the ip address and port labels and text boxes
 		VBox ipAndPortVbox = ipAndPortVBoxCreation();
 		
+		MenuBar menuBar = createMenuBar();
+		
 		//place the boxes inside the layout created
+		guiLayout.setTop(menuBar);
 		guiLayout.setBottom(buttonHBox);
 		guiLayout.setRight(logHBox);
 		guiLayout.setLeft(ipAndPortVbox);
@@ -150,46 +158,33 @@ public class ClientGui extends Application {
 		buttonHBox.setPadding(new Insets(0, 0, 10, 235));
 		buttonHBox.setSpacing(10);
 		buttonHBox.setStyle("-fx-background-colour: #336699;");
-		
-		browseButtonSetup();
+
+		requestButtonSetup();
 		
 		connectButtonSetup();
 		
 		disconnectButtonSetup();
 		
-		buttonHBox.getChildren().addAll(browseButton, connectButton, disconnectButton);
+		buttonHBox.getChildren().addAll(requestButton, connectButton, disconnectButton);
 		
 		return buttonHBox;	
 	}
 
 	/**
-	 * Method to setup the browse button
+	 * Method to setup the request button
 	 */
-	private void browseButtonSetup() {
-		browseButton = new Button("Browse");
-		browseButton.setPrefSize(100, 20);
-		//action event that happens when the browse button is pressed
-		//open file dialog box appears for the user to choose and xml file
-		browseButton.setOnAction(new EventHandler<ActionEvent>() {
+	private void requestButtonSetup() {
+		requestButton = new Button("Request");
+		requestButton.setDisable(false);
+		requestButton.setPrefSize(100, 20);
+		requestButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
-				xmlFileChooser = new FileChooser();
-				
-				// Restrict choice of files to xml
-				FileChooser.ExtensionFilter extensionFilter = new FileChooser.ExtensionFilter("XML files (*.xml, *.XML)", "*.xml", "*.XML");
-				xmlFileChooser.getExtensionFilters().add(extensionFilter);
-				
-				xmlFile = xmlFileChooser.showOpenDialog(primaryStage);
-				if (xmlFile != null) {
-					actionStatus.setText("File selected: " + xmlFile.getName());
-				}
-				else {
-					actionStatus.setText("File selection cancelled.");
-				}
+				System.out.println("Requesting presentation from server");
 			}
 		});
 	}
-
+	
 	/**
 	 * Method to setup the connect button
 	 */
@@ -327,9 +322,56 @@ public class ClientGui extends Application {
 	    ipAndPortVbox.getChildren().addAll(ipHBox, portHBox);
 	    return ipAndPortVbox;
 	}
+	
+	/**
+	 * method that creates the menu bar on the top of the window
+	 * @return menuBar  -  menu bar object that contains the open file and configure menus
+	 */
+	private MenuBar createMenuBar() {
+		// instantiation of the menu bar
+		MenuBar menuBar = new MenuBar();
+		MenuItem configureServer = MenuItemBuilder.create().text("Configure").build();
+		configureServer.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent e) {
+            	Platform.runLater(new Runnable() {
+        	       public void run() {             
+        	           try {
+						new ConfigureWindow().start(new Stage());
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+        	       }
+        	    });
+            }
+		});
+		// File->Open... submenu 
+        MenuItem openFile = MenuItemBuilder.create().text("Open File...").build();
+        openFile.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent e) {
+            	xmlFileChooser = new FileChooser();
+				// Restrict choice of files to xml
+				FileChooser.ExtensionFilter extensionFilter = new FileChooser.ExtensionFilter("XML files (*.xml, *.XML)", "*.xml", "*.XML");
+				xmlFileChooser.getExtensionFilters().add(extensionFilter);
+				
+				xmlFile = xmlFileChooser.showOpenDialog(primaryStage);
+				if (xmlFile != null) {
+					actionStatus.setText("File selected: " + xmlFile.getName());
+				}
+				else {
+					actionStatus.setText("File selection cancelled.");
+				}
+			}
+        }); 
+        Menu optionsMenu = MenuBuilder.create().text("Options").items(configureServer).build();
+		Menu fileMenu = MenuBuilder.create().text("File").items(openFile).build();
+		menuBar.getMenus().addAll(fileMenu, optionsMenu);
+		return menuBar;
+	}
 
 	protected Object getID() {
 		// TODO Auto-generated method stub
 		return client.getID();
 	}
+
 }

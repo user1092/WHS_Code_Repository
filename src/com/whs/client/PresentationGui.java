@@ -5,22 +5,26 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Pagination;
+import javafx.scene.control.*;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Slider;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToolBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Region;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 
 public class PresentationGui extends Application {
 		
 	// temporary number for the pagination system
-	private Integer slideNumber = 7;
+	private Integer tempSlideNumber = 7;
 	
 	public static void main(String[] args) {
 		launch(PresentationGui.class, args);
@@ -30,7 +34,7 @@ public class PresentationGui extends Application {
 	public void start(Stage slideStage) throws Exception {		
 		BorderPane slideLayout = new BorderPane();
 		Scene scene = new Scene(slideLayout);
-		
+		Canvas newCanvas = createNewCanvas(tempSlideNumber);
 		
 		//import and set background image
 		String background = getClass().getResource("SlideBackground.jpg").toExternalForm();
@@ -39,8 +43,9 @@ public class PresentationGui extends Application {
 		           "-fx-background-repeat: stretch;");
 		
 		// call method for creating the control bar
-		ToolBar controlBar = createControlBar();
+		ToolBar controlBar = createControlBar(slideStage);
 		// place the control bar at the bottom of the window
+		slideLayout.setCenter(newCanvas);
 		slideLayout.setBottom(controlBar);
 		
 		
@@ -56,63 +61,51 @@ public class PresentationGui extends Application {
 	
 	/**
 	 * Method for creating the control tool bar at the bottom of each slide
+	 * @param slideStage  -  window contains the control bar on
 	 * @return ToolBar  -  returns the tool bar which was created
 	 */
-	private ToolBar createControlBar() {
-		// image for the play button
-		Image playImage = new Image(getClass().getResourceAsStream("play.png"));
-		ImageView playView = new ImageView(playImage);
-		// image for the pause button
-		Image pauseImage = new Image(getClass().getResourceAsStream("pause.png"));
-		ImageView pauseView = new ImageView(pauseImage);
-		// image for mute button
-		Image muteImage = new Image(getClass().getResourceAsStream("mute.png"));
-		ImageView muteView = new ImageView(muteImage);
-		// image for the exit button
-		Image exitImage = new Image(getClass().getResourceAsStream("exit.png"));
-		ImageView exitView = new ImageView(exitImage);
-		
+	private ToolBar createControlBar(Stage slideStage) {
+		// instantiation of the control bar
 		ToolBar controlBar = new ToolBar();
-		// play button on tool bar
-		Button playButton = new Button();
-		// set the image on the button
-		playButton.setGraphic(playView);
-		playButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				System.out.println("Play");
-			}
-		});
-		// pause button on tool bar
-		Button pauseButton = new Button();
-		pauseButton.setGraphic(pauseView);
-		pauseButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				System.out.println("Pause");
-			}
-		});
-		// mute button on tool bar
-		Button muteButton = new Button();
-		muteButton.setGraphic(muteView);
-		muteButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				System.out.println("Mute");
-			}
-		});
-		// exit button on tool bar
-		Button exitButton = new Button();
-		exitButton.setGraphic(exitView);
-		exitButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				System.out.println("Exit");
-			}
-		});
+		// instantiation of new slider calling the createVolumeSlider() method
+		Slider volumeSlider = createVolumeSlider();
 		
-		// volume slider on tool bar
+		// instantiation of transition toggle button
+		ToggleButton transitionButton = createTransitionButton();
+		// instantiation of mute toggle button
+		ToggleButton muteButton = createMuteButton();
+		// instantiation of play button
+		ToggleButton playButton = createPlayButton();		
+		// instantiation of full screen button
+		ToggleButton fullScreenButton = createFullScreenButton(slideStage);
+		
+		// pagination for the slides in the presentation
+		Pagination slidePagination;
+		
+		slidePagination = PaginationBuilder.create().pageCount(tempSlideNumber).pageFactory(new Callback<Integer, Node>() {
+            @Override
+            public Node call(Integer slideNumber) {
+                return createNewCanvas(slideNumber);
+            }
+        }).build();	
+		
+		slidePagination.getStyleClass().add(Pagination.STYLE_CLASS_BULLET);
+		// instantiation of the separator on the control bar
+		Separator separator = new Separator();
+		// adding all the items on the control bar
+		controlBar.getItems().addAll(slidePagination, separator, playButton, transitionButton, volumeSlider, 
+													muteButton, fullScreenButton);
+		return controlBar;
+	}
+	
+	/**
+	 * Method for creating the master volume slider with all its attributes
+	 * @return volumeSlider  -  master volume slider which is placed on the control bar
+	 */
+	private Slider createVolumeSlider() {
+		// instantiation of volume slider
 		Slider volumeSlider = new Slider();
+		// setting the attributes of the slider
 		volumeSlider.setMin(0);
 		volumeSlider.setMax(100);
 		volumeSlider.setValue(50);
@@ -121,26 +114,137 @@ public class PresentationGui extends Application {
 		volumeSlider.setMajorTickUnit(50);
 		volumeSlider.setMinorTickCount(5);
 		volumeSlider.setBlockIncrement(10);
+		// listener to change the volume of the media when the slider is adjusted
 		volumeSlider.valueProperty().addListener(new ChangeListener<Number>() {
             public void changed(ObservableValue<? extends Number> ov,
                 Number old_val, Number new_val) {
                     System.out.println(new_val.doubleValue());
             }
         });
-		
-		// pagination for the slides in the presentation
-		Pagination slidePagination = new Pagination(slideNumber);
-		slidePagination.getStyleClass().add(Pagination.STYLE_CLASS_BULLET);
-		
-		Separator separator = new Separator();
-		
-		Region spacer = new Region();
-		spacer.setMinWidth(Region.USE_PREF_SIZE);
-		
-		controlBar.getItems().addAll(slidePagination, separator, playButton, pauseButton, spacer, volumeSlider, 
-													muteButton, exitButton);
-		
-		return controlBar;
+		return volumeSlider;
 	}
 
+	/**
+	 * Method for creating the automatic/manual slide transition button
+	 * @return transitionButton  -  toggle button for switching the type of slide transition
+	 */
+	private ToggleButton createTransitionButton() {
+		ToggleButton transitionButton = new ToggleButton("Automatic");
+		transitionButton.setMaxSize(80, 30);
+		transitionButton.setPrefSize(80, 30);
+		transitionButton.setMinSize(80, 30);
+		transitionButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override 
+            public void handle(ActionEvent e) {
+            	if (transitionButton.isSelected() == true) {
+            		transitionButton.setText("Manual");
+            	}
+            	else { 
+            		transitionButton.setText("Automatic");
+            	}
+            }
+        });
+		return transitionButton;
+	}
+
+	/**
+	 * Method for creating the mute button on the control bar
+	 * @return muteButton  -  toggle button for muting/unmuting the media
+	 */
+	private ToggleButton createMuteButton() {
+		// image for mute button
+		Image muteImage = new Image(getClass().getResourceAsStream("mute.png"));
+		ImageView muteView = new ImageView(muteImage);
+		Image unmutedImage = new Image(getClass().getResourceAsStream("unmute.png"));
+		ImageView unmutedView = new ImageView(unmutedImage);
+		// instantiation of mute button
+		ToggleButton muteButton = new ToggleButton();
+		muteButton.setGraphic(unmutedView);
+		muteButton.setMaxSize(50, 30);
+		muteButton.setPrefSize(50, 30);
+		muteButton.setMinSize(50, 30);
+		muteButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent e) {
+				if (muteButton.isSelected() == true) {
+					muteButton.setGraphic(muteView);
+				}
+				else {
+					muteButton.setGraphic(unmutedView);
+				}
+			}
+		});
+		return muteButton;
+	}
+	
+	/**
+	 * method for creating the play button on the control bar
+	 * @return playButton  -  toggle button for the pause/play of media
+	 */
+	private ToggleButton createPlayButton() {
+		// image for the play button
+		Image playImage = new Image(getClass().getResourceAsStream("play.png"));
+		ImageView playView = new ImageView(playImage);
+		// image for the pause button
+		Image pauseImage = new Image(getClass().getResourceAsStream("pause.png"));
+		ImageView pauseView = new ImageView(pauseImage);
+		// instantiation of play button
+		ToggleButton playButton = new ToggleButton();
+		// set the image on the button
+		playButton.setGraphic(playView);
+		playButton.setMaxSize(40, 30);
+		playButton.setPrefSize(40, 30);
+		playButton.setMinSize(40, 30);
+		playButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent e) {
+				if (playButton.isSelected() == true) {
+					playButton.setGraphic(pauseView);
+				}
+				else {
+					playButton.setGraphic(playView);
+				}
+			}
+		});
+		return playButton;
+	}
+	
+	/**
+	 * method for creating the full screen toggle button
+	 * @param slideStage  -  window that will switch from full screen to normal size
+	 * @return fullScreenButton  -  the toggle button that enters and exits full screen
+	 */
+	private ToggleButton createFullScreenButton(Stage slideStage) {
+		// image for the full screen button
+		Image exitImage = new Image(getClass().getResourceAsStream("exit.png"));
+		ImageView exitView = new ImageView(exitImage);
+		// instantiation of full screen button
+		ToggleButton fullScreenButton = new ToggleButton();
+		// set the image on the button
+		fullScreenButton.setGraphic(exitView);
+		fullScreenButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent e) {
+				if (fullScreenButton.isSelected() == true) {
+					slideStage.setFullScreen(false);
+				}
+				else {
+					slideStage.setFullScreen(true);
+				}
+			}
+		});
+		return fullScreenButton;
+	}
+
+	/**
+	 * 
+	 * @param slideNumber
+	 * @return
+	 */
+	private Canvas createNewCanvas(Integer slideNumber) {
+		Canvas newCanvas = new Canvas();
+		GraphicsContext gcSlideNumber = newCanvas.getGraphicsContext2D();
+		gcSlideNumber.fillText("Slide: " + slideNumber, 50, 10);
+		return newCanvas;
+	}
 }
