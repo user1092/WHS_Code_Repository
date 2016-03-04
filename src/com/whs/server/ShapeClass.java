@@ -12,11 +12,11 @@ public class ShapeClass
 	protected String shapeLineColour = null;
 	protected String shapeFillColour = null;
 	
-	protected String shapeShadeX1 = null;
-	protected String shapeShadeY1 = null;
+	protected float shapeShadeX1 = -10;
+	protected float shapeShadeY1 = -10;
 	protected String shapeShadeColour1 = null;
-	protected String shapeShadeX2 = null;
-	protected String shapeShadeY2 = null;
+	protected float shapeShadeX2 = -10;
+	protected float shapeShadeY2 = -10;
 	protected String shapeShadeColour2 = null;
 	
 	private boolean interactable = false;
@@ -138,20 +138,20 @@ public class ShapeClass
 	
 	protected void setShapeShadeX1(String contents) 
 	{
-		shapeShadeX1 = contents;		
+		shapeShadeX1 = Float.parseFloat(contents);	
 	}
 
-	protected String getShapeShadeX1() 
+	protected float getShapeShadeX1() 
 	{
 		return shapeShadeX1;
 	}
 	
 	protected void setShapeShadeY1(String contents) 
 	{
-		shapeShadeY1 = contents;		
+		shapeShadeY1 = Float.parseFloat(contents);
 	}
 
-	protected String getShapeShadeY1() 
+	protected float getShapeShadeY1() 
 	{
 		return shapeShadeY1;
 	}
@@ -168,20 +168,20 @@ public class ShapeClass
 	
 	protected void setShapeShadeX2(String contents) 
 	{
-		shapeShadeX2 = contents;		
+		shapeShadeX2 = Float.parseFloat(contents);
 	}
 
-	protected String getShapeShadeX2() 
+	protected float getShapeShadeX2() 
 	{
 		return shapeShadeX2;
 	}
 	
 	protected void setShapeShadeY2(String contents) 
 	{
-		shapeShadeY2 = contents;		
+		shapeShadeY2 = Float.parseFloat(contents);
 	}
 
-	protected String getShapeShadeY2() 
+	protected float getShapeShadeY2() 
 	{
 		return shapeShadeY2;
 	}

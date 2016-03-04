@@ -478,8 +478,57 @@ public class XMLParser
 				tempShape.setShapeFillColour(reallyTempNode.getNodeValue());
 				System.out.println("Shape Fill Colour : " + tempShape.getShapeFillColour());
 			}
-		}	
-	}
+		}
+		
+        NodeList childList = currentNode.getChildNodes();
+
+        Node child = childList.item(1);
+        
+        //System.out.println("CHILD SHADE TEST: : " + child.getNodeName());
+        NamedNodeMap nodeAttributes = child.getAttributes();
+        
+        for (int i = 0; i < nodeAttributes.getLength(); i++) 
+		{
+			Node reallyTempNode = nodeAttributes.item(i);
+			System.out.println("CHILD SHADE TEST: : " + reallyTempNode.getNodeName());
+				
+			if (reallyTempNode.getNodeName() == "x1")
+			{
+				tempShape.setShapeShadeX1(reallyTempNode.getNodeValue());
+				System.out.println("Shade x1 : " + tempShape.getShapeShadeX1());
+			}
+			
+			if (reallyTempNode.getNodeName() == "y1")
+			{
+				tempShape.setShapeShadeY1(reallyTempNode.getNodeValue());
+				System.out.println("Shade x2 : " + tempShape.getShapeShadeY1());
+			}
+			
+			if (reallyTempNode.getNodeName() == "colour1")
+			{
+				tempShape.setShapeShadeColour1(reallyTempNode.getNodeValue());
+				System.out.println("Shade Colour1 : " + tempShape.getShapeShadeColour1());
+			}
+			
+			if (reallyTempNode.getNodeName() == "x2")
+			{
+				tempShape.setShapeShadeX2(reallyTempNode.getNodeValue());
+				System.out.println("Shade x2 : " + tempShape.getShapeShadeX2());
+			}
+			
+			if (reallyTempNode.getNodeName() == "y2")
+			{
+				tempShape.setShapeShadeY2(reallyTempNode.getNodeValue());
+				System.out.println("Shade Y2 : " + tempShape.getShapeShadeY2());
+			}
+			
+			if (reallyTempNode.getNodeName() == "colour2")
+			{
+				tempShape.setShapeShadeColour2(reallyTempNode.getNodeValue());
+				System.out.println("Shade Colour2 : " + tempShape.getShapeShadeColour2());
+			}
+		}
+    }
 	
 	// Method to parse a Polygon node.
 	// It takes the node itself and the current slide it belongs to, and adds the contents of the node to the PolygonClass inside the current Slide.

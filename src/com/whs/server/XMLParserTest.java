@@ -71,6 +71,12 @@ public class XMLParserTest
 		assertEquals(null, currentShape.getShapeFillColour());
 		assertEquals(false, currentShape.getShapeInteractable());
 		assertEquals(-10, currentShape.getShapeTargetSlide());
+		assertEquals(0.6f, currentShape.getShapeShadeX1(), 0.0f);
+		assertEquals(0.9f, currentShape.getShapeShadeY1(), 0.0f);
+		assertEquals("00FF00", currentShape.getShapeShadeColour1());
+		assertEquals(0.8f, currentShape.getShapeShadeX2(), 0.0f);
+		assertEquals(0.65f, currentShape.getShapeShadeY2(), 0.0f);
+		assertEquals("FF0000", currentShape.getShapeShadeColour2());
 		
 		currentText = currentSlide.textList.get(1);
 		
