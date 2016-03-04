@@ -28,7 +28,7 @@ public class XMLParserTest
 	@Test
 	public void ExtractSlideInfo()
 	{
-		XMLParser parser = new XMLParser();		
+		XMLParser parser = new XMLParser();
 		PresentationClass presentation = new PresentationClass();		
 		presentation = parser.parsePresention("src/test_file.xml");
 		
@@ -54,7 +54,7 @@ public class XMLParserTest
 		assertEquals("Impact", currentText.getTextFont());
 		assertEquals("30", currentText.getTextFontSize());
 		assertEquals("000000", currentText.getTextFontColour());		
-		assertEquals("Hello World  How are you", currentText.getTextContent());
+		assertEquals("Hello <b>World</b> How are <i>you</i>", currentText.getTextContent());
 		assertEquals(false, currentText.getTextInteractable());
 		
 		currentShape = currentSlide.shapeList.get(0);

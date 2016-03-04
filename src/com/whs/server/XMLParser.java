@@ -1,7 +1,7 @@
 package com.whs.server;
 
 //	Company : 				Woolly Software
-//	Programmer :			Antonio Figueiredo
+//	Programmers :			Antonio Figueiredo & Sabrina Quinn
 //	Latest Update Date :	25 / 02 / 2016
 
 import java.io.File;
@@ -78,6 +78,8 @@ public class XMLParser
 	{
 		String nodeName = temp.getNodeName();
 		String nodeContents = temp.getTextContent();
+		
+		System.out.println("FIRST NODE NAME: " + nodeName);
 		
 		switch(nodeName)
 		{
@@ -161,6 +163,160 @@ public class XMLParser
 		}
 	}
 	
+	// Main method to loop within each slide and extracting everything they have.
+	protected void CheckSlideContent(Node temp) 
+	{
+		String nodeName = temp.getNodeName();
+		NamedNodeMap nodeAttributes = temp.getAttributes();
+		
+		switch(nodeName)
+		{
+			case "slide" :
+				SlideClass currentSlide = presentation.CreateNewSlide();
+				
+				for (int i = 0; i < nodeAttributes.getLength(); i++) 
+				{
+					Node reallyTempNode = nodeAttributes.item(i);
+						
+					if (reallyTempNode.getNodeName() == "slideID")
+					{
+						currentSlide.setSlideID(reallyTempNode.getNodeValue());
+						System.out.println("Slide no. : " + currentSlide.getSlideID());
+					}
+					
+					if (reallyTempNode.getNodeName() == "duration")
+					{
+						currentSlide.setSlideDuration(reallyTempNode.getNodeValue());
+						System.out.println("Slide Duration : " + currentSlide.getSlideDuration());
+					}
+					
+					if (reallyTempNode.getNodeName() == "nextSlide")
+					{
+						currentSlide.setSlideNext(reallyTempNode.getNodeValue());
+						System.out.println("Next Slide : " + currentSlide.getSlideNext());
+					}
+				}
+				
+				for (int count = 0; count < temp.getChildNodes().getLength(); count++) 
+				{
+					Node currentNode = temp.getChildNodes().item(count);
+					String currentNodeName = temp.getChildNodes().item(count).getNodeName();
+					//String currentNodeContents = temp.getChildNodes().item(count).getTextContent();
+					//NamedNodeMap currentNodeAttributes = temp.getChildNodes().item(count).getAttributes();
+					
+					switch(currentNodeName)
+					{
+						case "text" :
+							
+							ParseText(currentSlide, currentNode, interactable);
+							
+						break;
+						
+						case "shape" :
+							
+							ParseShape(currentSlide, currentNode, interactable);
+							
+						break;
+						
+						case "polygon" :
+							
+							ParsePolygon(currentSlide, currentNode, interactable);
+							
+						break;
+						
+						case "image" :
+							
+							ParseImage(currentSlide, currentNode, interactable);
+							
+						break;
+						
+						case "video" :
+							
+							ParseVideo(currentSlide, currentNode, interactable);
+							
+						break;
+						
+						case "audio" :
+							
+							ParseAudio(currentSlide, currentNode, interactable);
+							
+						break;
+						
+						case "interactable" :
+							
+							NodeList currentNode2 = currentNode.getChildNodes();
+							Node insideNode = currentNode2.item(1);
+							
+							String currentNodeName2 = insideNode.getNodeName();
+							
+							
+							//String currentNodeContents2 = currentNode.getChildNodes().item(count).getTextContent();
+							//NamedNodeMap currentNodeAttributes2 = insideNode.getAttributes();
+							
+							System.out.println("What name?: " + currentNodeName2);
+							
+							switch(currentNodeName2)
+							{
+								case "text" :
+									
+									interactable = true;
+									ParseText(currentSlide, insideNode, interactable);
+									interactable = false;
+									
+								break;
+								
+								case "shape" :
+									
+									interactable = true;
+									ParseShape(currentSlide, insideNode, interactable);
+									interactable = false;
+									
+								break;
+								
+								case "polygon" :
+									
+									interactable = true;
+									ParsePolygon(currentSlide, insideNode, interactable);
+									interactable = false;
+									
+								break;
+								
+								case "image" :
+									
+									interactable = true;
+									ParseImage(currentSlide, insideNode, interactable);
+									interactable = false;
+									
+								break;
+								
+								case "video" :
+									
+									interactable = true;
+									ParseVideo(currentSlide, insideNode, interactable);
+									interactable = false;
+									
+								break;
+								
+								case "audio" :
+									
+									interactable = true;
+									ParseAudio(currentSlide, insideNode, interactable);
+									interactable = false;
+									
+								break;
+							}
+								
+						break;
+					}	
+				}
+			break;
+			
+			default:
+				//System.out.println("-----ERROR! Something has not been parsed correctly!");
+			break;
+		}
+	}
+	
 	// Method to parse a Text node.
 	// It takes the node itself and the current slide it belongs to, and adds the contents of the node to the TextClass inside the current Slide.
 	protected void ParseText (SlideClass currentSlide, Node currentNode, boolean interactable)
@@ -170,10 +326,7 @@ public class XMLParser
 		
 		TextClass tempText = currentSlide.CreateNewText();
 		
-		// These Strings are temporary and will be refactored out.
-		String tagABody = "";
-		String tagBBody = "";
-		String tagIBody = "";
+		String completeTextWithTags = "";
 		
 		for (int i = 0; i < currentNodeAttributes.getLength(); i++) 
 		{
@@ -234,28 +387,35 @@ public class XMLParser
 	            // parse normal text
 	            if(child.getNodeType() == Node.TEXT_NODE) 
 	            {
-	            	tagABody = child.getTextContent();
+	            	String tagABody = child.getTextContent();
+	            	completeTextWithTags = completeTextWithTags.concat(tagABody);
 	            	System.out.println("Normal Text: " + tagABody);
 	            } 
 	            	
 	            // parse <b> tag
 	            if (child != null && "b".equals(child.getNodeName())) 
 	            {
-	            	tagBBody = child.getTextContent();
+	            	String tagBBody = child.getTextContent();
+	            	completeTextWithTags = completeTextWithTags.concat("<b>");
+	            	completeTextWithTags = completeTextWithTags.concat(tagBBody);
+	            	completeTextWithTags = completeTextWithTags.concat("</b>");
 	            	System.out.println("Bold Text: " + tagBBody);
 	            }
 	            
 	            // parse <i> tag
 	            if (child != null && "i".equals(child.getNodeName())) 
 	            {
-	            	tagIBody = child.getTextContent();
+	            	String tagIBody = child.getTextContent();
+	            	completeTextWithTags = completeTextWithTags.concat("<i>");
+	            	completeTextWithTags = completeTextWithTags.concat(tagIBody);
+	            	completeTextWithTags = completeTextWithTags.concat("</i>");
 	            	System.out.println("Italic Text: " + tagIBody);
 	            }
 	        }		
 		}
 		
 		// Ignore the above <b> and <i> parser and just save the whole thing.
-		tempText.setTextContent(currentNodeContents);
+		tempText.setTextContent(completeTextWithTags);
 		
 		System.out.println("Text Content : " + tempText.getTextContent());
 	}
@@ -513,159 +673,6 @@ public class XMLParser
 				tempAudio.setAudioLoop(reallyTempNode.getNodeValue());
 				System.out.println("Audio Loop : " + tempAudio.getAudioLoop());
 			}
-		}
-	}
-
-	// Main method to loop within each slide and extracting everything they have.
-	protected void CheckSlideContent(Node temp) 
-	{
-		String nodeName = temp.getNodeName();
-		NamedNodeMap nodeAttributes = temp.getAttributes();
-		
-		switch(nodeName)
-		{
-			case "slide" :
-				SlideClass currentSlide = presentation.CreateNewSlide();
-				
-				for (int i = 0; i < nodeAttributes.getLength(); i++) 
-				{
-					Node reallyTempNode = nodeAttributes.item(i);
-						
-					if (reallyTempNode.getNodeName() == "slideID")
-					{
-						currentSlide.setSlideID(reallyTempNode.getNodeValue());
-						System.out.println("Slide no. : " + currentSlide.getSlideID());
-					}
-					
-					if (reallyTempNode.getNodeName() == "duration")
-					{
-						currentSlide.setSlideDuration(reallyTempNode.getNodeValue());
-						System.out.println("Slide Duration : " + currentSlide.getSlideDuration());
-					}
-					
-					if (reallyTempNode.getNodeName() == "nextSlide")
-					{
-						currentSlide.setSlideNext(reallyTempNode.getNodeValue());
-						System.out.println("Next Slide : " + currentSlide.getSlideNext());
-					}
-				}
-				
-				for (int count = 0; count < temp.getChildNodes().getLength(); count++) 
-				{
-					Node currentNode = temp.getChildNodes().item(count);
-					String currentNodeName = temp.getChildNodes().item(count).getNodeName();
-					String currentNodeContents = temp.getChildNodes().item(count).getTextContent();
-					NamedNodeMap currentNodeAttributes = temp.getChildNodes().item(count).getAttributes();
-					
-					switch(currentNodeName)
-					{
-						case "text" :
-							
-							ParseText(currentSlide, currentNode, interactable);
-							
-						break;
-						
-						case "shape" :
-							
-							ParseShape(currentSlide, currentNode, interactable);
-							
-						break;
-						
-						case "polygon" :
-							
-							ParsePolygon(currentSlide, currentNode, interactable);
-							
-						break;
-						
-						case "image" :
-							
-							ParseImage(currentSlide, currentNode, interactable);
-							
-						break;
-						
-						case "video" :
-							
-							ParseVideo(currentSlide, currentNode, interactable);
-							
-						break;
-						
-						case "audio" :
-							
-							ParseAudio(currentSlide, currentNode, interactable);
-							
-						break;
-						
-						case "interactable" :
-							
-							Node currentNode2 = currentNode.getFirstChild();
-							String currentNodeName2 = currentNode.getFirstChild().getNodeName();
-							
-							
-							
-							String currentNodeContents2 = currentNode.getChildNodes().item(count).getTextContent();
-							NamedNodeMap currentNodeAttributes2 = currentNode.getChildNodes().item(count).getAttributes();
-							
-							System.out.println("THIS IS A TEST: " + currentNodeName2);
-							
-							switch(currentNodeName2)
-							{
-								case "text" :
-									
-									interactable = true;
-									ParseText(currentSlide, currentNode2, interactable);
-									interactable = false;
-									
-								break;
-								
-								case "shape" :
-									
-									interactable = true;
-									ParseShape(currentSlide, currentNode2, interactable);
-									interactable = false;
-									
-								break;
-								
-								case "polygon" :
-									
-									interactable = true;
-									ParsePolygon(currentSlide, currentNode2, interactable);
-									interactable = false;
-									
-								break;
-								
-								case "image" :
-									
-									interactable = true;
-									ParseImage(currentSlide, currentNode2, interactable);
-									interactable = false;
-									
-								break;
-								
-								case "video" :
-									
-									interactable = true;
-									ParseVideo(currentSlide, currentNode2, interactable);
-									interactable = false;
-									
-								break;
-								
-								case "audio" :
-									
-									interactable = true;
-									ParseAudio(currentSlide, currentNode2, interactable);
-									interactable = false;
-									
-								break;
-							}
-								
-						break;
-					}	
-				}
-			break;
-			
-			default:
-				//System.out.println("-----ERROR! Something has not been parsed correctly!");
-			break;
 		}
 	}
 }
