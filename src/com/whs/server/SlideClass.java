@@ -5,9 +5,9 @@ import java.util.List;
 
 public class SlideClass 
 {
-	private String slideID = null;
-	private String slideDuration = null;
-	private String slideNext = null;
+	private int slideID = -10;
+	private int slideDuration = -10;
+	private int slideNext = -10;
 	
 	protected List<TextClass> textList = new ArrayList<TextClass>();
 	protected List<ShapeClass> shapeList = new ArrayList<ShapeClass>();
@@ -19,30 +19,30 @@ public class SlideClass
 
 	protected void setSlideID(String contents) 
 	{
-		slideID = contents;		
+		slideID = Integer.parseInt(contents);
 	}
 	
-	protected String getSlideID()
+	protected int getSlideID()
 	{
 		return slideID;
 	}
 
 	protected void setSlideDuration(String contents) 
 	{
-		slideDuration = contents;
+		slideDuration = Integer.parseInt(contents);
 	}
 	
-	protected String getSlideDuration()
+	protected int getSlideDuration()
 	{
 		return slideDuration;
 	}
 
 	protected void setSlideNext(String contents) 
 	{
-		slideNext = contents;	
+		slideNext = Integer.parseInt(contents);
 	}
 	
-	protected String getSlideNext()
+	protected int getSlideNext()
 	{
 		return slideNext;
 	}

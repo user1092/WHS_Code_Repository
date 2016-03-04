@@ -2,13 +2,13 @@ package com.whs.server;
 
 public class ShapeClass 
 {
-	protected String shapeStartTime = null;
-	protected String shapeDuration = null;
-	protected String shapeXStart = null;
-	protected String shapeYStart = null;
+	protected int shapeStartTime = -10;
+	protected int shapeDuration = -10;
+	protected float shapeXStart = -10;
+	protected float shapeYStart = -10;
 	protected String shapeType = null;
-	protected String shapeWidth = null;
-	protected String shapeHeight = null;
+	protected float shapeWidth = -10;
+	protected float shapeHeight = -10;
 	protected String shapeLineColour = null;
 	protected String shapeFillColour = null;
 	
@@ -45,40 +45,40 @@ public class ShapeClass
 	
 	protected void setShapeStartTime(String contents) 
 	{
-		shapeStartTime = contents;		
+		shapeStartTime = Integer.parseInt(contents);
 	}
 
-	protected String getShapeStartTime() 
+	protected int getShapeStartTime() 
 	{
 		return shapeStartTime;
 	}
 	
 	protected void setShapeDuration(String contents) 
 	{
-		shapeDuration = contents;		
+		shapeDuration = Integer.parseInt(contents);
 	}
 
-	protected String getShapeDuration() 
+	protected int getShapeDuration() 
 	{
 		return shapeDuration;
 	}
 	
 	protected void setShapeXStart(String contents) 
 	{
-		shapeXStart = contents;		
+		shapeXStart = Float.parseFloat(contents);
 	}
 
-	protected String getShapeXStart() 
+	protected float getShapeXStart() 
 	{
 		return shapeXStart;
 	}
 	
 	protected void setShapeYStart(String contents) 
 	{
-		shapeYStart = contents;		
+		shapeYStart = Float.parseFloat(contents);
 	}
 
-	protected String getShapeYStart() 
+	protected float getShapeYStart() 
 	{
 		return shapeYStart;
 	}
@@ -95,20 +95,20 @@ public class ShapeClass
 	
 	protected void setShapeWidth(String contents) 
 	{
-		shapeWidth = contents;		
+		shapeWidth = Float.parseFloat(contents);
 	}
 
-	protected String getShapeWidth() 
+	protected float getShapeWidth() 
 	{
 		return shapeWidth;
 	}
 	
 	protected void setShapeHeight(String contents) 
 	{
-		shapeHeight = contents;		
+		shapeHeight = Float.parseFloat(contents);
 	}
 
-	protected String getShapeHeight() 
+	protected float getShapeHeight() 
 	{
 		return shapeHeight;
 	}

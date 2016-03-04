@@ -2,13 +2,13 @@ package com.whs.server;
 
 public class ImageClass 
 {
-	protected String imageStartTime = null;
+	protected int imageStartTime = -10;
 	protected String imageSourceFile = null;
-	protected String imageDuration = null;
-	protected String imageXStart = null;
-	protected String imageYStart = null;
-	protected String imageWidth = null;
-	protected String imageHeight = null;
+	protected int imageDuration = -10;
+	protected float imageXStart = -10;
+	protected float imageYStart = -10;
+	protected float imageWidth = -10;
+	protected float imageHeight = -10;
 	
 	private boolean interactable = false;
 	private int targetSlide = -10;
@@ -36,10 +36,10 @@ public class ImageClass
 	
 	protected void setImageStartTime(String contents) 
 	{
-		imageStartTime = contents;		
+		imageStartTime = Integer.parseInt(contents);
 	}
 
-	protected String getImageStartTime() 
+	protected int getImageStartTime() 
 	{
 		return imageStartTime;
 	}
@@ -56,50 +56,50 @@ public class ImageClass
 	
 	protected void setImageDuration(String contents) 
 	{
-		imageDuration = contents;		
+		imageDuration = Integer.parseInt(contents);	
 	}
 
-	protected String getImageDuration() 
+	protected int getImageDuration() 
 	{
 		return imageDuration;
 	}
 	
 	protected void setImageXStart(String contents) 
 	{
-		imageXStart = contents;		
+		imageXStart = Float.parseFloat(contents);
 	}
 
-	protected String getImageXStart() 
+	protected float getImageXStart() 
 	{
 		return imageXStart;
 	}
 	
 	protected void setImageYStart(String contents) 
 	{
-		imageYStart = contents;		
+		imageYStart = Float.parseFloat(contents);
 	}
 
-	protected String getImageYStart() 
+	protected float getImageYStart() 
 	{
 		return imageYStart;
 	}
 	
 	protected void setImageWidth(String contents) 
 	{
-		imageWidth = contents;		
+		imageWidth = Float.parseFloat(contents);
 	}
 
-	protected String getImageWidth() 
+	protected float getImageWidth() 
 	{
 		return imageWidth;
 	}
 	
 	protected void setImageHeight(String contents) 
 	{
-		imageHeight = contents;		
+		imageHeight = Float.parseFloat(contents);
 	}
 
-	protected String getImageHeight() 
+	protected float getImageHeight() 
 	{
 		return imageHeight;
 	}

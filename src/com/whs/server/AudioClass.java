@@ -2,28 +2,28 @@ package com.whs.server;
 
 public class AudioClass 
 {
-	protected String audioStartTime = null;
-	protected String audioDuration = null;
+	protected int audioStartTime = -10;
+	protected int audioDuration = -10;
 	protected String audioSourceFile = null;
-	protected String audioLoop = null;
+	protected boolean audioLoop = false;
 
 	
 	protected void setAudioStartTime(String contents) 
 	{
-		audioStartTime = contents;		
+		audioStartTime = Integer.parseInt(contents);
 	}
 
-	protected String getAudioStartTime() 
+	protected int getAudioStartTime() 
 	{
 		return audioStartTime;
 	}
 	
 	protected void setAudioDuration(String contents) 
 	{
-		audioDuration = contents;		
+		audioDuration = Integer.parseInt(contents);
 	}
 
-	protected String getAudioDuration() 
+	protected int getAudioDuration() 
 	{
 		return audioDuration;
 	}
@@ -40,10 +40,10 @@ public class AudioClass
 	
 	protected void setAudioLoop(String contents) 
 	{
-		audioLoop = contents;		
+		audioLoop = Boolean.parseBoolean(contents);
 	}
 
-	protected String getAudioLoop() 
+	protected boolean getAudioLoop() 
 	{
 		return audioLoop;
 	}

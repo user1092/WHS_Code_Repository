@@ -2,12 +2,12 @@ package com.whs.server;
 
 public class VideoClass 
 {
-	protected String videoStartTime = null;
-	protected String videoDuration = null;
-	protected String videoXStart = null;
-	protected String videoYStart = null;
+	protected int videoStartTime = -10;
+	protected int videoDuration = -10;
+	protected float videoXStart = -10;
+	protected float videoYStart = -10;
 	protected String videoSourceFile = null;
-	protected String videoLoop = null;
+	protected boolean videoLoop = false;
 	
 	private boolean interactable = false;
 	private int targetSlide = -10;
@@ -35,40 +35,40 @@ public class VideoClass
 	
 	protected void setVideoStartTime(String contents) 
 	{
-		videoStartTime = contents;		
+		videoStartTime = Integer.parseInt(contents);
 	}
 
-	protected String getVideoStartTime() 
+	protected int getVideoStartTime() 
 	{
 		return videoStartTime;
 	}
 	
 	protected void setVideoDuration(String contents) 
 	{
-		videoDuration = contents;		
+		videoDuration = Integer.parseInt(contents);
 	}
 
-	protected String getVideoDuration() 
+	protected int getVideoDuration() 
 	{
 		return videoDuration;
 	}
 	
 	protected void setVideoXStart(String contents) 
 	{
-		videoXStart = contents;		
+		videoXStart = Float.parseFloat(contents);
 	}
 
-	protected String getVideoXStart() 
+	protected float getVideoXStart() 
 	{
 		return videoXStart;
 	}
 	
 	protected void setVideoYStart(String contents) 
 	{
-		videoYStart = contents;		
+		videoYStart = Float.parseFloat(contents);
 	}
 
-	protected String getVideoYStart() 
+	protected float getVideoYStart() 
 	{
 		return videoYStart;
 	}
@@ -85,10 +85,10 @@ public class VideoClass
 	
 	protected void setVideoLoop(String contents) 
 	{
-		videoLoop = contents;		
+		videoLoop = Boolean.parseBoolean(contents);
 	}
 
-	protected String getVideoLoop() 
+	protected boolean getVideoLoop() 
 	{
 		return videoLoop;
 	}

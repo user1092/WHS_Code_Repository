@@ -2,9 +2,9 @@ package com.whs.server;
 
 public class PolygonClass 
 {
-	protected String polygonStartTime = null;
+	protected int polygonStartTime = -10;
 	protected String polygonSourceFile = null;
-	protected String polygonDuration = null;
+	protected int polygonDuration = -10;
 	protected String polygonLineColour = null;
 	protected String polygonFillColour = null;
 	
@@ -34,10 +34,10 @@ public class PolygonClass
 	
 	protected void setPolygonStartTime(String contents) 
 	{
-		polygonStartTime = contents;		
+		polygonStartTime = Integer.parseInt(contents);
 	}
 
-	protected String getPolygonStartTime() 
+	protected int getPolygonStartTime() 
 	{
 		return polygonStartTime;
 	}
@@ -54,10 +54,10 @@ public class PolygonClass
 	
 	protected void setPolygonDuration(String contents) 
 	{
-		polygonDuration = contents;		
+		polygonDuration = Integer.parseInt(contents);
 	}
 
-	protected String getPolygonDuration() 
+	protected int getPolygonDuration() 
 	{
 		return polygonDuration;
 	}

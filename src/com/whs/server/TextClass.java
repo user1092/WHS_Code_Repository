@@ -2,12 +2,12 @@ package com.whs.server;
 
 public class TextClass 
 {
-	private String textStartTime = null;
-	private String textDuration = null;
-	private String textXStart = null;
-	private String textYStart = null;
+	private int textStartTime = -10;
+	private int textDuration = -10;
+	private float textXStart = -10;
+	private float textYStart = -10;
 	private String textFont = null;
-	private String textFontSize = null;
+	private int textFontSize = -10;
 	private String textFontColour = null;
 	private String textContent = null;
 	
@@ -36,40 +36,40 @@ public class TextClass
 	
 	protected void setTextStartTime(String contents) 
 	{
-		textStartTime = contents;		
+		textStartTime = Integer.parseInt(contents);		
 	}
 	
-	protected String getTextStartTime()
+	protected int getTextStartTime()
 	{
 		return textStartTime;
 	}
 
 	protected void setTextDuration(String contents) 
 	{
-		textDuration = contents;
+		textDuration = Integer.parseInt(contents);
 	}
 	
-	protected String getTextDuration()
+	protected int getTextDuration()
 	{
 		return textDuration;
 	}
 
 	protected void setTextXStart(String contents) 
 	{
-		textXStart = contents;		
+		textXStart = Float.parseFloat(contents);
 	}
 
-	protected String getTextXStart() 
+	protected float getTextXStart() 
 	{
 		return textXStart;
 	}
 	
 	protected void setTextYStart(String contents) 
 	{
-		textYStart = contents;		
+		textYStart = Float.parseFloat(contents);
 	}
 
-	protected String getTextYStart() 
+	protected float getTextYStart() 
 	{
 		return textYStart;
 	}
@@ -86,10 +86,10 @@ public class TextClass
 	
 	protected void setTextFontSize(String contents) 
 	{
-		textFontSize = contents;		
+		textFontSize = Integer.parseInt(contents);	
 	}
 
-	protected String getTextFontSize() 
+	protected int getTextFontSize() 
 	{
 		return textFontSize;
 	}

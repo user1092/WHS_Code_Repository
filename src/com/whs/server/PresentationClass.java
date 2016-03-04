@@ -11,7 +11,7 @@ public class PresentationClass
 	
 	private String defaultBackgroundColour = null;
 	private String defaultFont = null;
-	private String defaultFontSize = null;
+	private int defaultFontSize = -10;
 	private String defaultFontColour = null;
 	private String defaultLineColour = null;
 	private String defaultFillColour = null;
@@ -71,10 +71,10 @@ public class PresentationClass
 	
 	protected void setDefaultFontSize(String contents) 
 	{
-		defaultFontSize = contents;	
+		defaultFontSize = Integer.parseInt(contents);
 	}
 
-	protected String getDefaultFontSize() 
+	protected int getDefaultFontSize() 
 	{
 		return defaultFontSize;
 	}
