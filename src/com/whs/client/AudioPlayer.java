@@ -4,25 +4,27 @@
 package com.whs.client;
 
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;
-import uk.co.caprica.vlcj.player.headless.HeadlessMediaPlayer;
+import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
 /**
  * Class for the client's back end handling playing audio files 
  * 
  * @author		user1092, guest501
- * @version		v0.1 01/03/2016
+ * @version		v0.2 04/03/2016
  */
 public class AudioPlayer {
 	
-	private HeadlessMediaPlayer headlessPlayer;
+	private EmbeddedMediaPlayer mediaPlayer;
 	
 	/**
 	 * Constructor
 	 * 
-	 * Point to the VLC library path and create a new player.
+	 * Create a new player from the mediaPlayerFactory.
+	 * 
+	 * @param mediaPlayerFactory
 	 */
 	public AudioPlayer(MediaPlayerFactory mediaPlayerFactory) {
-		headlessPlayer = mediaPlayerFactory.newHeadlessMediaPlayer();
+		mediaPlayer = mediaPlayerFactory.newEmbeddedMediaPlayer();
 	}
 	
 	/**
@@ -31,47 +33,49 @@ public class AudioPlayer {
 	 * @param audioFilename	-	The path to the audio file to be played
 	 */
 	public void loadLocalAudio(String audioFilename) {
-		headlessPlayer.prepareMedia(audioFilename);
+		mediaPlayer.prepareMedia(audioFilename);
 	}
 	
-	public void playStreamedAudio() {
-		String host = "127.0.0.1";
-		int rtpPort = 5555;
-		headlessPlayer.playMedia("rtp://@"+ host + ":" + rtpPort);
+	/**
+	 * Method to play audio from an RTP port
+	 * 
+	 * @param host	-	The IP address of the server
+	 * @param rtpPort	-	The RTP port the server is streaming audio on
+	 */
+	public void playStreamedAudio(String host, int rtpPort) {
+		mediaPlayer.playMedia("rtp://@"+ host + ":" + rtpPort);
 	}
 	
 	/**
 	 * Method to Play or Pause the Audio depending on the current state.
 	 */
 	public void playPauseAudio() {
-		if(headlessPlayer.isPlaying()) {
-			headlessPlayer.pause();
+		if(mediaPlayer.isPlaying()) {
+			mediaPlayer.pause();
 		} else {
-			headlessPlayer.play();
+			mediaPlayer.play();
 		}
 	}
 	
 	/**
 	 * Method to play a loaded audio file.
-	 * 
-	 * loadLocalAudio must be called first!
 	 */
 	public void playAudio() {
-		headlessPlayer.play();
+		mediaPlayer.play();
 	}
 	
 	/**
 	 * Method to pause a loaded audio file.
 	 */
 	public void pauseAudio() {
-		headlessPlayer.pause();
+		mediaPlayer.pause();
 	}
 	
 	/**
 	 * Method to stop a loaded audio file.
 	 */
 	public void stopAudio() {
-		headlessPlayer.stop();
+		mediaPlayer.stop();
 	}
 	
 	/**
@@ -80,14 +84,14 @@ public class AudioPlayer {
 	 * @param mute	-	boolean value set true to mute audio, else false.
 	 */
 	public void muteAudio(boolean mute) {
-		headlessPlayer.mute(mute);
+		mediaPlayer.mute(mute);
 	}
 	
 	/**
 	 * Method to toggle mute for a loaded audio file.
 	 */
 	public void toggleMuteAudio() {
-		headlessPlayer.mute();
+		mediaPlayer.mute();
 	}
 	
 	/**
@@ -96,7 +100,7 @@ public class AudioPlayer {
 	 * @param level - Volume level from 0 to 200, above 100 may result in distorted audio.
 	 */
 	public void setAudioVolume(int level) {
-		headlessPlayer.setVolume(level);
+		mediaPlayer.setVolume(level);
 	}
 	
 	/**
@@ -105,30 +109,27 @@ public class AudioPlayer {
 	 * @param loop	-	boolean value set true to loop audio, else false.
 	 */
 	public void loopAudio(boolean loop) {
-		headlessPlayer.setRepeat(loop);
+		mediaPlayer.setRepeat(loop);
 	}
 	
 	/**
 	 * Method to toggle loop for an audio file
 	 */
 	public void toggleLoopAudio() {
-		if(headlessPlayer.getRepeat()) {
-			headlessPlayer.setRepeat(false);
+		if(mediaPlayer.getRepeat()) {
+			mediaPlayer.setRepeat(false);
 		} else {
-			headlessPlayer.setRepeat(true);
+			mediaPlayer.setRepeat(true);
 		}
 		
 	}
 
 	/**
 	 * Method to clean up and release all players
-	 * 
-	 * Must be called on destruction of window
 	 */
-	public void releasePlayer(MediaPlayerFactory mediaPlayerFactory) {
-		headlessPlayer.stop();
-		headlessPlayer.release();
-		mediaPlayerFactory.release();
+	public void releasePlayer() {
+		mediaPlayer.stop();
+		mediaPlayer.release();
 	}
 	
 }

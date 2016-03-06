@@ -2,25 +2,19 @@ package com.whs.client;
 
 import uk.co.caprica.vlcj.binding.LibVlc;
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;
-import uk.co.caprica.vlcj.player.headless.HeadlessMediaPlayer;
 import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 
 import com.sun.jna.Native;
 import com.sun.jna.NativeLibrary;
-import com.whs.server.AudioStreamer;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Separator;
 import javafx.scene.control.Slider;
 import javafx.scene.control.ToolBar;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 
 import javafx.beans.value.ChangeListener;
@@ -30,48 +24,58 @@ import javafx.beans.value.ObservableValue;
 /**
  * Example for using the AudioPlayer.java class
  * 
- * @author user1092 guest501
+ * This file has been tested with the following configuration:
+ * JDK 1.8 32-bit
+ * VLC 2.1.0 32-bit
+ * vlcj-3.8.0
+ * an acc format audio file
+ * 
+ * @author 		user1092, guest501
+ * @version		v0.2 04/03/2016
  * 
  * NOT FOR RELEASE!
  *
  */
 public class AudioPlayerExample extends Application {	
-		
-	
 	
 	/*
 	 * Start of Audio specific declarations
 	 */
 	
 	// Location of where VLC is installed
-	private final String VLC_LIBRARY_LOCATION = "C:/temp/vlc-2.1.0";
-	// Set VLC video output to a dummy
-	private final String[] VLC_ARGS = {"--vout", "dummy"};
+	private final String VLC_LIBRARY_LOCATION = "M:/vlc-2.1.0";
+	// Set VLC video output to a dummy, waveout used as bug with DX
+	private final String[] VLC_ARGS = {"--vout", "dummy", "--aout", "waveout"};
 	
 	private MediaPlayerFactory mediaPlayerFactory;
 	
 	private AudioPlayer audioPlayer;
-	
-	//private String audioDesired = "C:\\temp\\jetairplane16sec.aac";
-	private String iP = "127.0.0.1";
+	// File to play locally
+	private String audioFile = "jetairplane16sec.aac";
+	// Server details
+	private String host = "127.0.0.1";
 	private int rtpPort = 5555;
 	
 	/*
 	 * End of Audio specific declarations
 	 */
-			
+	
+	/**
+	 * Constructor
+	 * 
+	 * Setup the audio player backend
+	 */
 	public AudioPlayerExample() {
 		// Find and load VLC libraries
 		NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), VLC_LIBRARY_LOCATION);
 		System.setProperty("jna.library.path", VLC_LIBRARY_LOCATION);
 		Native.loadLibrary(RuntimeUtil.getLibVlcLibraryName(), LibVlc.class);
 		
-		mediaPlayerFactory = new MediaPlayerFactory(VLC_ARGS);		
-		//headlessPlayer = mediaPlayerFactory.newHeadlessMediaPlayer();
+		// Create a media player factory
+		mediaPlayerFactory = new MediaPlayerFactory(VLC_ARGS);
 		
+		// Create a audio player
 		audioPlayer = new AudioPlayer(mediaPlayerFactory);
-		
-		
 	}
 	
 	public static void main(String[] args) {
@@ -88,7 +92,6 @@ public class AudioPlayerExample extends Application {
 		// place the control bar at the bottom of the window
 		slideLayout.setBottom(controlBar);
 		
-		
 		//main stage set up with appropriate scene and size
 		slideStage.setScene(scene);
 		slideStage.setHeight(600);
@@ -100,12 +103,13 @@ public class AudioPlayerExample extends Application {
 	
 	/**
 	 * Method for creating the control tool bar at the bottom of each slide
-	 * @param id  -  number of the item to be entered on the tool bar
+	 * 
 	 * @return ToolBar  -  returns the tool bar which was created
 	 */
 	private ToolBar createControlBar() {
 		
 		ToolBar controlBar = new ToolBar();
+		
 		// play button on tool bar
 		Button playButton = new Button("Play");
 		playButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -115,8 +119,6 @@ public class AudioPlayerExample extends Application {
 			}
 		});
 		
-		// set the image on the button
-		//playButton.setGraphic();
 		// pause button on tool bar
 		Button pauseButton = new Button("Pause");
 		pauseButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -125,9 +127,8 @@ public class AudioPlayerExample extends Application {
 				audioPlayer.pauseAudio();
 			}
 		});
-		//pauseButton.setGraphic(pauseView);
 		
-		// exit button on tool bar
+		// stop button on tool bar
 		Button stopButton = new Button("Stop");
 		stopButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -135,8 +136,8 @@ public class AudioPlayerExample extends Application {
 				audioPlayer.stopAudio();
 			}
 		});
-		//exitButton.setGraphic(exitView);
 		
+		// mute button on tool bar
 		Button muteButton = new Button("Mute");
 		muteButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -145,6 +146,7 @@ public class AudioPlayerExample extends Application {
 			}
 		});
 		
+		// loop button on tool bar
 		Button loopButton = new Button("Loop");
 		loopButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -153,19 +155,21 @@ public class AudioPlayerExample extends Application {
 			}
 		});
 		
+		// play stream button on tool bar
 		Button streamButton = new Button("Play Stream");
 		streamButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
-				audioPlayer.playStreamedAudio();
+				audioPlayer.playStreamedAudio(host, rtpPort);
 			}
 		});
 		
+		// load button on tool bar
 		Button loadButton = new Button("Load Local File");
 		loadButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
-				audioPlayer.loadLocalAudio("jetairplane16sec.wav");
+				audioPlayer.loadLocalAudio(audioFile);
 			}
 		});
 		
@@ -173,7 +177,7 @@ public class AudioPlayerExample extends Application {
 		Slider volumeSlider = new Slider();
 		volumeSlider.setMin(0);
 		volumeSlider.setMax(100);
-		volumeSlider.setValue(40);
+		volumeSlider.setValue(50);
 		volumeSlider.setShowTickLabels(true);
 		volumeSlider.setShowTickMarks(true);
 		volumeSlider.setMajorTickUnit(50);
@@ -182,11 +186,11 @@ public class AudioPlayerExample extends Application {
 		volumeSlider.valueProperty().addListener(new ChangeListener<Number>() {
             public void changed(ObservableValue<? extends Number> ov,
                 Number old_val, Number new_val) {
-                    System.out.println(new_val.doubleValue());
                     audioPlayer.setAudioVolume(new_val.intValue());
             }
         });
 		
+		// add all buttons to controlBar
 		controlBar.getItems().addAll(playButton, pauseButton, stopButton, volumeSlider, muteButton, loopButton,  streamButton, loadButton);
 		
 		return controlBar;
@@ -194,7 +198,8 @@ public class AudioPlayerExample extends Application {
 	
 	@Override
     public final void stop() throws Exception {
-        audioPlayer.releasePlayer(mediaPlayerFactory);
+        audioPlayer.releasePlayer();
+		mediaPlayerFactory.release();
     }
 	
 }

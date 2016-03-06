@@ -9,6 +9,8 @@ package com.whs.server;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -16,7 +18,6 @@ import javax.swing.JPanel;
 
 import uk.co.caprica.vlcj.binding.LibVlc;
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;
-import uk.co.caprica.vlcj.player.headless.HeadlessMediaPlayer;
 import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 
 import com.sun.jna.Native;
@@ -27,11 +28,12 @@ import com.sun.jna.NativeLibrary;
  * 
  * This file has been tested with the following configuration:
  * JDK 1.8 32-bit
- * VLC 2.1.0
+ * VLC 2.1.0 32-bit
  * vlcj-3.8.0
  * an acc format audio file
  * 
  * @author		user1092, guest501
+ * @version		v0.2 04/03/2016
  * 
  * NOT FOR RELEASE!
  */
@@ -47,16 +49,15 @@ public class AudioServerExample {
 	 */
 	
 	// Location of where VLC is installed
-	private final String VLC_LIBRARY_LOCATION = "C:/temp/vlc-2.1.0";
+	private final String VLC_LIBRARY_LOCATION = "M:/vlc-2.1.0";
 	// Set VLC video output to a dummy
 	private final String[] VLC_ARGS = {"--vout", "dummy"};
 	
-	private MediaPlayerFactory mediaPlayerFactory;
-	private HeadlessMediaPlayer headlessPlayer;
+	private static MediaPlayerFactory mediaPlayerFactory;
 	
-	private AudioStreamer audioStreamer;
+	private static AudioStreamer audioStreamer;
 	
-	private String audioRequested = "C:\\temp\\jetairplane16sec.aac";
+	private String audioRequested = "jetairplane16sec.aac";
 	private String iP = "127.0.0.1";
 	private int rtpPort = 5555;
 	
@@ -67,7 +68,8 @@ public class AudioServerExample {
 	/**
 	 * Constructor
 	 * 
-	 * The constructor will automatically create and populate a server window.
+	 * The constructor will automatically create an audio server as well as 
+	 * creating and populating a server window.
 	 */
 	public AudioServerExample() {
 		
@@ -76,18 +78,18 @@ public class AudioServerExample {
 		System.setProperty("jna.library.path", VLC_LIBRARY_LOCATION);
 		Native.loadLibrary(RuntimeUtil.getLibVlcLibraryName(), LibVlc.class);
 		
-		// Create a headless media player
-		mediaPlayerFactory = new MediaPlayerFactory(VLC_ARGS);		
-		headlessPlayer = mediaPlayerFactory.newHeadlessMediaPlayer();
+		// Create a media player factory
+		mediaPlayerFactory = new MediaPlayerFactory(VLC_ARGS);
 		
 		// Create a new audio streamer
-		audioStreamer = new AudioStreamer();
+		audioStreamer = new AudioStreamer(mediaPlayerFactory);
 		
 		setupGui();
 		
 		setupButtons();
 		
 		serverFrame.validate();
+		serverFrame.addWindowListener(listener);
 		serverFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 
@@ -128,7 +130,7 @@ public class AudioServerExample {
 	}
 
 	/**
-	 * This method will setup a button for closing the socket to listen for clients
+	 * This method will setup a button streaming an audio file
 	 */
 	private void setupStreamButton() {
 		JButton streamButton;
@@ -138,9 +140,23 @@ public class AudioServerExample {
 		streamButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				audioStreamer.streamAudio(audioRequested, iP, rtpPort, headlessPlayer);
+				audioStreamer.streamAudio(audioRequested, iP, rtpPort);
 			}          
 	    });
 	}
+	
+	 /**
+	 * Listen for the window closing to correctly shutdown the media player 
+	 */
+	private static final WindowAdapter listener = new WindowAdapter() {
+
+	        @Override
+	        public void windowClosing(WindowEvent e) {
+	        	audioStreamer.releasePlayer();
+	    		mediaPlayerFactory.release();
+	        }
+	        
+	    };
+
 		
 }
