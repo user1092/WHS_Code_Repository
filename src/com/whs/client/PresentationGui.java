@@ -9,22 +9,27 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Label;
 import javafx.scene.control.Pagination;
-import javafx.scene.control.*;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Slider;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToolBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
 public class PresentationGui extends Application {
 		
 	// temporary number for the pagination system
-	private Integer tempSlideNumber = 7;
+	private Integer tempSlideNumber;
+	private Integer slideNumber = 7;
+	private VBox slide;
+	private AnchorPane anchorPane;
 	
 	public static void main(String[] args) {
 		launch(PresentationGui.class, args);
@@ -34,7 +39,10 @@ public class PresentationGui extends Application {
 	public void start(Stage slideStage) throws Exception {		
 		BorderPane slideLayout = new BorderPane();
 		Scene scene = new Scene(slideLayout);
-		Canvas newCanvas = createNewCanvas(tempSlideNumber);
+		
+		//VBox slide = tempPaginationTester(tempSlideNumber);
+		//Canvas[] newCanvasArray = new Canvas[tempSlideNumber];
+		//newCanvasArray[tempSlideNumber] = createNewCanvas(tempSlideNumber);
 		
 		//import and set background image
 		String background = getClass().getResource("SlideBackground.jpg").toExternalForm();
@@ -42,10 +50,18 @@ public class PresentationGui extends Application {
 		           "-fx-background-position: center center; " +
 		           "-fx-background-repeat: stretch;");
 		
+		
+
+//		AnchorPane.setTopAnchor(slidePagination, 10.0);
+//        AnchorPane.setRightAnchor(slidePagination, 10.0);
+//        AnchorPane.setBottomAnchor(slidePagination, 10.0);
+//        AnchorPane.setLeftAnchor(slidePagination, 10.0);
+//		anchorPane.getChildren().addAll(slidePagination);
 		// call method for creating the control bar
 		ToolBar controlBar = createControlBar(slideStage);
 		// place the control bar at the bottom of the window
-		slideLayout.setCenter(newCanvas);
+		
+		slideLayout.setCenter(anchorPane);
 		slideLayout.setBottom(controlBar);
 		
 		
@@ -79,17 +95,30 @@ public class PresentationGui extends Application {
 		// instantiation of full screen button
 		ToggleButton fullScreenButton = createFullScreenButton(slideStage);
 		
+		anchorPane = new AnchorPane();
 		// pagination for the slides in the presentation
-		Pagination slidePagination;
+		Pagination slidePagination = new Pagination(slideNumber);
+		slidePagination.currentPageIndexProperty().addListener(new ChangeListener<Number>() {
+	        @Override
+	        public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+		        if (oldValue.intValue() == 0) {
+		        	slide = tempPaginationTester(1);
+		        }
+		        else {
+		        	slide = tempPaginationTester(newValue.intValue());
+		        }
+	        	anchorPane.getChildren().addAll(slide);
+	        }
+		});
+	
+//		slidePagination.setPageFactory(new Callback<Integer, Node>() {
+//            @Override
+//            public Node call(Integer slideNumber) {
+//                return tempPaginationTester(slideNumber);
+//            }
+//        });	
 		
-		slidePagination = PaginationBuilder.create().pageCount(tempSlideNumber).pageFactory(new Callback<Integer, Node>() {
-            @Override
-            public Node call(Integer slideNumber) {
-                return createNewCanvas(slideNumber);
-            }
-        }).build();	
-		
-		slidePagination.getStyleClass().add(Pagination.STYLE_CLASS_BULLET);
+		//slidePagination.getStyleClass().add(Pagination.STYLE_CLASS_BULLET);
 		// instantiation of the separator on the control bar
 		Separator separator = new Separator();
 		// adding all the items on the control bar
@@ -241,10 +270,15 @@ public class PresentationGui extends Application {
 	 * @param slideNumber
 	 * @return
 	 */
-	private Canvas createNewCanvas(Integer slideNumber) {
-		Canvas newCanvas = new Canvas();
-		GraphicsContext gcSlideNumber = newCanvas.getGraphicsContext2D();
-		gcSlideNumber.fillText("Slide: " + slideNumber, 50, 10);
-		return newCanvas;
+	private VBox tempPaginationTester(Integer slideNumber) {
+		
+		slide = new VBox();
+		Label slideNumberLabel = new Label("Slide: " + (slideNumber + 1));
+		
+		//Canvas newCanvas = new Canvas();
+		//GraphicsContext gcSlideNumber = newCanvas.getGraphicsContext2D();
+		//gcSlideNumber.fillText("Slide: " + slideNumber, 1, 1);
+		slide.getChildren().addAll(slideNumberLabel);
+		return slide;
 	}
 }

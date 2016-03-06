@@ -18,7 +18,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
-import javafx.scene.control.*;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
@@ -330,7 +329,7 @@ public class ClientGui extends Application{
 	private MenuBar createMenuBar() {
 		// instantiation of the menu bar
 		MenuBar menuBar = new MenuBar();
-		MenuItem configureServer = MenuItemBuilder.create().text("Configure").build();
+		MenuItem configureServer = new MenuItem("Configure");
 		configureServer.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
             	Platform.runLater(new Runnable() {
@@ -345,8 +344,8 @@ public class ClientGui extends Application{
         	    });
             }
 		});
-		// File->Open... submenu 
-        MenuItem openFile = MenuItemBuilder.create().text("Open File...").build();
+		// File->OpenFile... submenu 
+        MenuItem openFile = new MenuItem("Open File...");
         openFile.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
             	xmlFileChooser = new FileChooser();
@@ -363,8 +362,10 @@ public class ClientGui extends Application{
 				}
 			}
         }); 
-        Menu optionsMenu = MenuBuilder.create().text("Options").items(configureServer).build();
-		Menu fileMenu = MenuBuilder.create().text("File").items(openFile).build();
+        Menu optionsMenu = new Menu("Options");
+        optionsMenu.getItems().addAll(configureServer);
+		Menu fileMenu = new Menu("File");
+		fileMenu.getItems().addAll(openFile);
 		menuBar.getMenus().addAll(fileMenu, optionsMenu);
 		return menuBar;
 	}
