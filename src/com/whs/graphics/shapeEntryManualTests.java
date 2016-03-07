@@ -12,7 +12,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 /**
- * Class that contains manual tests relating shapeEntry due to the fact
+ * Class that contains manual tests relating ShapeEntry due to the fact
  * that javafx and junit testing are not compatible.
  * 
  * All shapes are drawn from top left corner
@@ -22,7 +22,7 @@ import javafx.stage.Stage;
  * @version	v0.1 04/03/16
  * 
  */
-public class shapeEntryManualTests extends Application {
+public class ShapeEntryManualTests extends Application {
 	
 	/**
 	 * Test for plain square 
@@ -43,10 +43,10 @@ public class shapeEntryManualTests extends Application {
 		Group shapes;
 		
 		//set up shape entry
-		shapeEntry shapeEntry = new shapeEntry(startTime, duration, xStart, yStart, height, width, type);
+		ShapeEntry ShapeEntry = new ShapeEntry(startTime, duration, xStart, yStart, height, width, type);
 		
 		//set up shape and scene
-		shapes = shapeEntry.drawShape();
+		shapes = ShapeEntry.drawShape();
 		Scene scene = new Scene(shapes, 600, 600);
 				
 		//main stage set up with appropriate scene and size
@@ -58,7 +58,7 @@ public class shapeEntryManualTests extends Application {
 	}
 	
 	public static void main(String[] args) {
-		launch(shapeEntryManualTests.class, args);
+		launch(ShapeEntryManualTests.class, args);
 		
 	}
 	
@@ -80,10 +80,10 @@ public class shapeEntryManualTests extends Application {
 		Group shapes;
 		
 		//set up shape entry
-		shapeEntry shapeEntry = new shapeEntry(startTime, duration, xStart, yStart, height, width, type);
+		ShapeEntry ShapeEntry = new ShapeEntry(startTime, duration, xStart, yStart, height, width, type);
 		
 		//set up shape and scene
-		shapes = shapeEntry.drawShape();
+		shapes = ShapeEntry.drawShape();
 		Scene scene = new Scene(shapes, 600, 600);
 				
 		//main stage set up with appropriate scene and size
@@ -112,10 +112,10 @@ public class shapeEntryManualTests extends Application {
 		Group shapes;
 		
 		//set up shape entry
-		shapeEntry shapeEntry = new shapeEntry(startTime, duration, xStart, yStart, height, width, type, fillColour, lineColour);
+		ShapeEntry ShapeEntry = new ShapeEntry(startTime, duration, xStart, yStart, height, width, type, fillColour, lineColour);
 		
 		//set up shape and scene
-		shapes = shapeEntry.drawShape();
+		shapes = ShapeEntry.drawShape();
 		Scene scene = new Scene(shapes, 600, 600);
 				
 		//main stage set up with appropriate scene and size
@@ -141,11 +141,11 @@ public class shapeEntryManualTests extends Application {
 		Group shapes;
 		
 		//set up shape entry
-		shapeEntry shapeEntry = new shapeEntry(startTime, duration, xStart, yStart, height, width, type);
+		ShapeEntry ShapeEntry = new ShapeEntry(startTime, duration, xStart, yStart, height, width, type);
 		
 		//set up shape and scene
-		shapeEntry.setShading(0.5f, 0.75f, 0.5f, 0.75f, "aa0000", "00aa00");
-		shapes = shapeEntry.drawShape();
+		ShapeEntry.setShading(0.5f, 0.75f, 0.5f, 0.75f, "aa0000", "00aa00");
+		shapes = ShapeEntry.drawShape();
 		Scene scene = new Scene(shapes, 600, 600);
 				
 		//main stage set up with appropriate scene and size

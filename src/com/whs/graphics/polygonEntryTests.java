@@ -19,11 +19,11 @@ import org.junit.Test;
  * @version	v0.1 04/03/16
  * 
  */
-public class polygonEntryTests{
+public class PolygonEntryTests{
 	int startTime, duration = 0;
 	float[] x = {0.25f, 0.5f, 0.15f};
 	float[] y = {0.25f, 0.5f, 0.35f};
-	polygonEntry polygon;
+	PolygonEntry polygon;
 	String sourceFile = "csv/polygon.csv";
 	
 	/**
@@ -31,7 +31,7 @@ public class polygonEntryTests{
 	 */
 	@Before
 	public void setup() {
-		polygon = new polygonEntry(startTime, duration, x, y, sourceFile);
+		polygon = new PolygonEntry(startTime, duration, x, y, sourceFile);
 	}
 	
 	/**

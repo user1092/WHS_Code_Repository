@@ -22,7 +22,7 @@ import javafx.stage.Stage;
  * @version	v0.1 04/03/16
  * 
  */
-public class polygonEntryManualTests extends Application {
+public class PolygonEntryManualTests extends Application {
 	
 
 	/**
@@ -43,7 +43,7 @@ public class polygonEntryManualTests extends Application {
 		Group polygon;
 		
 		//set up shape entry
-		polygonEntry polygonEntry = new polygonEntry(startTime, duration, x, y, fillColour, lineColour, "/csv/poly1.csv");
+		PolygonEntry polygonEntry = new PolygonEntry(startTime, duration, x, y, fillColour, lineColour, "/csv/poly1.csv");
 		
 		//set up shape and scene
 		polygon = polygonEntry.drawPolygon();
@@ -70,7 +70,7 @@ public class polygonEntryManualTests extends Application {
 		Group polygon;
 		
 		//set up shape entry
-		polygonEntry polygonEntry = new polygonEntry(startTime, duration, x, y, "/csv/poly1.csv");
+		PolygonEntry polygonEntry = new PolygonEntry(startTime, duration, x, y, "/csv/poly1.csv");
 		
 		//set up shape and scene
 		polygonEntry.setShading(0.2f, 0.5f, 0.175f, 0.175f, "aa0000", "00aa00");
@@ -83,6 +83,10 @@ public class polygonEntryManualTests extends Application {
 		primaryStage.setScene(scene);
 				
 		primaryStage.show();
+	}
+	
+	public static void main(String[] args) {
+		launch(PolygonEntryManualTests.class, args);
 	}
 
 	@Override

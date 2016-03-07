@@ -9,7 +9,7 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.whs.graphics.shapeEntry;
+import com.whs.graphics.ShapeEntry;
 
 /**
  * Class that contains junit tests relating shapeEntry.
@@ -21,19 +21,19 @@ import com.whs.graphics.shapeEntry;
  * @version	v0.1 04/03/16
  * 
  */
-public class shapeEntryTests{
+public class ShapeEntryTests{
 	int startTime, duration = 0;
 	float xStart, yStart = 0.1f;
 	String type = "circle";
 	float width, height = 0.2f;
-	shapeEntry circle;
+	ShapeEntry circle;
 	
 	/**
 	 * setup
 	 */
 	@Before
 	public void setup() {
-		circle = new shapeEntry(startTime, duration, xStart, yStart, height, width);
+		circle = new ShapeEntry(startTime, duration, xStart, yStart, height, width);
 	}
 	
 	/**

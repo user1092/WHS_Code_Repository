@@ -26,7 +26,7 @@ import javafx.scene.shape.*;
  * 
  */
 
-public class polygonEntry {
+public class PolygonEntry {
 	//finals for window size
 	private static final int GUI_HEIGHT = 600;
 	private static final int GUI_WIDTH = 600;
@@ -48,21 +48,21 @@ public class polygonEntry {
 	 * Constructor containing the minimal arguments to create a valid shapeEntry.
 	 * 
 	 */
-	public polygonEntry(int inStart, int inDuration, float[] inX, float[] inY, String inSourceFile) {
+	public PolygonEntry(int inStart, int inDuration, float[] inX, float[] inY, String inSourceFile) {
 		this(inStart, inDuration, inX, inY, "000000", "FALSE", inSourceFile);
 	}
 	
 	/**
 	 *  Constructor with optional arguments for fill colour.
 	 */
-	public polygonEntry(int inStart, int inDuration, float[] inX, float[] inY, String inFillColour, String inSourceFile) {
+	public PolygonEntry(int inStart, int inDuration, float[] inX, float[] inY, String inFillColour, String inSourceFile) {
 		this(inStart, inDuration, inX, inY, inFillColour, "FALSE", inSourceFile);
 	}
 	
 	/**
 	 *  Constructor with all optional arguments: shape type, shape colour and shape outline colour.
 	 */
-	public polygonEntry(int inStart, int inDuration, float[] inX, float[] inY, String inFillColour, String inLineColour, String inSourceFile) {
+	public PolygonEntry(int inStart, int inDuration, float[] inX, float[] inY, String inFillColour, String inLineColour, String inSourceFile) {
 		// assign variables
 		this.startTime = inStart;
 		this.duration = inDuration;
