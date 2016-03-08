@@ -73,7 +73,7 @@ public class ClientGui extends Application{
 		Scene scene = new Scene(guiLayout);
 		
 		//import and set background image
-		String background = ClientGui.class.getResource("SlideBackground.jpg").toExternalForm();
+		String background = ClientGui.class.getResource("resources/SlideBackground.jpg").toExternalForm();
 		guiLayout.setStyle("-fx-background-image: url('" + background + "'); " +
 		           "-fx-background-position: center center; " +
 		           "-fx-background-repeat: stretch;");
@@ -335,11 +335,12 @@ public class ClientGui extends Application{
             	Platform.runLater(new Runnable() {
         	       public void run() {             
         	           try {
-						new ConfigureWindow().start(new Stage());
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+        	        	   new ConfigureWindow().start(new Stage());
+        	           } 
+        	           catch (Exception e) {
+        	        	   // TODO Auto-generated catch block
+        	        	   e.printStackTrace();
+        	           }
         	       }
         	    });
             }

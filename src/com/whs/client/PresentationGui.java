@@ -26,10 +26,11 @@ import javafx.util.Callback;
 public class PresentationGui extends Application {
 		
 	// temporary number for the pagination system
-	private Integer tempSlideNumber;
-	private Integer slideNumber = 7;
+	//private Integer currentSlideNumber;
+	private Integer totalSlideNumber = 7;
 	private VBox slide;
 	private AnchorPane anchorPane;
+	private final double CONTROL_BAR_HEIGHT = 60;
 	
 	public static void main(String[] args) {
 		launch(PresentationGui.class, args);
@@ -40,27 +41,32 @@ public class PresentationGui extends Application {
 		BorderPane slideLayout = new BorderPane();
 		Scene scene = new Scene(slideLayout);
 		
-		//VBox slide = tempPaginationTester(tempSlideNumber);
-		//Canvas[] newCanvasArray = new Canvas[tempSlideNumber];
-		//newCanvasArray[tempSlideNumber] = createNewCanvas(tempSlideNumber);
+		
 		
 		//import and set background image
-		String background = getClass().getResource("SlideBackground.jpg").toExternalForm();
+		String background = getClass().getResource("resources/SlideBackground.jpg").toExternalForm();
 		slideLayout.setStyle("-fx-background-image: url('" + background + "'); " +
 		           "-fx-background-position: center center; " +
 		           "-fx-background-repeat: stretch;");
 		
 		
-
-//		AnchorPane.setTopAnchor(slidePagination, 10.0);
-//        AnchorPane.setRightAnchor(slidePagination, 10.0);
-//        AnchorPane.setBottomAnchor(slidePagination, 10.0);
-//        AnchorPane.setLeftAnchor(slidePagination, 10.0);
-//		anchorPane.getChildren().addAll(slidePagination);
+		/* Test code for pagination not currently used
+		VBox slide = tempPaginationTester(tempSlideNumber);
+		Canvas[] newCanvasArray = new Canvas[tempSlideNumber];
+		newCanvasArray[tempSlideNumber] = createNewCanvas(tempSlideNumber);
+		AnchorPane.setTopAnchor(slidePagination, 10.0);
+        AnchorPane.setRightAnchor(slidePagination, 10.0);
+        AnchorPane.setBottomAnchor(slidePagination, 10.0);
+        AnchorPane.setLeftAnchor(slidePagination, 10.0);
+		anchorPane.getChildren().addAll(slidePagination);
+		*/
+		
 		// call method for creating the control bar
 		ToolBar controlBar = createControlBar(slideStage);
+		controlBar.setMaxHeight(CONTROL_BAR_HEIGHT);
+		controlBar.setMinHeight(CONTROL_BAR_HEIGHT);
+		controlBar.setPrefHeight(CONTROL_BAR_HEIGHT);
 		// place the control bar at the bottom of the window
-		
 		slideLayout.setCenter(anchorPane);
 		slideLayout.setBottom(controlBar);
 		
@@ -97,7 +103,8 @@ public class PresentationGui extends Application {
 		
 		anchorPane = new AnchorPane();
 		// pagination for the slides in the presentation
-		Pagination slidePagination = new Pagination(slideNumber);
+		Pagination slidePagination = new Pagination(totalSlideNumber);
+		slidePagination.getStyleClass().add(Pagination.STYLE_CLASS_BULLET);
 		slidePagination.currentPageIndexProperty().addListener(new ChangeListener<Number>() {
 	        @Override
 	        public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
@@ -111,14 +118,16 @@ public class PresentationGui extends Application {
 	        }
 		});
 	
-//		slidePagination.setPageFactory(new Callback<Integer, Node>() {
-//            @Override
-//            public Node call(Integer slideNumber) {
-//                return tempPaginationTester(slideNumber);
-//            }
-//        });	
+		/* Temporary test code for the pagination system
+		 * not currently used
+		slidePagination.setPageFactory(new Callback<Integer, Node>() {
+            @Override
+            public Node call(Integer slideNumber) {
+                return tempPaginationTester(slideNumber);
+            }
+        });	
+		*/
 		
-		//slidePagination.getStyleClass().add(Pagination.STYLE_CLASS_BULLET);
 		// instantiation of the separator on the control bar
 		Separator separator = new Separator();
 		// adding all the items on the control bar
@@ -182,9 +191,9 @@ public class PresentationGui extends Application {
 	 */
 	private ToggleButton createMuteButton() {
 		// image for mute button
-		Image muteImage = new Image(getClass().getResourceAsStream("mute.png"));
+		Image muteImage = new Image(getClass().getResourceAsStream("resources/mute.png"));
 		ImageView muteView = new ImageView(muteImage);
-		Image unmutedImage = new Image(getClass().getResourceAsStream("unmute.png"));
+		Image unmutedImage = new Image(getClass().getResourceAsStream("resources/unmute.png"));
 		ImageView unmutedView = new ImageView(unmutedImage);
 		// instantiation of mute button
 		ToggleButton muteButton = new ToggleButton();
@@ -212,10 +221,10 @@ public class PresentationGui extends Application {
 	 */
 	private ToggleButton createPlayButton() {
 		// image for the play button
-		Image playImage = new Image(getClass().getResourceAsStream("play.png"));
+		Image playImage = new Image(getClass().getResourceAsStream("resources/play.png"));
 		ImageView playView = new ImageView(playImage);
 		// image for the pause button
-		Image pauseImage = new Image(getClass().getResourceAsStream("pause.png"));
+		Image pauseImage = new Image(getClass().getResourceAsStream("resources/pause.png"));
 		ImageView pauseView = new ImageView(pauseImage);
 		// instantiation of play button
 		ToggleButton playButton = new ToggleButton();
@@ -245,7 +254,7 @@ public class PresentationGui extends Application {
 	 */
 	private ToggleButton createFullScreenButton(Stage slideStage) {
 		// image for the full screen button
-		Image exitImage = new Image(getClass().getResourceAsStream("exit.png"));
+		Image exitImage = new Image(getClass().getResource("resources/exit.png").toExternalForm());
 		ImageView exitView = new ImageView(exitImage);
 		// instantiation of full screen button
 		ToggleButton fullScreenButton = new ToggleButton();
@@ -266,7 +275,7 @@ public class PresentationGui extends Application {
 	}
 
 	/**
-	 * 
+	 * temporary test method for the pagination system 
 	 * @param slideNumber
 	 * @return
 	 */

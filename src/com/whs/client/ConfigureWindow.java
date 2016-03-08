@@ -38,7 +38,7 @@ public class ConfigureWindow extends Application {
 		// Box that contains the buttons "Connect" and "Cancel"
 		HBox buttonHBox = buttonHBoxCreation(primaryStage);
 		//import and set background image
-		String background = ClientGui.class.getResource("SlideBackground.jpg").toExternalForm();
+		String background = ClientGui.class.getResource("resources/SlideBackground.jpg").toExternalForm();
 		guiLayout.setStyle("-fx-background-image: url('" + background + "'); " +
 		           "-fx-background-position: center center; " +
 		           "-fx-background-repeat: stretch;");
@@ -182,10 +182,10 @@ public class ConfigureWindow extends Application {
 		buttonHBox.setPadding(new Insets(0, 0, 10, 135));
 		buttonHBox.setSpacing(10);
 		buttonHBox.setStyle("-fx-background-colour: #336699;");
-		Button connectButton = new Button("Connect");
-		connectButton.setPrefSize(100, 20);
+		Button saveButton = new Button("Save");
+		saveButton.setPrefSize(100, 20);
 		cancelButtonSetup(primaryStage);
-		buttonHBox.getChildren().addAll(connectButton, cancelButton);
+		buttonHBox.getChildren().addAll(saveButton, cancelButton);
 		return buttonHBox;	
 	}
 	
@@ -199,4 +199,6 @@ public class ConfigureWindow extends Application {
 			}
 		});
 	}
+	
+	
 }
