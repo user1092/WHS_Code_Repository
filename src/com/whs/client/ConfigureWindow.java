@@ -17,6 +17,7 @@ import javafx.util.StringConverter;
 
 public class ConfigureWindow extends Application {
 
+	//private Stage primaryStage;
 	// text field used for inputting the ip address and port of the server
 	private TextField ipAddressTextField_1, ipAddressTextField_2, ipAddressTextField_3, 
 							ipAddressTextField_4, portTextField;
@@ -189,7 +190,7 @@ public class ConfigureWindow extends Application {
 		return buttonHBox;	
 	}
 	
-	private void cancelButtonSetup(Stage primaryStage) {
+	private void cancelButtonSetup(final Stage primaryStage) {
 		cancelButton = new Button("Cancel");
 		cancelButton.setPrefSize(100, 20);
 		cancelButton.setOnAction(new EventHandler<ActionEvent>() {

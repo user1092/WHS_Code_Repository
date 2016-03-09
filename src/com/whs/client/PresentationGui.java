@@ -1,6 +1,7 @@
 package com.whs.client;
 
 import javafx.application.Application;
+import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -17,20 +18,39 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToolBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
 public class PresentationGui extends Application {
-		
+	
 	// temporary number for the pagination system
 	//private Integer currentSlideNumber;
 	private Integer totalSlideNumber = 7;
 	private VBox slide;
 	private AnchorPane anchorPane;
 	private final double CONTROL_BAR_HEIGHT = 60;
+	private final double WINDOW_HEIGHT = 600;
+	private final double WINDOW_WIDTH = 800;
+
+	private ToggleButton transitionButton;
+	private ToggleButton muteButton;
+	private Image muteImage;
+	private ImageView muteView;
+	private Image unmutedImage;
+	private ImageView unmutedView;
+	private ToggleButton playButton;
+	private Image playImage;
+	private ImageView playView;
+	private Image pauseImage;
+	private ImageView pauseView;
+	private ToggleButton fullScreenButton;
 	
 	public static void main(String[] args) {
 		launch(PresentationGui.class, args);
@@ -39,27 +59,14 @@ public class PresentationGui extends Application {
 	@Override
 	public void start(Stage slideStage) throws Exception {		
 		BorderPane slideLayout = new BorderPane();
-		Scene scene = new Scene(slideLayout);
-		
-		
+		StackPane presentationLayout = new StackPane();
+		Scene scene = new Scene(presentationLayout);
 		
 		//import and set background image
 		String background = getClass().getResource("resources/SlideBackground.jpg").toExternalForm();
-		slideLayout.setStyle("-fx-background-image: url('" + background + "'); " +
+		presentationLayout.setStyle("-fx-background-image: url('" + background + "'); " +
 		           "-fx-background-position: center center; " +
 		           "-fx-background-repeat: stretch;");
-		
-		
-		/* Test code for pagination not currently used
-		VBox slide = tempPaginationTester(tempSlideNumber);
-		Canvas[] newCanvasArray = new Canvas[tempSlideNumber];
-		newCanvasArray[tempSlideNumber] = createNewCanvas(tempSlideNumber);
-		AnchorPane.setTopAnchor(slidePagination, 10.0);
-        AnchorPane.setRightAnchor(slidePagination, 10.0);
-        AnchorPane.setBottomAnchor(slidePagination, 10.0);
-        AnchorPane.setLeftAnchor(slidePagination, 10.0);
-		anchorPane.getChildren().addAll(slidePagination);
-		*/
 		
 		// call method for creating the control bar
 		ToolBar controlBar = createControlBar(slideStage);
@@ -69,15 +76,26 @@ public class PresentationGui extends Application {
 		// place the control bar at the bottom of the window
 		slideLayout.setCenter(anchorPane);
 		slideLayout.setBottom(controlBar);
+
+		presentationLayout.getChildren().add(slideLayout);
 		
-		
+		// Handler to change state of full screen toggle button
+		// when the user exits fullscreen using esc button
+		scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
+	        public void handle(KeyEvent ke) {
+	            if (ke.getCode() == KeyCode.ESCAPE) {
+	            	fullScreenButton.setSelected(true);
+	            }
+	        }
+	    });
 		//main stage set up with appropriate scene and size
 		slideStage.setScene(scene);
-		slideStage.setWidth(800);
-		slideStage.setHeight(600);
+		slideStage.setWidth(WINDOW_WIDTH);
+		slideStage.setHeight(WINDOW_HEIGHT);
 		slideStage.setFullScreen(true);
 		slideStage.setTitle("Presentation Slide");
 		slideStage.show();
+		
 		
 	}
 	
@@ -118,15 +136,6 @@ public class PresentationGui extends Application {
 	        }
 		});
 	
-		/* Temporary test code for the pagination system
-		 * not currently used
-		slidePagination.setPageFactory(new Callback<Integer, Node>() {
-            @Override
-            public Node call(Integer slideNumber) {
-                return tempPaginationTester(slideNumber);
-            }
-        });	
-		*/
 		
 		// instantiation of the separator on the control bar
 		Separator separator = new Separator();
@@ -167,7 +176,7 @@ public class PresentationGui extends Application {
 	 * @return transitionButton  -  toggle button for switching the type of slide transition
 	 */
 	private ToggleButton createTransitionButton() {
-		ToggleButton transitionButton = new ToggleButton("Automatic");
+		transitionButton = new ToggleButton("Automatic");
 		transitionButton.setMaxSize(80, 30);
 		transitionButton.setPrefSize(80, 30);
 		transitionButton.setMinSize(80, 30);
@@ -191,12 +200,12 @@ public class PresentationGui extends Application {
 	 */
 	private ToggleButton createMuteButton() {
 		// image for mute button
-		Image muteImage = new Image(getClass().getResourceAsStream("resources/mute.png"));
-		ImageView muteView = new ImageView(muteImage);
-		Image unmutedImage = new Image(getClass().getResourceAsStream("resources/unmute.png"));
-		ImageView unmutedView = new ImageView(unmutedImage);
+		muteImage = new Image(getClass().getResourceAsStream("resources/mute.png"));
+		muteView = new ImageView(muteImage);
+		unmutedImage = new Image(getClass().getResourceAsStream("resources/unmute.png"));
+		unmutedView = new ImageView(unmutedImage);
 		// instantiation of mute button
-		ToggleButton muteButton = new ToggleButton();
+		muteButton = new ToggleButton();
 		muteButton.setGraphic(unmutedView);
 		muteButton.setMaxSize(50, 30);
 		muteButton.setPrefSize(50, 30);
@@ -221,13 +230,13 @@ public class PresentationGui extends Application {
 	 */
 	private ToggleButton createPlayButton() {
 		// image for the play button
-		Image playImage = new Image(getClass().getResourceAsStream("resources/play.png"));
-		ImageView playView = new ImageView(playImage);
+		playImage = new Image(getClass().getResourceAsStream("resources/play.png"));
+		playView = new ImageView(playImage);
 		// image for the pause button
-		Image pauseImage = new Image(getClass().getResourceAsStream("resources/pause.png"));
-		ImageView pauseView = new ImageView(pauseImage);
+		pauseImage = new Image(getClass().getResourceAsStream("resources/pause.png"));
+		pauseView = new ImageView(pauseImage);
 		// instantiation of play button
-		ToggleButton playButton = new ToggleButton();
+		playButton = new ToggleButton();
 		// set the image on the button
 		playButton.setGraphic(playView);
 		playButton.setMaxSize(40, 30);
@@ -252,14 +261,15 @@ public class PresentationGui extends Application {
 	 * @param slideStage  -  window that will switch from full screen to normal size
 	 * @return fullScreenButton  -  the toggle button that enters and exits full screen
 	 */
-	private ToggleButton createFullScreenButton(Stage slideStage) {
+	private ToggleButton createFullScreenButton(final Stage slideStage) {
 		// image for the full screen button
 		Image exitImage = new Image(getClass().getResource("resources/exit.png").toExternalForm());
 		ImageView exitView = new ImageView(exitImage);
 		// instantiation of full screen button
-		ToggleButton fullScreenButton = new ToggleButton();
+		fullScreenButton = new ToggleButton();
 		// set the image on the button
 		fullScreenButton.setGraphic(exitView);
+		
 		fullScreenButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
@@ -283,10 +293,6 @@ public class PresentationGui extends Application {
 		
 		slide = new VBox();
 		Label slideNumberLabel = new Label("Slide: " + (slideNumber + 1));
-		
-		//Canvas newCanvas = new Canvas();
-		//GraphicsContext gcSlideNumber = newCanvas.getGraphicsContext2D();
-		//gcSlideNumber.fillText("Slide: " + slideNumber, 1, 1);
 		slide.getChildren().addAll(slideNumberLabel);
 		return slide;
 	}
