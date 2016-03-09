@@ -43,9 +43,9 @@ public class AudioPlayerExample extends Application {
 	 */
 	
 	// Location of where VLC is installed
-	private final String VLC_LIBRARY_LOCATION = "M:/vlc-2.1.0";
+	private final String VLC_LIBRARY_LOCATION = "M:/vlc-2.1.0-win64";
 	// Set VLC video output to a dummy, waveout used as bug with DX
-	private final String[] VLC_ARGS = {"--vout", "dummy", "--aout", "waveout"};
+	private final String[] VLC_ARGS = {"--vout", "dummy", "--aout", "waveout", "-vvv"};
 	
 	private MediaPlayerFactory mediaPlayerFactory;
 	
@@ -109,6 +109,15 @@ public class AudioPlayerExample extends Application {
 	private ToolBar createControlBar() {
 		
 		ToolBar controlBar = new ToolBar();
+		
+		// play button on tool bar
+		Button playNowButton = new Button("Play Now");
+		playNowButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent e) {
+				audioPlayer.playAudio(audioFile);
+			}
+		});
 		
 		// play button on tool bar
 		Button playButton = new Button("Play");
@@ -191,7 +200,7 @@ public class AudioPlayerExample extends Application {
         });
 		
 		// add all buttons to controlBar
-		controlBar.getItems().addAll(playButton, pauseButton, stopButton, volumeSlider, muteButton, loopButton,  streamButton, loadButton);
+		controlBar.getItems().addAll(playNowButton, playButton, pauseButton, stopButton, volumeSlider, muteButton, loopButton,  streamButton, loadButton);
 		
 		return controlBar;
 	}

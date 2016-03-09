@@ -65,6 +65,15 @@ public class AudioPlayer {
 	}
 	
 	/**
+	 * Method to play an audio file without first loading.
+	 * 
+	 * @param audioFile	-	The audio file to be played
+	 */
+	public void playAudio(String audioFile) {
+		mediaPlayer.playMedia(audioFile);
+	}
+	
+	/**
 	 * Method to pause a loaded audio file.
 	 */
 	public void pauseAudio() {
