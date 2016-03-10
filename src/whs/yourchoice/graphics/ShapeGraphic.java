@@ -6,7 +6,7 @@
 
 package whs.yourchoice.graphics;
 
-import javafx.scene.Group;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
@@ -25,15 +25,15 @@ import javafx.scene.shape.*;
 
 public class ShapeGraphic {
 	//finals for window size
-	private static final int GUI_HEIGHT = 600;
-	private static final int GUI_WIDTH = 600;
+	private int gui_height = 600;
+	private int gui_width = 600;
 	//remaining variables
 	protected int startTime, duration;
 	protected float xStart, yStart;
 	protected String type;
 	protected float width, height;
 	protected String lineColourString, fillColourString;
-	protected Group group = new Group();
+	protected Pane group = new Pane();
 	protected Color fillColour;
 	protected Color lineColour;
 	protected float shadingX1, shadingX2;
@@ -110,12 +110,15 @@ public class ShapeGraphic {
 	}
 	
 	/**
-	 * Sets the group parameter in shapeEntry
-	 * @param inGroup	group that is be set
+	 * Sets the resolution of the canvas
+	 * @param width		Width of canvas in pixels
+	 * @param height	Height of canvas in pixels
 	 */
-	public void setGroup(Group inGroup) {
-		group = inGroup;
+	public void setRes(int width, int height) {
+		gui_width = width;
+		gui_height = height;
 	}
+	
 	
 	/**
 	 *  Validates user input shape type as a valid shape for shapeEntry object.
@@ -185,10 +188,10 @@ public class ShapeGraphic {
 		float pixel;
 		
 		if (axis.equals("Y")) {
-			pixel = (GUI_HEIGHT * percentage);
+			pixel = (gui_height * percentage);
 		}
 		else if (axis.equals("X")) {
-			pixel = (GUI_WIDTH * percentage);
+			pixel = (gui_width * percentage);
 		}
 		else {
 			pixel = 0;
@@ -201,7 +204,7 @@ public class ShapeGraphic {
 	 * A method that parses shape type and calls a method to draw that shape
 	 * @return this.group	Group containing shape
 	 */
-	public Group drawShape() {
+	public Pane drawShape() {
 		//convert to percentages to pixels
 		float x = getPixel("X", xStart);
 		float y = getPixel("Y", yStart);
@@ -271,13 +274,13 @@ public class ShapeGraphic {
 		Circle c = new Circle();
 		
 		//adjust centre point from top left point
-		x = x + ((width*GUI_WIDTH)/2);
-		y = y + ((height*GUI_HEIGHT)/2);
+		x = x + ((width*gui_width)/2);
+		y = y + ((height*gui_height)/2);
 		
 		//set coordinates and radius
 		c.setCenterX(x);
 		c.setCenterY(y);
-		c.setRadius((width*GUI_WIDTH)/2);
+		c.setRadius((width*gui_width)/2);
 		
 		//set line and fill colours
 		if (shading == true) {
