@@ -241,6 +241,11 @@ public class Server {
 		return inputFromClient.readObject();
 	}
 	
+	/**
+	 * Method to inform client that server is full.
+	 * 
+	 * @param client - This is the client to be informed
+	 */
 	private void informThatServerFull(ConnectedClient client) {
 		ObjectOutputStream outputToClient = null;
 		
@@ -264,7 +269,7 @@ public class Server {
 	/**
 	 * Method to listen to client for data requests
 	 * 
-	 * @param client
+	 * @param client - This is the client to be listened to
 	 */
 	private void listenToClient(final ConnectedClient client) {
 		Thread[] listenToClientThread;

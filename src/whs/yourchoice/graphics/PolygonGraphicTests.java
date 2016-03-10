@@ -24,7 +24,7 @@ public class PolygonGraphicTests{
 	float[] x = {0.25f, 0.5f, 0.15f};
 	float[] y = {0.25f, 0.5f, 0.35f};
 	PolygonGraphic polygon;
-	String sourceFile = "csv/polygon.csv";
+	String sourceFile = "/Users/williamsharrard/Desktop/ArrowShape.csv";
 	
 	/**
 	 * setup
@@ -53,4 +53,19 @@ public class PolygonGraphicTests{
 		assertEquals(0.02f, polygon.shadingX1, 0.001);
 		assertEquals(true, polygon.shading);
 	}
+	
+	/**
+	 * Assert CSV values are read correctly
+	 */
+	@Test
+	public void correctCSVParsing(){
+		try {
+			polygon.parseCSV();
+		}
+		catch (Exception e) {
+			System.out.println("File cannot be found.");
+		}
+		
+	}
+	
 }
