@@ -20,6 +20,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.transform.Scale;
 import javafx.stage.Stage;
 
 public class PresentationGui extends Application {
@@ -29,10 +30,27 @@ public class PresentationGui extends Application {
 	private Integer totalSlideNumber = 7;
 	private VBox slide;
 	private AnchorPane anchorPane;
-	private final double CONTROL_BAR_HEIGHT = 60;
-	private final double WINDOW_HEIGHT = 600;
-	private final double WINDOW_WIDTH = 800;
-
+	
+	final int WINDOW_MIN_WIDTH = 640;
+	final int WINDOW_MIN_HEIGHT = 480;
+	final int WINDOW_WIDTH = 640;
+	final int WINDOW_HEIGHT = 480;
+	final int CONTROL_BAR_WIDTH = WINDOW_WIDTH;
+	final int CONTROL_BAR_HEIGHT = 60;
+	final int PRESENTATION_WIDTH = WINDOW_WIDTH;
+	final int PRESENTATION_HEIGHT = WINDOW_HEIGHT - (CONTROL_BAR_HEIGHT/2) - CONTROL_BAR_HEIGHT;
+	
+    private StackPane presentationLayout;
+    private BorderPane subPresentationLayout;
+	private BorderPane windowLayout;
+	
+	private double scaleXratio = 1;
+    private double scaleYRatio = 1;
+    private double stageInitialWidth = 0;
+    private double stageInitialHeight = 0;
+	
+    private ToolBar controlBar;
+    
 	private ToggleButton transitionButton;
 	private ToggleButton muteButton;
 	private Image muteImage;
@@ -52,27 +70,33 @@ public class PresentationGui extends Application {
 	
 	@Override
 	public void start(Stage slideStage) throws Exception {		
-		BorderPane slideLayout = new BorderPane();
-		StackPane presentationLayout = new StackPane();
-		Scene scene = new Scene(presentationLayout);
+		presentationLayout = new StackPane();
+		subPresentationLayout = new BorderPane();
+		windowLayout = new BorderPane();
+		
+		Scene scene = new Scene(windowLayout, WINDOW_WIDTH, WINDOW_HEIGHT);
+		
+		windowLayout.setTop(subPresentationLayout);
+		subPresentationLayout.setLeft(presentationLayout);
+		
+		slideStage.setMinHeight(WINDOW_MIN_HEIGHT);
+		slideStage.setMinWidth(WINDOW_MIN_WIDTH);
 		
 		//import and set background image
 		String background = getClass().getResource("resources/SlideBackground.jpg").toExternalForm();
-		presentationLayout.setStyle("-fx-background-image: url('" + background + "'); " +
+		windowLayout.setStyle("-fx-background-image: url('" + background + "'); " +
 		           "-fx-background-position: center center; " +
 		           "-fx-background-repeat: stretch;");
 		
 		// call method for creating the control bar
-		ToolBar controlBar = createControlBar(slideStage);
+		controlBar = createControlBar(slideStage);
 		controlBar.setMaxHeight(CONTROL_BAR_HEIGHT);
 		controlBar.setMinHeight(CONTROL_BAR_HEIGHT);
 		controlBar.setPrefHeight(CONTROL_BAR_HEIGHT);
-		// place the control bar at the bottom of the window
-		slideLayout.setCenter(anchorPane);
-		slideLayout.setBottom(controlBar);
-
-		presentationLayout.getChildren().add(slideLayout);
 		
+		// place the control bar at the bottom of the window
+		windowLayout.setBottom(controlBar);
+
 		// Handler to change state of full screen toggle button
 		// when the user exits fullscreen using esc button
 		scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
@@ -86,11 +110,46 @@ public class PresentationGui extends Application {
 		slideStage.setScene(scene);
 		slideStage.setWidth(WINDOW_WIDTH);
 		slideStage.setHeight(WINDOW_HEIGHT);
-		slideStage.setFullScreen(true);
 		slideStage.setTitle("Presentation Slide");
 		slideStage.show();
 		
+		stageInitialWidth = scene.getWidth();
+        stageInitialHeight = scene.getHeight();
+
+        windowLayout.getScene().widthProperty()
+        .addListener(new ChangeListener<Number>() {
+             @Override
+             public void changed(ObservableValue<? extends Number> observable,
+                       Number oldValue, Number newValue) {
+
+                  scaleXratio = newValue.doubleValue() / stageInitialWidth;
+
+                  presentationLayout.getTransforms().clear();
+                  Scale scale = new Scale(scaleXratio, scaleYRatio, 0, 0);
+                  presentationLayout.getTransforms().add(scale);
+                  controlBar.setPrefHeight(CONTROL_BAR_HEIGHT);
+
+             }
+        });
+
+        windowLayout.getScene().heightProperty()
+        .addListener(new ChangeListener<Number>() {
+             @Override
+             public void changed(ObservableValue<? extends Number> observable,
+                       Number oldValue, Number newValue) {
+
+                  scaleYRatio = (newValue.doubleValue())
+                            / (stageInitialHeight);
+
+                  presentationLayout.getTransforms().clear();
+                  Scale scale = new Scale(scaleXratio, scaleYRatio, 0, 0);
+                  presentationLayout.getTransforms().add(scale);
+                  controlBar.setPrefHeight(CONTROL_BAR_HEIGHT);
+
+             }
+        });
 		
+		slideStage.setFullScreen(true);
 	}
 	
 	/**
