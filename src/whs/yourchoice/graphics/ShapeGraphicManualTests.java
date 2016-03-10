@@ -7,8 +7,8 @@
 package whs.yourchoice.graphics;
 
 import javafx.application.Application;
-import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 /**
@@ -40,7 +40,7 @@ public class ShapeGraphicManualTests extends Application {
 		String type = "rectangle";
 		float width = 0.5f;
 		float height = 0.5f;
-		Group shapes;
+		Pane shapes;
 		
 		//set up shape entry
 		ShapeGraphic ShapeEntry = new ShapeGraphic(startTime, duration, xStart, yStart, height, width, type);
@@ -77,7 +77,7 @@ public class ShapeGraphicManualTests extends Application {
 		String type = "circle";
 		float width = 0.5f;
 		float height = 0.5f;
-		Group shapes;
+		Pane shapes;
 		
 		//set up shape entry
 		ShapeGraphic ShapeEntry = new ShapeGraphic(startTime, duration, xStart, yStart, height, width, type);
@@ -109,7 +109,7 @@ public class ShapeGraphicManualTests extends Application {
 		String lineColour = "000000";
 		float width = 0.5f;
 		float height = 0.321f;
-		Group shapes;
+		Pane shapes;
 		
 		//set up shape entry
 		ShapeGraphic ShapeEntry = new ShapeGraphic(startTime, duration, xStart, yStart, height, width, type, fillColour, lineColour);
@@ -138,7 +138,7 @@ public class ShapeGraphicManualTests extends Application {
 		String type = "circle";
 		float width = 0.25f;
 		float height = 0.25f;
-		Group shapes;
+		Pane shapes;
 		
 		//set up shape entry
 		ShapeGraphic ShapeEntry = new ShapeGraphic(startTime, duration, xStart, yStart, height, width, type);

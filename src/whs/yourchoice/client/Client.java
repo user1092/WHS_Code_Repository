@@ -29,8 +29,8 @@ public class Client {
 	
 	/**
 	 * Method to open socket, in order to connect to the server. 
-	 * @param host - 
-	 * @param port - 
+	 * @param host - The socket's host number
+	 * @param port - The socket's port number
 	 */
 	protected void openSocket(String host, int port) {
 	
@@ -112,6 +112,7 @@ public class Client {
 	 * Method to receive an ID should be called once the connection to the server has been made.
 	 */
 	private void receiveID() {
+		
 		try {
 			System.out.println("Waiting for ID");
 			iD = (int) receiveData();
