@@ -57,13 +57,17 @@
 		
         <image width="0.6" duration="-1" ystart="0.2" sourceFile="imgs\companyLogo.jpg" starttime="0" xstart="0.2" height="0.6" />
 				
-        <polygon duration="-1" starttime="0" sourceFile="starShape.csv" lineColour="FF5500" fillColour="007766"/>
+        <polygon duration="-1" starttime="0" sourceFile="starShape.csv" lineColour="FF5500" fillColour="007766">
+			<shading x2="0.80" x1="0.60" y2="0.65" y1="0.90" colour2="FF0000" colour1="00FF00" />
+		</polygon>
 		
     </slide>
 	
     <slide slideID="3" duration="8" nextSlide="-1">
 	
         <audio loop="false" sourceFile="ping.wav" duration="6" starttime="2" />
+		
+		<polygon duration="2" starttime="23" sourceFile="iceShape.csv" lineColour="F5F6F7" fillColour="696969" />
 		
     </slide>
 	
