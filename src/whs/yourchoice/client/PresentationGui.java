@@ -6,7 +6,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.control.Pagination;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Slider;
@@ -16,21 +15,19 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.transform.Scale;
 import javafx.stage.Stage;
-
+/**
+* Class for creation of the presentation window and adding functionality
+*
+* @author user828 & user1092
+* @version v0.5 10/03/16
+*/
 public class PresentationGui extends Application {
 	
-	// temporary number for the pagination system
-	//private Integer currentSlideNumber;
-	private Integer totalSlideNumber = 7;
-	private VBox slide;
-	private AnchorPane anchorPane;
-	
+	// Definitions for window, presentation and control area sizes
 	final int WINDOW_MIN_WIDTH = 640;
 	final int WINDOW_MIN_HEIGHT = 480;
 	final int WINDOW_WIDTH = 640;
@@ -40,17 +37,25 @@ public class PresentationGui extends Application {
 	final int PRESENTATION_WIDTH = WINDOW_WIDTH;
 	final int PRESENTATION_HEIGHT = WINDOW_HEIGHT - (CONTROL_BAR_HEIGHT/2) - CONTROL_BAR_HEIGHT;
 	
+	
     private StackPane presentationLayout;
     private BorderPane subPresentationLayout;
 	private BorderPane windowLayout;
 	
-	private double scaleXratio = 1;
-    private double scaleYRatio = 1;
+	// temporary number for the pagination system
+	// private Integer currentSlideNumber;
+	private Integer totalSlideNumber = 7;
+	
+	// variables for the scaling of all the objects on the window
+	private double scaleWidthRatio = 1;
+    private double scaleHeightRatio = 1;
     private double stageInitialWidth = 0;
     private double stageInitialHeight = 0;
 	
+    
     private ToolBar controlBar;
     
+    // objects present on the control bar
 	private ToggleButton transitionButton;
 	private ToggleButton muteButton;
 	private Image muteImage;
@@ -106,6 +111,7 @@ public class PresentationGui extends Application {
 	            }
 	        }
 	    });
+		
 		//main stage set up with appropriate scene and size
 		slideStage.setScene(scene);
 		slideStage.setWidth(WINDOW_WIDTH);
@@ -113,42 +119,48 @@ public class PresentationGui extends Application {
 		slideStage.setTitle("Presentation Slide");
 		slideStage.show();
 		
+		
 		stageInitialWidth = scene.getWidth();
         stageInitialHeight = scene.getHeight();
 
+        // listener for getting the width of the window
+        // and scaling everything according to the change in the window size
         windowLayout.getScene().widthProperty()
         .addListener(new ChangeListener<Number>() {
              @Override
              public void changed(ObservableValue<? extends Number> observable,
                        Number oldValue, Number newValue) {
 
-                  scaleXratio = newValue.doubleValue() / stageInitialWidth;
+            	 scaleWidthRatio = newValue.doubleValue() / stageInitialWidth;
 
                   presentationLayout.getTransforms().clear();
-                  Scale scale = new Scale(scaleXratio, scaleYRatio, 0, 0);
+                  Scale scale = new Scale(scaleWidthRatio, scaleHeightRatio, 0, 0);
                   presentationLayout.getTransforms().add(scale);
                   controlBar.setPrefHeight(CONTROL_BAR_HEIGHT);
 
              }
         });
 
+        // listener for getting the height of the window
+        // and scaling everything according to the change in the window size
         windowLayout.getScene().heightProperty()
         .addListener(new ChangeListener<Number>() {
              @Override
              public void changed(ObservableValue<? extends Number> observable,
                        Number oldValue, Number newValue) {
 
-                  scaleYRatio = (newValue.doubleValue())
+            	 scaleHeightRatio = (newValue.doubleValue())
                             / (stageInitialHeight);
 
                   presentationLayout.getTransforms().clear();
-                  Scale scale = new Scale(scaleXratio, scaleYRatio, 0, 0);
+                  Scale scale = new Scale(scaleWidthRatio, scaleHeightRatio, 0, 0);
                   presentationLayout.getTransforms().add(scale);
                   controlBar.setPrefHeight(CONTROL_BAR_HEIGHT);
 
              }
         });
 		
+        // initialise full screen
 		slideStage.setFullScreen(true);
 	}
 	
@@ -172,22 +184,10 @@ public class PresentationGui extends Application {
 		// instantiation of full screen button
 		ToggleButton fullScreenButton = createFullScreenButton(slideStage);
 		
-		anchorPane = new AnchorPane();
 		// pagination for the slides in the presentation
 		Pagination slidePagination = new Pagination(totalSlideNumber);
 		slidePagination.getStyleClass().add(Pagination.STYLE_CLASS_BULLET);
-		slidePagination.currentPageIndexProperty().addListener(new ChangeListener<Number>() {
-	        @Override
-	        public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-		        if (oldValue.intValue() == 0) {
-		        	slide = tempPaginationTester(1);
-		        }
-		        else {
-		        	slide = tempPaginationTester(newValue.intValue());
-		        }
-	        	anchorPane.getChildren().addAll(slide);
-	        }
-		});
+		
 	
 		
 		// instantiation of the separator on the control bar
@@ -335,18 +335,5 @@ public class PresentationGui extends Application {
 			}
 		});
 		return fullScreenButton;
-	}
-
-	/**
-	 * temporary test method for the pagination system 
-	 * @param slideNumber
-	 * @return
-	 */
-	private VBox tempPaginationTester(Integer slideNumber) {
-		
-		slide = new VBox();
-		Label slideNumberLabel = new Label("Slide: " + (slideNumber + 1));
-		slide.getChildren().addAll(slideNumberLabel);
-		return slide;
 	}
 }
