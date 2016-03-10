@@ -181,14 +181,9 @@ public class ConfigureWindow extends Application {
 	}
 	
 	/**
-<<<<<<< HEAD
-	 * method for the creation of the HBox that contains the buttons
-	 * @param primaryStage  -  The application window
-	 * @return buttonHBox  -  The box that contains the buttons 
-=======
 	 * Method for the creation of the HBox that contains the buttons
-	 * @return HBox  -  The box that contains the buttons 
->>>>>>> dfe5356c95f2a7ae6a1e79e5bd834d5edb16185e
+	 * @param primaryStage  -  The application window
+	 * @return HBox  -  The box that contains the buttons
 	 */
 	private HBox buttonHBoxCreation(Stage primaryStage) {
 		HBox buttonHBox = new HBox();
