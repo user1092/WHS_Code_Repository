@@ -1,6 +1,5 @@
 package whs.yourchoice.client;
 
-
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.event.ActionEvent;
@@ -17,8 +16,6 @@ import javafx.scene.layout.Region;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
-
-
 
 /**
  * Class for the client's back end handling playing video files 
@@ -38,7 +35,6 @@ public class VideoPlayer{
 	public Canvas canvas;
 	public MediaPlayer player;
 	public AnchorPane anchorPane;
-	public int CurrentCycleCount;
 
 	/**
 	 * Method to create the video player window, this contains the controls to operate the video player
@@ -168,7 +164,6 @@ public class VideoPlayer{
 		
 		controlBar.getChildren().addAll(playButton,pauseButton,exitButton,volumeSlider,loopButton);
 				
-				return controlBar;
-			}
-
+		return controlBar;
 	}
+}

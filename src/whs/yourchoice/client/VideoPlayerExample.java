@@ -1,6 +1,5 @@
 package whs.yourchoice.client;
 
-
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
@@ -25,23 +24,23 @@ public class VideoPlayerExample extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		
-	videoPlayer = new VideoPlayer();
+		videoPlayer = new VideoPlayer();
+			
+		BorderPane videoPlayerAndControls = videoPlayer.videoPlayerWindow();
+	  
+		primaryStage.setTitle("MediaPlayer");	
+			
+		videoPlayerAndControls.setLayoutY(400);
+		videoPlayerAndControls.setLayoutX(300);
 		
-	BorderPane videoPlayerAndControls = videoPlayer.videoPlayerWindow();
-  
-	primaryStage.setTitle("MediaPlayer");	
-		
-	videoPlayerAndControls.setLayoutY(400);
-	videoPlayerAndControls.setLayoutX(300);
+		Pane baseBox = new Pane();		
+		baseBox.getChildren().add(videoPlayerAndControls);
+		baseBox.autosize();
+		baseBox.setBackground(null);
 	
-	Pane baseBox = new Pane();		
-	baseBox.getChildren().add(videoPlayerAndControls);
-	baseBox.autosize();
-	baseBox.setBackground(null);
-
-	Scene scene = new Scene(baseBox, 1000 , 1000, Color.RED);
-	primaryStage.setScene(scene);
-	primaryStage.show();
+		Scene scene = new Scene(baseBox, 1000 , 1000, Color.RED);
+		primaryStage.setScene(scene);
+		primaryStage.show();
 	}
 
 }
