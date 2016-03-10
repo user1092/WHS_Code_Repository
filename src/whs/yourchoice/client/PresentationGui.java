@@ -7,8 +7,12 @@ import presentech.TextHandler;
 import stammtisch.Objects.Images;
 import stammtisch.handlers.ImageHandler;
 
+import whs.yourchoice.graphics.PolygonGraphic;
+import whs.yourchoice.graphics.ShapeGraphic;
 import whs.yourchoice.presentation.ImageEntry;
+import whs.yourchoice.presentation.PolygonEntry;
 import whs.yourchoice.presentation.PresentationEntry;
+import whs.yourchoice.presentation.ShapeEntry;
 import whs.yourchoice.presentation.SlideEntry;
 import whs.yourchoice.presentation.TextEntry;
 import javafx.application.Application;
@@ -31,6 +35,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextFlow;
@@ -80,10 +85,11 @@ public class PresentationGui extends Application {
 	
 	private List<TextFlow> textList = new ArrayList<TextFlow>();
 	private List<Canvas> imageList = new ArrayList<Canvas>();
+	private List<Pane> shapeList = new ArrayList<Pane>();
+	private List<Pane> polygonList = new ArrayList<Pane>();
 	
 
 	public PresentationGui(PresentationEntry presentation) {
-		//presentationLayout = new StackPane();
 		Canvas duffCanvas = new Canvas(PRESENTATION_WIDTH,  PRESENTATION_HEIGHT);
 		
 		SlideEntry currentSlide;
@@ -91,16 +97,25 @@ public class PresentationGui extends Application {
 		String sourceFile = null;
 		ImageEntry currentImage;
 		Images tempImage;
+		ShapeEntry currentShape;
+		PolygonEntry currentPolygon; 
 		
+		float[] polygonX = {0.1f, 0.2f, 0.3f};
+		float[] polygonY = {0.0f, 0.2f, 0.0f};
 		int numberOfSlides;
 		int numberOfTexts;
 		int numberOfImages;
+		int numberOfShapes;
+		int numberOfPolygons;
 		
 		numberOfSlides = presentation.slideList.size();
 		for(int slide = 0; slide < numberOfSlides; slide++) {
 			currentSlide = presentation.slideList.get(slide);
+			
 			numberOfTexts = currentSlide.textList.size();
 			numberOfImages = currentSlide.imageList.size();
+			numberOfShapes = currentSlide.shapeList.size();
+			numberOfPolygons = currentSlide.polygonList.size();
 			
 			System.out.println(numberOfSlides);
 			
@@ -133,6 +148,59 @@ public class PresentationGui extends Application {
 				System.out.println(currentSlide.imageList.get(image));
 			}
 			
+			for(int shape = 0; shape < numberOfShapes; shape++) {
+				currentShape = currentSlide.shapeList.get(shape);
+				
+//				ShapeGraphic ShapeEntry = new ShapeGraphic(currentShape.getShapeStartTime(),
+//													currentShape.getShapeDuration(),
+//													currentShape.getShapeXStart(),
+//													currentShape.getShapeYStart(),
+//													currentShape.getShapeHeight(),
+//													currentShape.getShapeWidth(),
+//													currentShape.getShapeType(),
+//													currentShape.getShapeFillColour(),
+//													currentShape.getShapeLineColour());
+				ShapeGraphic shapeEntry = new ShapeGraphic(currentShape.getShapeStartTime(),
+														currentShape.getShapeDuration(),
+														currentShape.getShapeXStart(),
+														currentShape.getShapeYStart(),
+														currentShape.getShapeHeight(),
+														currentShape.getShapeWidth(),
+														currentShape.getShapeType());
+												
+				shapeEntry.setRes(PRESENTATION_WIDTH, PRESENTATION_HEIGHT);
+				shapeList.add(shapeEntry.drawShape());
+				System.out.println(shape);
+				System.out.println(currentSlide.shapeList.get(shape));
+			}
+			
+			for(int polygon = 0; polygon < numberOfPolygons; polygon++) {
+				currentPolygon = currentSlide.polygonList.get(polygon);
+				
+//				ShapeGraphic ShapeEntry = new ShapeGraphic(currentShape.getShapeStartTime(),
+//													currentShape.getShapeDuration(),
+//													currentShape.getShapeXStart(),
+//													currentShape.getShapeYStart(),
+//													currentShape.getShapeHeight(),
+//													currentShape.getShapeWidth(),
+//													currentShape.getShapeType(),
+//													currentShape.getShapeFillColour(),
+//													currentShape.getShapeLineColour());
+				PolygonGraphic polygonEntry = new PolygonGraphic(currentPolygon.getPolygonStartTime(),
+															currentPolygon.getPolygonDuration(),
+															polygonX, polygonY,
+															currentPolygon.getPolygonFillColour(),
+															currentPolygon.getPolygonLineColour(),
+															currentPolygon.getPolygonSourceFile());
+				
+				polygonEntry.setRes(PRESENTATION_WIDTH, PRESENTATION_HEIGHT);
+				shapeList.add(polygonEntry.drawPolygon());
+				System.out.println(polygon);
+				System.out.println(currentSlide.polygonList.get(polygon));
+			}
+			
+			
+			
 		}
 	}
 	
@@ -149,6 +217,20 @@ public class PresentationGui extends Application {
 			System.out.println(textList.get(image));
 			presentationLayout.getChildren().add(imageList.get(image));
 		}
+		
+		for(int shape = 0; shape < shapeList.size(); shape++) {
+			System.out.println("disp shape number: " + shape);
+			System.out.println(shapeList.get(shape));
+			presentationLayout.getChildren().add(shapeList.get(shape));
+		}
+		
+//		for(int polygon = 0; polygon < polygonList.size(); polygon++) {
+//			System.out.println("disp polygon number: " + polygon);
+//			System.out.println(polygonList.get(polygon));
+//			presentationLayout.getChildren().add(polygonList.get(polygon));
+//		}
+		
+		
 	}
 	
 	public static void main(String[] args) {
