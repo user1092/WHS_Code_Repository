@@ -3,7 +3,7 @@
  * 
  * 
  */
-package com.whs.client;
+package whs.yourchoice.client;
 
 import java.io.IOException;
 

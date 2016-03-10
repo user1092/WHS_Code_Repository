@@ -4,7 +4,7 @@
  * 
  */
 
-package com.whs.server;
+package whs.yourchoice.server;
 
 import static org.junit.Assert.*;
 
@@ -15,7 +15,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.whs.client.ClientInterfacer;
+import whs.yourchoice.client.ClientInterfacer;
 
 
 /**

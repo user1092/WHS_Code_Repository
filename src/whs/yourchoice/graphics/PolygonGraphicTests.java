@@ -3,7 +3,7 @@
  * 
  * Copyright Woolly Hat Software
  */
-package com.whs.graphics;
+package whs.yourchoice.graphics;
 
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -19,11 +19,11 @@ import org.junit.Test;
  * @version	v0.1 04/03/16
  * 
  */
-public class PolygonEntryTests{
+public class PolygonGraphicTests{
 	int startTime, duration = 0;
 	float[] x = {0.25f, 0.5f, 0.15f};
 	float[] y = {0.25f, 0.5f, 0.35f};
-	PolygonEntry polygon;
+	PolygonGraphic polygon;
 	String sourceFile = "csv/polygon.csv";
 	
 	/**
@@ -31,7 +31,7 @@ public class PolygonEntryTests{
 	 */
 	@Before
 	public void setup() {
-		polygon = new PolygonEntry(startTime, duration, x, y, sourceFile);
+		polygon = new PolygonGraphic(startTime, duration, x, y, sourceFile);
 	}
 	
 	/**

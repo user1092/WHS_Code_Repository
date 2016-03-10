@@ -1,4 +1,4 @@
-package com.whs.client;
+package whs.yourchoice.audio;
 
 import uk.co.caprica.vlcj.binding.LibVlc;
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;

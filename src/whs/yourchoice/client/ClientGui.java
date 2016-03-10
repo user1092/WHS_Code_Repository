@@ -4,7 +4,7 @@
 * Copyright and Licensing Information if applicable
 */
 
-package com.whs.client;
+package whs.yourchoice.client;
 
 import java.io.File;
 

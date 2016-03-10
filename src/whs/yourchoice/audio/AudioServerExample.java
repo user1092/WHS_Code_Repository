@@ -4,7 +4,7 @@
  * 
  */
 
-package com.whs.server;
+package whs.yourchoice.audio;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;

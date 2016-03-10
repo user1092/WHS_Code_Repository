@@ -3,13 +3,13 @@
  * 
  * Copyright Woolly Hat Software
  */
-package com.whs.graphics;
+package whs.yourchoice.graphics;
 
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.whs.graphics.ShapeEntry;
+import whs.yourchoice.graphics.ShapeGraphic;
 
 /**
  * Class that contains junit tests relating shapeEntry.
@@ -21,19 +21,19 @@ import com.whs.graphics.ShapeEntry;
  * @version	v0.1 04/03/16
  * 
  */
-public class ShapeEntryTests{
+public class ShapeGraphicTests{
 	int startTime, duration = 0;
 	float xStart, yStart = 0.1f;
 	String type = "circle";
 	float width, height = 0.2f;
-	ShapeEntry circle;
+	ShapeGraphic circle;
 	
 	/**
 	 * setup
 	 */
 	@Before
 	public void setup() {
-		circle = new ShapeEntry(startTime, duration, xStart, yStart, height, width);
+		circle = new ShapeGraphic(startTime, duration, xStart, yStart, height, width);
 	}
 	
 	/**

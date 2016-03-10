@@ -4,7 +4,7 @@
  * Copyright Woolly Hat Software
  */
 
-package com.whs.graphics;
+package whs.yourchoice.graphics;
 
 import javafx.application.Application;
 import javafx.scene.Group;
@@ -22,7 +22,7 @@ import javafx.stage.Stage;
  * @version	v0.1 04/03/16
  * 
  */
-public class PolygonEntryManualTests extends Application {
+public class PolygonGraphicManualTests extends Application {
 	
 
 	/**
@@ -43,7 +43,7 @@ public class PolygonEntryManualTests extends Application {
 		Group polygon;
 		
 		//set up shape entry
-		PolygonEntry polygonEntry = new PolygonEntry(startTime, duration, x, y, fillColour, lineColour, "/csv/poly1.csv");
+		PolygonGraphic polygonEntry = new PolygonGraphic(startTime, duration, x, y, fillColour, lineColour, "/csv/poly1.csv");
 		
 		//set up shape and scene
 		polygon = polygonEntry.drawPolygon();
@@ -70,7 +70,7 @@ public class PolygonEntryManualTests extends Application {
 		Group polygon;
 		
 		//set up shape entry
-		PolygonEntry polygonEntry = new PolygonEntry(startTime, duration, x, y, "/csv/poly1.csv");
+		PolygonGraphic polygonEntry = new PolygonGraphic(startTime, duration, x, y, "/csv/poly1.csv");
 		
 		//set up shape and scene
 		polygonEntry.setShading(0.2f, 0.5f, 0.175f, 0.175f, "aa0000", "00aa00");
@@ -86,7 +86,7 @@ public class PolygonEntryManualTests extends Application {
 	}
 	
 	public static void main(String[] args) {
-		launch(PolygonEntryManualTests.class, args);
+		launch(PolygonGraphicManualTests.class, args);
 	}
 
 	@Override

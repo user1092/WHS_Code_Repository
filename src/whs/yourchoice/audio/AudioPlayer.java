@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.whs.client;
+package whs.yourchoice.audio;
 
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;

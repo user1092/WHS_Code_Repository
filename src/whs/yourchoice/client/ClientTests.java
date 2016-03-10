@@ -4,7 +4,7 @@
  * 
  */
 
-package com.whs.client;
+package whs.yourchoice.client;
 
 import static org.junit.Assert.*;
 
@@ -14,7 +14,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.whs.server.ServerInterfacer;
+import whs.yourchoice.server.ServerInterfacer;
 
 /**
  * Class for testing the clients back end handling communications to the server.
