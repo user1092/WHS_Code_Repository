@@ -4,14 +4,13 @@ import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -25,42 +24,47 @@ import javafx.scene.media.MediaView;
  */
 public class VideoPlayer{
 	
-	// when setting the video file, you need to make sure you set the media type, so always have "file:" (or the media type) in front of the directory...
-	private static final String VIDEO_FILE = "file:///H:/Desktop/GitPortable/Data/WHS_Code_Repository/yourChoice/bin/com/whs/client/Thank_You_Video.mp4";
 	private static final int DEFAULT_START_VOLUME = 50;
 	private static final int DEFAULT_VOLUMESLIDER_WIDTH = 100;
 	private static final int DEFAULT_HALFWAY_VOLUME = 50; 
 	private static final int DEFAULT_VOLUMESLIDER_SCALE_DISPLAYED = 5; 
 	private static final int DEFAULT_VOLUMESLIDER_INCREMENTING_SCALE = 10;
-	public Canvas canvas;
 	public MediaPlayer player;
-	public AnchorPane anchorPane;
+	
 
 	/**
-	 * Method to create the video player window, this contains the controls to operate the video player
-	 * @return mediaViewer - This displays the video
+	 * Method to create the video player window, this contains the controls to operate the video player and the video viewer.
+	 * @return baseBox - This is returning a pane in which the video displays
 	 */
-	protected BorderPane videoPlayerWindow() {
+	protected Pane videoPlayerWindow(String videoFile, int locationY, int locationX, int videoWidth, int videoHeight) {
 		
-		MediaView mediaViewer = setUpVideo();
+		MediaView mediaViewer = setUpVideo(videoFile, videoWidth, videoHeight);
 		
 		HBox controls = createControlBar();
 		
+		// Adding the media Viewer and the controls together  
 		BorderPane videoPlayerAndControls = new BorderPane();
 		videoPlayerAndControls.setBottom(controls);
 		videoPlayerAndControls.setCenter(mediaViewer);	
-		videoPlayerAndControls.setMaxSize(50, 50);
+		videoPlayerAndControls.setMaxSize(50, 50);			
+     	videoPlayerAndControls.setLayoutY(locationY);
+ 		videoPlayerAndControls.setLayoutX(locationX);
 		
-		return  videoPlayerAndControls;
+		Pane baseBox = new Pane();		
+		baseBox.getChildren().add(videoPlayerAndControls);
+		baseBox.autosize();
+		baseBox.setBackground(null);
+	
+		return  baseBox;
 	}
 
 	/**
 	 * Method to create the video player and displays it
 	 * @return mediaViewer - This displays the video
 	 */
-	protected MediaView setUpVideo() {
+	protected MediaView setUpVideo(String videoFile, int videoWidth, int videoHeight) {
 		//media resource
-		Media mediaToPlay = new Media(VIDEO_FILE);
+		Media mediaToPlay = new Media(videoFile);
 			
 		//media player
 		player = new MediaPlayer(mediaToPlay);
@@ -69,8 +73,8 @@ public class VideoPlayer{
 		MediaView mediaViewer = new MediaView(player);
 		
 		//set the size you want the video to be re-scaled to. 
-		mediaViewer.setFitHeight(300);
-		mediaViewer.setFitWidth(600);
+		mediaViewer.setFitHeight(videoHeight);
+		mediaViewer.setFitWidth(videoWidth);
 		
 		return mediaViewer;
 	}
@@ -81,21 +85,22 @@ public class VideoPlayer{
 	 */
 	private HBox createControlBar() {
 		
-		// image for the play button
-		Image playImage = new Image(getClass().getResourceAsStream("play.png"));
+		// Adding the images required for their relevant buttons, in the control bar. 
+		Image playImage = new Image(getClass().getResourceAsStream("resources/play.png"));
 		ImageView playView = new ImageView(playImage);
-		// image for the pause button
-		Image pauseImage = new Image(getClass().getResourceAsStream("pause.png"));
+
+		Image pauseImage = new Image(getClass().getResourceAsStream("resources/pause.png"));
 		ImageView pauseView = new ImageView(pauseImage);
-		// image for the exit button
-		Image exitImage = new Image(getClass().getResourceAsStream("exit.png"));
+	
+		Image exitImage = new Image(getClass().getResourceAsStream("resources/exit.png"));
 		ImageView exitView = new ImageView(exitImage);
 		
-		Image loopImage = new Image(getClass().getResourceAsStream("loop.png"));
+		Image loopImage = new Image(getClass().getResourceAsStream("resources/loop.png"));
 		ImageView loopView = new ImageView(loopImage);
 		
 		HBox controlBar = new HBox();
 		
+		// Adding all the buttons with the relevant images and setting all the action listeners for the buttons on the control bar. 
 		Button playButton = new Button();
 		playButton.setGraphic(playView);
 		
@@ -105,9 +110,8 @@ public class VideoPlayer{
 				player.play();
 			}
 		});
-		
-		// set the image on the button
 		playButton.setGraphic(playView);
+		
 		// pause button on tool bar
 		Button pauseButton = new Button();
 		pauseButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -128,7 +132,7 @@ public class VideoPlayer{
 		});
 		exitButton.setGraphic(exitView);
 		
-		//volume slider 
+		// Volume slider 
 		final Slider volumeSlider = new Slider();
 		volumeSlider.setValue(DEFAULT_START_VOLUME);
 		volumeSlider.setPrefWidth(DEFAULT_VOLUMESLIDER_WIDTH);
@@ -155,7 +159,7 @@ public class VideoPlayer{
 			@Override
 			public void handle(ActionEvent e) {				
 				if(player.getCycleCount() == 1){
-					player.setCycleCount(MediaPlayer.INDEFINITE);
+					player.setCycleCount(1000);
 				}else{
 					player.setCycleCount(1);
 				}
