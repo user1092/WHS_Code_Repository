@@ -15,6 +15,8 @@ import whs.yourchoice.presentation.PresentationEntry;
 import whs.yourchoice.presentation.ShapeEntry;
 import whs.yourchoice.presentation.SlideEntry;
 import whs.yourchoice.presentation.TextEntry;
+import whs.yourchoice.presentation.VideoEntry;
+import whs.yourchoice.video.VideoPlayer;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -22,11 +24,8 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
-<<<<<<< HEAD
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Label;
-=======
->>>>>>> b26fd72194dc8f01c4615713e33749dbca4b16ee
 import javafx.scene.control.Pagination;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Slider;
@@ -39,11 +38,8 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-<<<<<<< HEAD
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextFlow;
-=======
->>>>>>> b26fd72194dc8f01c4615713e33749dbca4b16ee
 import javafx.scene.transform.Scale;
 import javafx.stage.Stage;
 /**
@@ -100,6 +96,7 @@ public class PresentationGui extends Application {
 	private List<Canvas> imageList = new ArrayList<Canvas>();
 	private List<Pane> shapeList = new ArrayList<Pane>();
 	private List<Pane> polygonList = new ArrayList<Pane>();
+	private List<Pane> videoList = new ArrayList<Pane>();
 	
 
 	public PresentationGui(PresentationEntry presentation) {
@@ -111,7 +108,8 @@ public class PresentationGui extends Application {
 		ImageEntry currentImage;
 		Images tempImage;
 		ShapeEntry currentShape;
-		PolygonEntry currentPolygon; 
+		PolygonEntry currentPolygon;
+		VideoEntry currentVideo;
 		
 		float[] polygonX = {0.1f, 0.2f, 0.3f};
 		float[] polygonY = {0.0f, 0.2f, 0.0f};
@@ -120,6 +118,7 @@ public class PresentationGui extends Application {
 		int numberOfImages;
 		int numberOfShapes;
 		int numberOfPolygons;
+		int numberOfVideos;
 		
 		numberOfSlides = presentation.slideList.size();
 		for(int slide = 0; slide < numberOfSlides; slide++) {
@@ -129,6 +128,7 @@ public class PresentationGui extends Application {
 			numberOfImages = currentSlide.imageList.size();
 			numberOfShapes = currentSlide.shapeList.size();
 			numberOfPolygons = currentSlide.polygonList.size();
+			numberOfVideos = currentSlide.videoList.size();
 			
 			System.out.println(numberOfSlides);
 			
@@ -173,7 +173,7 @@ public class PresentationGui extends Application {
 //													currentShape.getShapeType(),
 //													currentShape.getShapeFillColour(),
 //													currentShape.getShapeLineColour());
-				ShapeGraphic shapeEntry = new ShapeGraphic(currentShape.getShapeStartTime(),
+				ShapeGraphic tempShape = new ShapeGraphic(currentShape.getShapeStartTime(),
 														currentShape.getShapeDuration(),
 														currentShape.getShapeXStart(),
 														currentShape.getShapeYStart(),
@@ -181,8 +181,8 @@ public class PresentationGui extends Application {
 														currentShape.getShapeWidth(),
 														currentShape.getShapeType());
 												
-				shapeEntry.setRes(PRESENTATION_WIDTH, PRESENTATION_HEIGHT);
-				shapeList.add(shapeEntry.drawShape());
+				tempShape.setRes(PRESENTATION_WIDTH, PRESENTATION_HEIGHT);
+				shapeList.add(tempShape.drawShape());
 				System.out.println(shape);
 				System.out.println(currentSlide.shapeList.get(shape));
 			}
@@ -199,20 +199,31 @@ public class PresentationGui extends Application {
 //													currentShape.getShapeType(),
 //													currentShape.getShapeFillColour(),
 //													currentShape.getShapeLineColour());
-				PolygonGraphic polygonEntry = new PolygonGraphic(currentPolygon.getPolygonStartTime(),
+				PolygonGraphic tempPolygon = new PolygonGraphic(currentPolygon.getPolygonStartTime(),
 															currentPolygon.getPolygonDuration(),
 															polygonX, polygonY,
 															currentPolygon.getPolygonFillColour(),
 															currentPolygon.getPolygonLineColour(),
 															currentPolygon.getPolygonSourceFile());
 				
-				polygonEntry.setRes(PRESENTATION_WIDTH, PRESENTATION_HEIGHT);
-				shapeList.add(polygonEntry.drawPolygon());
+				tempPolygon.setRes(PRESENTATION_WIDTH, PRESENTATION_HEIGHT);
+				shapeList.add(tempPolygon.drawPolygon());
 				System.out.println(polygon);
 				System.out.println(currentSlide.polygonList.get(polygon));
 			}
 			
-			
+			for(int video = 0; video < numberOfVideos; video++) {
+				currentVideo = currentSlide.videoList.get(video);
+				
+				VideoPlayer tempVideo = new VideoPlayer();
+				
+				videoList.add(tempVideo.videoPlayerWindow(currentVideo.getVideoSourceFile(),
+													currentVideo.getVideoYStart(),
+													currentVideo.getVideoXStart(),
+													200, 200));
+				System.out.println(video);
+				System.out.println(currentSlide.videoList.get(video));
+			}
 			
 		}
 	}
@@ -237,13 +248,17 @@ public class PresentationGui extends Application {
 			presentationLayout.getChildren().add(shapeList.get(shape));
 		}
 		
-//		for(int polygon = 0; polygon < polygonList.size(); polygon++) {
-//			System.out.println("disp polygon number: " + polygon);
-//			System.out.println(polygonList.get(polygon));
-//			presentationLayout.getChildren().add(polygonList.get(polygon));
-//		}
+		for(int polygon = 0; polygon < polygonList.size(); polygon++) {
+			System.out.println("disp polygon number: " + polygon);
+			System.out.println(polygonList.get(polygon));
+			presentationLayout.getChildren().add(polygonList.get(polygon));
+		}
 		
-		
+		for(int video = 0; video < videoList.size(); video++) {
+			System.out.println("disp video number: " + video);
+			System.out.println(videoList.get(video));
+			presentationLayout.getChildren().add(videoList.get(video));
+		}
 	}
 	
 	public static void main(String[] args) {
@@ -337,12 +352,9 @@ public class PresentationGui extends Application {
              }
         });
 		
-<<<<<<< HEAD
         displayPresentation();
         
-=======
         // initialise full screen
->>>>>>> b26fd72194dc8f01c4615713e33749dbca4b16ee
 		slideStage.setFullScreen(true);
 	}
 	
@@ -518,25 +530,4 @@ public class PresentationGui extends Application {
 		});
 		return fullScreenButton;
 	}
-<<<<<<< HEAD
-
-	/**
-	 * temporary test method for the pagination system 
-	 * @param slideNumber
-	 * @return
-	 */
-	private VBox tempPaginationTester(Integer slideNumber) {
-		
-		slide = new VBox();
-		Label slideNumberLabel = new Label("Slide: " + (slideNumber + 1));
-		slide.getChildren().addAll(slideNumberLabel);
-		return slide;
-	}
-	
-//	public void show(){
-//        launch();
-//    }
-	
-=======
->>>>>>> b26fd72194dc8f01c4615713e33749dbca4b16ee
 }

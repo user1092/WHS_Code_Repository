@@ -1,4 +1,4 @@
-package whs.yourchoice.client;
+package whs.yourchoice.video;
 
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
@@ -36,7 +36,7 @@ public class VideoPlayer{
 	 * Method to create the video player window, this contains the controls to operate the video player and the video viewer.
 	 * @return baseBox - This is returning a pane in which the video displays
 	 */
-	protected Pane videoPlayerWindow(String videoFile, int locationY, int locationX, int videoWidth, int videoHeight) {
+	public Pane videoPlayerWindow(String videoFile, float locationY, float locationX, int videoWidth, int videoHeight) {
 		
 		MediaView mediaViewer = setUpVideo(videoFile, videoWidth, videoHeight);
 		

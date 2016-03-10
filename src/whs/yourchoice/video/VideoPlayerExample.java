@@ -1,4 +1,4 @@
-package whs.yourchoice.client;
+package whs.yourchoice.video;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
