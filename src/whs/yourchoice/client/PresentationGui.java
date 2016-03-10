@@ -1,4 +1,4 @@
-package com.whs.client;
+package whs.yourchoice.client;
 
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;

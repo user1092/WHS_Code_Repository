@@ -4,7 +4,7 @@
  * Copyright Woolly Hat Software
  */
 
-package com.whs.graphics;
+package whs.yourchoice.graphics;
 
 import javafx.application.Application;
 import javafx.scene.Group;
@@ -22,7 +22,7 @@ import javafx.stage.Stage;
  * @version	v0.1 04/03/16
  * 
  */
-public class ShapeEntryManualTests extends Application {
+public class ShapeGraphicManualTests extends Application {
 	
 	/**
 	 * Test for plain square 
@@ -43,7 +43,7 @@ public class ShapeEntryManualTests extends Application {
 		Group shapes;
 		
 		//set up shape entry
-		ShapeEntry ShapeEntry = new ShapeEntry(startTime, duration, xStart, yStart, height, width, type);
+		ShapeGraphic ShapeEntry = new ShapeGraphic(startTime, duration, xStart, yStart, height, width, type);
 		
 		//set up shape and scene
 		shapes = ShapeEntry.drawShape();
@@ -58,7 +58,7 @@ public class ShapeEntryManualTests extends Application {
 	}
 	
 	public static void main(String[] args) {
-		launch(ShapeEntryManualTests.class, args);
+		launch(ShapeGraphicManualTests.class, args);
 		
 	}
 	
@@ -80,7 +80,7 @@ public class ShapeEntryManualTests extends Application {
 		Group shapes;
 		
 		//set up shape entry
-		ShapeEntry ShapeEntry = new ShapeEntry(startTime, duration, xStart, yStart, height, width, type);
+		ShapeGraphic ShapeEntry = new ShapeGraphic(startTime, duration, xStart, yStart, height, width, type);
 		
 		//set up shape and scene
 		shapes = ShapeEntry.drawShape();
@@ -112,7 +112,7 @@ public class ShapeEntryManualTests extends Application {
 		Group shapes;
 		
 		//set up shape entry
-		ShapeEntry ShapeEntry = new ShapeEntry(startTime, duration, xStart, yStart, height, width, type, fillColour, lineColour);
+		ShapeGraphic ShapeEntry = new ShapeGraphic(startTime, duration, xStart, yStart, height, width, type, fillColour, lineColour);
 		
 		//set up shape and scene
 		shapes = ShapeEntry.drawShape();
@@ -141,7 +141,7 @@ public class ShapeEntryManualTests extends Application {
 		Group shapes;
 		
 		//set up shape entry
-		ShapeEntry ShapeEntry = new ShapeEntry(startTime, duration, xStart, yStart, height, width, type);
+		ShapeGraphic ShapeEntry = new ShapeGraphic(startTime, duration, xStart, yStart, height, width, type);
 		
 		//set up shape and scene
 		ShapeEntry.setShading(0.5f, 0.75f, 0.5f, 0.75f, "aa0000", "00aa00");

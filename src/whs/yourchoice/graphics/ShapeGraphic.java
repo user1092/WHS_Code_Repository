@@ -4,7 +4,7 @@
  * Copyright Woolly Hat Software
  */
 
-package com.whs.graphics;
+package whs.yourchoice.graphics;
 
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
@@ -23,7 +23,7 @@ import javafx.scene.shape.*;
  * 
  */
 
-public class ShapeEntry {
+public class ShapeGraphic {
 	//finals for window size
 	private static final int GUI_HEIGHT = 600;
 	private static final int GUI_WIDTH = 600;
@@ -47,28 +47,28 @@ public class ShapeEntry {
 	 * Constructor containing the minimal arguments to create a valid shapeEntry.
 	 * 
 	 */
-	public ShapeEntry(int inStart, int inDuration, float inX, float inY, float inH, float inW) {
+	public ShapeGraphic(int inStart, int inDuration, float inX, float inY, float inH, float inW) {
 		this(inStart, inDuration, inX, inY, inH, inW, "circle", "000000", "FALSE");
 	}
 	
 	/**
 	 *  Constructor with optional argument for shape type.
 	 */
-	public ShapeEntry(int inStart, int inDuration, float inX, float inY, float inH, float inW, String inType) {
+	public ShapeGraphic(int inStart, int inDuration, float inX, float inY, float inH, float inW, String inType) {
 		this(inStart, inDuration, inX, inY, inH, inW, inType, "000000", "FALSE");
 	}
 	
 	/**
 	 *  Constructor with optional arguments for shape type and fill colour.
 	 */
-	public ShapeEntry(int inStart, int inDuration, float inX, float inY, float inH, float inW, String inType, String inFillColour) {
+	public ShapeGraphic(int inStart, int inDuration, float inX, float inY, float inH, float inW, String inType, String inFillColour) {
 		this(inStart, inDuration, inX, inY, inH, inW, inType, inFillColour, "FALSE");
 	}
 	
 	/**
 	 *  Constructor with all optional arguments: shape type, shape colour and shape outline colour.
 	 */
-	public ShapeEntry(int inStart, int inDuration, float inX, float inY, float inH, float inW, String inType, String inFillColour, String inLineColour) {
+	public ShapeGraphic(int inStart, int inDuration, float inX, float inY, float inH, float inW, String inType, String inFillColour, String inLineColour) {
 		// assign variables
 		this.startTime = inStart;
 		this.duration = inDuration;

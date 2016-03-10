@@ -3,7 +3,7 @@
  * 
  * 
  */
-package com.whs.server;
+package whs.yourchoice.server;
 
 import static org.junit.Assert.*;
 
