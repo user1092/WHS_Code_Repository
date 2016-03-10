@@ -1,11 +1,24 @@
 package whs.yourchoice.client;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import presentech.TextHandler;
+import stammtisch.Objects.Images;
+import stammtisch.handlers.ImageHandler;
+
+import whs.yourchoice.presentation.ImageEntry;
+import whs.yourchoice.presentation.PresentationEntry;
+import whs.yourchoice.presentation.SlideEntry;
+import whs.yourchoice.presentation.TextEntry;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Label;
 import javafx.scene.control.Pagination;
 import javafx.scene.control.Separator;
@@ -20,6 +33,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.TextFlow;
 import javafx.scene.transform.Scale;
 import javafx.stage.Stage;
 
@@ -63,6 +77,79 @@ public class PresentationGui extends Application {
 	private Image pauseImage;
 	private ImageView pauseView;
 	private ToggleButton fullScreenButton;
+	
+	private List<TextFlow> textList = new ArrayList<TextFlow>();
+	private List<Canvas> imageList = new ArrayList<Canvas>();
+	
+
+	public PresentationGui(PresentationEntry presentation) {
+		//presentationLayout = new StackPane();
+		Canvas duffCanvas = new Canvas(PRESENTATION_WIDTH,  PRESENTATION_HEIGHT);
+		
+		SlideEntry currentSlide;
+		TextEntry currentText;
+		String sourceFile = null;
+		ImageEntry currentImage;
+		Images tempImage;
+		
+		int numberOfSlides;
+		int numberOfTexts;
+		int numberOfImages;
+		
+		numberOfSlides = presentation.slideList.size();
+		for(int slide = 0; slide < numberOfSlides; slide++) {
+			currentSlide = presentation.slideList.get(slide);
+			numberOfTexts = currentSlide.textList.size();
+			numberOfImages = currentSlide.imageList.size();
+			
+			System.out.println(numberOfSlides);
+			
+			for(int text = 0; text < numberOfTexts; text++) {
+				currentText = currentSlide.textList.get(text);
+				textList.add(text, TextHandler.createText(duffCanvas, sourceFile,
+						currentText.getTextContent(), currentText.getTextFont(),
+						currentText.getTextFontColour(), currentText.getTextFontSize(),
+						currentText.getTextXStart(), currentText.getTextYStart(),
+						currentText.getTextStartTime(), currentText.getTextDuration()));
+				System.out.println(text);
+				System.out.println(currentText.getTextContent());
+				System.out.println(currentSlide.textList.get(text));
+			}
+			
+			for(int image = 0; image < numberOfImages; image++) {
+				ImageHandler imageHandler = new ImageHandler();
+				
+				currentImage = currentSlide.imageList.get(image);
+				
+				tempImage = new Images(currentImage.getImageSourceFile(),
+														currentImage.getImageStartTime(),
+														currentImage.getImageDuration(),
+														currentImage.getImageXStart(),
+														currentImage.getImageYStart(),
+														currentImage.getImageHeight(),
+														currentImage.getImageWidth());
+				imageList.add(imageHandler.drawCanvas(tempImage, PRESENTATION_WIDTH, PRESENTATION_HEIGHT));
+				System.out.println(image);
+				System.out.println(currentSlide.imageList.get(image));
+			}
+			
+		}
+	}
+	
+	private void displayPresentation() {
+//		for(int text = 0; text < textList.size(); text++) {
+//			System.out.println(text);
+//			System.out.println(textList.get(text));
+//			presentationLayout.getChildren().add(textList.get(text));
+//		}
+		presentationLayout.getChildren().add(textList.get(1));
+		
+		for(int image = 0; image < imageList.size(); image++) {
+			System.out.println("disp image number: " + image);
+			System.out.println(textList.get(image));
+			presentationLayout.getChildren().add(imageList.get(image));
+		}
+	}
 	
 	public static void main(String[] args) {
 		launch(PresentationGui.class, args);
@@ -149,6 +236,8 @@ public class PresentationGui extends Application {
              }
         });
 		
+        displayPresentation();
+        
 		slideStage.setFullScreen(true);
 	}
 	
@@ -349,4 +438,9 @@ public class PresentationGui extends Application {
 		slide.getChildren().addAll(slideNumberLabel);
 		return slide;
 	}
+	
+//	public void show(){
+//        launch();
+//    }
+	
 }

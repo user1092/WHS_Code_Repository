@@ -8,6 +8,9 @@ package whs.yourchoice.client;
 
 import java.io.File;
 
+import whs.yourchoice.parsers.PresentationParser;
+import whs.yourchoice.presentation.PresentationEntry;
+
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -47,7 +50,10 @@ public class ClientGui extends Application{
 	private Button connectButton;
 	private Button disconnectButton;
 	
+	// presentation related declarations
 	private File xmlFile;
+	private PresentationEntry presentation;
+	
 	// text box to show the file browse status
 	private Text actionStatus;
 	// text field used for inputting the ip address and port of the server
@@ -357,6 +363,24 @@ public class ClientGui extends Application{
 				xmlFile = xmlFileChooser.showOpenDialog(primaryStage);
 				if (xmlFile != null) {
 					actionStatus.setText("File selected: " + xmlFile.getName());
+					PresentationParser parser = new PresentationParser();		
+					
+					presentation = parser.parsePresention(xmlFile.getPath());
+					PresentationGui presentationGui;
+					//presentationGui = new PresentationGui(presentation);
+					Platform.runLater(new Runnable() {
+				 	       public void run() {             
+				 	           try {
+				 	        	   //PresentationGui presentationGui = new  PresentationGui(presentation);
+				 	        	   //presentationGui.show();
+				 	        	   new PresentationGui(presentation).start(new Stage());
+				 	           } 
+				 	           catch (Exception e) {
+				 	        	   // TODO Auto-generated catch block
+				 	        	   e.printStackTrace();
+				 	           }
+				 	       }
+				 	    });
 				}
 				else {
 					actionStatus.setText("File selection cancelled.");
