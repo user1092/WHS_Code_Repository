@@ -25,7 +25,7 @@ import javafx.stage.Stage;
 public class PresentationGui extends Application {
 	
 	// temporary number for the pagination system
-	//private Integer currentSlideNumber;
+	// private Integer currentSlideNumber;
 	private Integer totalSlideNumber = 7;
 	private VBox slide;
 	private AnchorPane anchorPane;
