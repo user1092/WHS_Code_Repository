@@ -102,7 +102,7 @@ public class ClientGui extends Application{
 	}
 	
 	/** 
-	 * class for setting the text fields to only accept integers 
+	 * Class for setting the text fields to only accept integers 
 	 * and have a range of 0-255 for the ip address and 0-65535 for the port
 	 */
 	private static class IntRangeStringConverter extends StringConverter<Integer> {
@@ -149,7 +149,7 @@ public class ClientGui extends Application{
 	}
 
 	/**
-	 * method for the creation of the HBox that contains the buttons
+	 * Method for the creation of the HBox that contains the buttons
 	 * @return HBox  -  The box that contains the buttons 
 	 */
 	private HBox buttonHBoxCreation() {
@@ -234,7 +234,7 @@ public class ClientGui extends Application{
 	}
 
 	/**
-	 * method for the creation of the HBox that contains the ip address labels and text boxes
+	 * Method for the creation of the HBox that contains the ip address labels and text boxes
 	 * @return HBox  -  The box that contains the ip address labels and text boxes
 	 */
 	private HBox ipHBoxCreation() {
@@ -272,7 +272,7 @@ public class ClientGui extends Application{
 	}
 	
 	/**
-	 * method for the creation of the HBox that contains the log for the file explorer
+	 * Method for the creation of the HBox that contains the log for the file explorer
 	 * @return HBox  -  The box that contains the log for the file explorer
 	 */
 	private HBox logHBoxCreation() {
@@ -289,7 +289,7 @@ public class ClientGui extends Application{
 	}
 	
 	/**  
-	 * method for the creation of the HBox that contains the port label and text box
+	 * Method for the creation of the HBox that contains the port label and text box
 	 * @return HBox  -  The box that contains the port label and text box
 	 */
 	private HBox portHBoxCreation() {
@@ -323,7 +323,7 @@ public class ClientGui extends Application{
 	}
 	
 	/**
-	 * method that creates the menu bar on the top of the window
+	 * Method that creates the menu bar on the top of the window
 	 * @return menuBar  -  menu bar object that contains the open file and configure menus
 	 */
 	private MenuBar createMenuBar() {
