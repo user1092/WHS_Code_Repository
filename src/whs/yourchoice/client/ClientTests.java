@@ -29,7 +29,7 @@ public class ClientTests {
 	// Declare a client to be used
 	Client client;
 	
-	//Declare the host and port of the server
+	// Declare the host and port of the server
 	String host = "127.0.0.1";
 	int port = 1138;
 	
@@ -101,7 +101,7 @@ public class ClientTests {
 			e2.printStackTrace();
 		}
 		
-		// wait until the server has received the data.
+		// Wait until the server has received the data.
 		while(listenThread.isAlive());
 		
 		assertEquals(itemToSend, itemReceived);
@@ -132,7 +132,7 @@ public class ClientTests {
 		// Write the object to the client
 		server.sendData(itemToSend, client.getID());
 				
-		// wait until the thread is finished to ensure client has received the data
+		// Wait until the thread is finished to ensure client has received the data
 		while(listenThread.isAlive());
 		
 		assertEquals(itemToSend, itemReceived);

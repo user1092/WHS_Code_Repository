@@ -62,7 +62,7 @@ public class ConfigureWindow extends Application {
 	}
 	
 	/** 
-	 * class for setting the text fields to only accept integers 
+	 * Class for setting the text fields to only accept integers 
 	 * and have a range of 0-255 for the ip address and 0-65535 for the port
 	 */
 	private static class IntRangeStringConverter extends StringConverter<Integer> {
@@ -109,7 +109,7 @@ public class ConfigureWindow extends Application {
 	}
 	
 	/**
-	 * method for the creation of the HBox that contains the ip address labels and text boxes
+	 * Method for the creation of the HBox that contains the ip address labels and text boxes
 	 * @return HBox  -  The box that contains the ip address labels and text boxes
 	 */
 	private HBox ipHBoxCreation() {
@@ -147,7 +147,7 @@ public class ConfigureWindow extends Application {
 	}
 
 	/**  
-	 * method for the creation of the HBox that contains the port label and text box
+	 * Method for the creation of the HBox that contains the port label and text box
 	 * @return HBox  -  The box that contains the port label and text box
 	 */
 	private HBox portHBoxCreation() {
@@ -181,9 +181,9 @@ public class ConfigureWindow extends Application {
 	}
 	
 	/**
-	 * method for the creation of the HBox that contains the buttons
+	 * Method for the creation of the HBox that contains the buttons
 	 * @param primaryStage  -  The application window
-	 * @return buttonHBox  -  The box that contains the buttons 
+	 * @return HBox  -  The box that contains the buttons
 	 */
 	private HBox buttonHBoxCreation(Stage primaryStage) {
 		HBox buttonHBox = new HBox();
