@@ -7,8 +7,8 @@
 package whs.yourchoice.graphics;
 
 import javafx.application.Application;
-import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 /**
@@ -40,7 +40,7 @@ public class PolygonGraphicManualTests extends Application {
 		float[] y = {0f, 0.75f, 0.75f};
 		String fillColour = "0055aa";
 		String lineColour = "222222";
-		Group polygon;
+		Pane polygon;
 		
 		//set up shape entry
 		PolygonGraphic polygonEntry = new PolygonGraphic(startTime, duration, x, y, fillColour, lineColour, "/csv/poly1.csv");
@@ -67,13 +67,19 @@ public class PolygonGraphicManualTests extends Application {
 		int duration = 0;
 		float[] x = {0.25f, 0.5f, 0.15f};
 		float[] y = {0.25f, 0.5f, 0.35f};
-		Group polygon;
+		Pane polygon;
 		
 		//set up shape entry
-		PolygonGraphic polygonEntry = new PolygonGraphic(startTime, duration, x, y, "/csv/poly1.csv");
+		PolygonGraphic polygonEntry = new PolygonGraphic(startTime, duration, x, y, "/Users/williamsharrard/Desktop/ArrowShape.csv");
 		
 		//set up shape and scene
 		polygonEntry.setShading(0.2f, 0.5f, 0.175f, 0.175f, "aa0000", "00aa00");
+		try {
+			polygonEntry.parseCSV();
+		}
+		catch (Exception e) {
+			System.out.println("Error openeing file");
+		}
 		polygon = polygonEntry.drawPolygon();
 		Scene scene = new Scene(polygon, 600, 600);
 				

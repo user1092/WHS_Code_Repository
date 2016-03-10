@@ -6,15 +6,17 @@
 
 package whs.yourchoice.graphics;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-
-import javafx.scene.Group;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
 import javafx.scene.shape.*;
+import java.util.Scanner;
 
 /**
  * Class that contains information relating to a polygon that is to be drawn
@@ -28,13 +30,13 @@ import javafx.scene.shape.*;
 
 public class PolygonGraphic {
 	//finals for window size
-	private static final int GUI_HEIGHT = 600;
-	private static final int GUI_WIDTH = 600;
+	private int gui_height = 600;
+	private int gui_width = 600;
 	//remaining variables
 	protected int startTime, duration;
 	protected float[] x, y;
 	protected String lineColourString, fillColourString;
-	protected Group group = new Group();
+	protected Pane group = new Pane();
 	protected Color fillColour;
 	protected Color lineColour;
 	protected float shadingX1, shadingX2;
@@ -43,6 +45,8 @@ public class PolygonGraphic {
 	protected Color shadingColour1, shadingColour2;
 	protected boolean shading;
 	protected String sourceFile;
+	protected List<Float> xList = new ArrayList<Float>();
+	protected List<Float> yList = new ArrayList<Float>();
 	
 	/**
 	 * Constructor containing the minimal arguments to create a valid shapeEntry.
@@ -80,6 +84,7 @@ public class PolygonGraphic {
 			lineColour = setColour(lineColourString);
 		}
 		fillColour = setColour(fillColourString);
+		populateList();
 	}
 	
 	/**
@@ -99,12 +104,15 @@ public class PolygonGraphic {
 	}
 	
 	/**
-	 * Sets the group parameter in shapeEntry
-	 * @param inGroup	group that is be set
+	 * Sets the resolution of the canvas
+	 * @param width		Width of canvas in pixels
+	 * @param height	Height of canvas in pixels
 	 */
-	public void setGroup(Group inGroup) {
-		group = inGroup;
+	public void setRes(int width, int height) {
+		gui_width = width;
+		gui_height = height;
 	}
+	
 	
 	/**
 	 *	Validates that the user input for the colour string matches a 6-digit hexadecimal format
@@ -141,6 +149,16 @@ public class PolygonGraphic {
 		
 		return c;
 	}
+	
+	/**
+	 * Populates an array list with x y values
+	 */
+	private void populateList() {
+		for (int i = 0; i < x.length; i++) {
+			xList.add(x[i]);
+			yList.add(y[i]);
+		}
+	}
 
 	/**
 	 * Converts a float representing a percentage of each axis into a
@@ -152,10 +170,10 @@ public class PolygonGraphic {
 	private float getPixel(String axis, float percentage) {
 		float pixel;
 		if (axis.equals("Y")) {
-			pixel = (GUI_HEIGHT * percentage);
+			pixel = (gui_height * percentage);
 		}
 		else if (axis.equals("X")) {
-			pixel = (GUI_WIDTH * percentage);
+			pixel = (gui_width * percentage);
 		}
 		else {
 			pixel = 0;
@@ -171,16 +189,22 @@ public class PolygonGraphic {
 	 * @param y	y pixel posistion of shape
 	 * @param h 	height of shape
 	 * @param w		width of shape
+	 * @returns group	Reutrns pane with drawn shape
 	 */
-	public Group drawPolygon() {
+	public Pane drawPolygon() {
 		List<Float> pixelX = new ArrayList<Float>();
 		List<Float> pixelY = new ArrayList<Float>();
 		
-		for (int i = 0; i < 3; i++) {
-			pixelX.add(getPixel("X", x[i]));
-			pixelY.add(getPixel("Y", y[i]));
+		for (int i = 0; i < xList.size(); i++) {
+			pixelX.add(getPixel("X", xList.get(i)));
+			pixelY.add(getPixel("Y", yList.get(i)));
 		}
-		Polygon p = new Polygon(pixelX.get(0), pixelY.get(0), pixelX.get(1), pixelY.get(1), pixelX.get(2), pixelY.get(2));
+		Polygon p = new Polygon();
+		
+		for (int i = 0; i < pixelX.size(); i++) {
+			p.getPoints().add((double) pixelX.get(i));
+			p.getPoints().add((double) pixelY.get(i));
+		}
 		
 		// set line and fill colours
 		if (shading == true) {
@@ -239,5 +263,29 @@ public class PolygonGraphic {
 		// create and return all stops
 		LinearGradient gradient = new LinearGradient(x1, y1, x2, y2, false, CycleMethod.NO_CYCLE, stops);
 		return gradient;
+	}
+	
+	/**
+	 * function that reads a csv file and parses it
+	 * @throws FileNotFoundException
+	 */
+	public void parseCSV() throws FileNotFoundException {
+		Scanner scanner = new Scanner(new File(sourceFile));
+		scanner.useDelimiter(",");
+		xList = new ArrayList<Float>();
+		yList = new ArrayList<Float>();
+		
+		// parse the CSV file
+		while (scanner.hasNext()) {
+			xList.add(scanner.nextFloat());
+			// if there are an odd number of points
+			if (scanner.hasNextFloat()) {
+				yList.add(scanner.nextFloat());
+			}
+			else {
+				throw new IllegalArgumentException("Invalid CSV file, expected an even number of data points.");
+			}
+		}
+		scanner.close();
 	}
 }
