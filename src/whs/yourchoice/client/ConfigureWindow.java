@@ -14,7 +14,13 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
-
+/**
+* Class for creation of the configure window for inputting 
+* the ip address and port of the server
+*
+* @author user828
+* @version v0.1 17/02/16
+*/
 public class ConfigureWindow extends Application {
 
 	//private Stage primaryStage;
@@ -160,7 +166,7 @@ public class ConfigureWindow extends Application {
 	
 	/**
 	 * VBox that contains the two HBoxes, one for the ip address and one for the port
-	 * @return VBox  --  The box that contains the ip address and port HBoxes
+	 * @return ipAndPortVbox  --  The box that contains the ip address and port HBoxes
 	 */
 	private VBox ipAndPortVBoxCreation() {
 	    VBox ipAndPortVbox = new VBox();
@@ -176,7 +182,8 @@ public class ConfigureWindow extends Application {
 	
 	/**
 	 * method for the creation of the HBox that contains the buttons
-	 * @return HBox  -  The box that contains the buttons 
+	 * @param primaryStage  -  The application window
+	 * @return buttonHBox  -  The box that contains the buttons 
 	 */
 	private HBox buttonHBoxCreation(Stage primaryStage) {
 		HBox buttonHBox = new HBox();
@@ -190,6 +197,10 @@ public class ConfigureWindow extends Application {
 		return buttonHBox;	
 	}
 	
+	/**
+	 * Method for setting up the cancel button, when pressed the window closes
+	 * @param primaryStage  -  The application window
+	 */
 	private void cancelButtonSetup(final Stage primaryStage) {
 		cancelButton = new Button("Cancel");
 		cancelButton.setPrefSize(100, 20);
