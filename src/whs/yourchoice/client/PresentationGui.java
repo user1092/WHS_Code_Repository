@@ -35,6 +35,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -93,7 +94,7 @@ public class PresentationGui extends Application {
 	private ToggleButton fullScreenButton;
 	
 	private PresentationEntry presentation;
-	private List<Pane> textList = new ArrayList<Pane>();
+	private List<AnchorPane> textList = new ArrayList<AnchorPane>();
 	private List<Canvas> imageList = new ArrayList<Canvas>();
 	private List<Pane> shapeList = new ArrayList<Pane>();
 	private List<Pane> polygonList = new ArrayList<Pane>();
@@ -137,7 +138,7 @@ public class PresentationGui extends Application {
 			System.out.println(numberOfSlides);
 			
 			for(int text = 0; text < numberOfTexts; text++) {
-				Pane tempPane = new Pane();
+				AnchorPane tempPane = new AnchorPane();
 				currentText = new TextEntry();
 				currentText = currentSlide.textList.get(text);
 				tempPane.getChildren().add(TextHandler.createText(duffCanvas, sourceFile,
@@ -227,7 +228,7 @@ public class PresentationGui extends Application {
 				videoList.add(tempVideo.videoPlayerWindow(currentVideo.getVideoSourceFile(),
 													currentVideo.getVideoYStart(),
 													currentVideo.getVideoXStart(),
-													0.1f, 0.1f, duffCanvas));
+													0.3f, 0.3f, duffCanvas));
 				System.out.println(video);
 				System.out.println(currentSlide.videoList.get(video));
 			}
