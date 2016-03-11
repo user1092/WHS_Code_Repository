@@ -371,8 +371,6 @@ public class ClientGui extends Application{
 					Platform.runLater(new Runnable() {
 				 	       public void run() {             
 				 	           try {
-				 	        	   //PresentationGui presentationGui = new  PresentationGui(presentation);
-				 	        	   //presentationGui.show();
 				 	        	   new PresentationGui(presentation).start(new Stage());
 				 	           } 
 				 	           catch (Exception e) {

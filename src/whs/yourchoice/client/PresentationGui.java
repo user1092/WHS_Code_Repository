@@ -92,7 +92,8 @@ public class PresentationGui extends Application {
 	private ImageView pauseView;
 	private ToggleButton fullScreenButton;
 	
-	private List<TextFlow> textList = new ArrayList<TextFlow>();
+	private PresentationEntry presentation;
+	private List<Pane> textList = new ArrayList<Pane>();
 	private List<Canvas> imageList = new ArrayList<Canvas>();
 	private List<Pane> shapeList = new ArrayList<Pane>();
 	private List<Pane> polygonList = new ArrayList<Pane>();
@@ -100,6 +101,9 @@ public class PresentationGui extends Application {
 	
 
 	public PresentationGui(PresentationEntry presentation) {
+		//presentation = passedPresentation;
+		
+		
 		Canvas duffCanvas = new Canvas(PRESENTATION_WIDTH,  PRESENTATION_HEIGHT);
 		
 		SlideEntry currentSlide;
@@ -133,12 +137,15 @@ public class PresentationGui extends Application {
 			System.out.println(numberOfSlides);
 			
 			for(int text = 0; text < numberOfTexts; text++) {
+				Pane tempPane = new Pane();
+				currentText = new TextEntry();
 				currentText = currentSlide.textList.get(text);
-				textList.add(text, TextHandler.createText(duffCanvas, sourceFile,
+				tempPane.getChildren().add(TextHandler.createText(duffCanvas, sourceFile,
 						currentText.getTextContent(), currentText.getTextFont(),
 						currentText.getTextFontColour(), currentText.getTextFontSize(),
 						currentText.getTextXStart(), currentText.getTextYStart(),
 						currentText.getTextStartTime(), currentText.getTextDuration()));
+				textList.add(tempPane);
 				System.out.println(text);
 				System.out.println(currentText.getTextContent());
 				System.out.println(currentSlide.textList.get(text));
@@ -220,21 +227,22 @@ public class PresentationGui extends Application {
 				videoList.add(tempVideo.videoPlayerWindow(currentVideo.getVideoSourceFile(),
 													currentVideo.getVideoYStart(),
 													currentVideo.getVideoXStart(),
-													200, 200));
+													0.1f, 0.1f, duffCanvas));
 				System.out.println(video);
 				System.out.println(currentSlide.videoList.get(video));
 			}
 			
 		}
+		
 	}
 	
 	private void displayPresentation() {
-//		for(int text = 0; text < textList.size(); text++) {
-//			System.out.println(text);
-//			System.out.println(textList.get(text));
-//			presentationLayout.getChildren().add(textList.get(text));
-//		}
-		presentationLayout.getChildren().add(textList.get(1));
+		for(int text = 0; text < textList.size(); text++) {
+			System.out.println(text);
+			System.out.println(textList.get(text));
+			presentationLayout.getChildren().add(textList.get(text));
+		}
+//		presentationLayout.getChildren().add(textList.get(0));
 		
 		for(int image = 0; image < imageList.size(); image++) {
 			System.out.println("disp image number: " + image);
@@ -260,6 +268,31 @@ public class PresentationGui extends Application {
 			presentationLayout.getChildren().add(videoList.get(video));
 		}
 	}
+	
+//	private void populateSlide(int slideId) {
+//		Canvas duffCanvas = new Canvas(PRESENTATION_WIDTH,  PRESENTATION_HEIGHT);
+//		
+//		SlideEntry currentSlide = presentation.slideList.get(slideId);
+//		
+//		int numberOfTexts = currentSlide.textList.size();
+//		
+//		String sourceFile = null;
+//		
+//		for(int text = 0; text < numberOfTexts; text++) {
+//			Pane tempPane = new Pane();
+//			TextEntry currentText = new TextEntry();
+//			currentText = currentSlide.textList.get(text);
+//			tempPane.getChildren().add(TextHandler.createText(duffCanvas, sourceFile,
+//					currentText.getTextContent(), currentText.getTextFont(),
+//					currentText.getTextFontColour(), currentText.getTextFontSize(),
+//					currentText.getTextXStart(), currentText.getTextYStart(),
+//					currentText.getTextStartTime(), currentText.getTextDuration()));
+//			presentationLayout.getChildren().add(tempPane);
+//			System.out.println(text);
+//			System.out.println(currentText.getTextContent());
+//			System.out.println(currentSlide.textList.get(text));
+//		}
+//	}
 	
 	public static void main(String[] args) {
 		launch(PresentationGui.class, args);
@@ -353,6 +386,8 @@ public class PresentationGui extends Application {
         });
 		
         displayPresentation();
+        
+        //populateSlide(0);
         
         // initialise full screen
 		slideStage.setFullScreen(true);

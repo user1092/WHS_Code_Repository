@@ -4,6 +4,7 @@ import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
@@ -24,6 +25,9 @@ import javafx.scene.media.MediaView;
  */
 public class VideoPlayer{
 	
+	private double guiHeight = 600;
+	private double guiWidth = 600;
+	
 	private static final int DEFAULT_START_VOLUME = 50;
 	private static final int DEFAULT_VOLUMESLIDER_WIDTH = 100;
 	private static final int DEFAULT_HALFWAY_VOLUME = 50; 
@@ -36,9 +40,12 @@ public class VideoPlayer{
 	 * Method to create the video player window, this contains the controls to operate the video player and the video viewer.
 	 * @return baseBox - This is returning a pane in which the video displays
 	 */
-	public Pane videoPlayerWindow(String videoFile, float locationY, float locationX, int videoWidth, int videoHeight) {
+	public Pane videoPlayerWindow(String videoFile, float locationY, float locationX, float videoWidth, float videoHeight, Canvas duffCanvas) {
 		
-		MediaView mediaViewer = setUpVideo(videoFile, videoWidth, videoHeight);
+		guiHeight = duffCanvas.getHeight();
+		guiWidth = duffCanvas.getWidth();
+		
+		MediaView mediaViewer = setUpVideo(videoFile, getPixel("X", videoWidth), getPixel("Y", videoHeight));
 		
 		HBox controls = createControlBar();
 		
@@ -47,13 +54,15 @@ public class VideoPlayer{
 		videoPlayerAndControls.setBottom(controls);
 		videoPlayerAndControls.setCenter(mediaViewer);	
 		videoPlayerAndControls.setMaxSize(50, 50);			
-     	videoPlayerAndControls.setLayoutY(locationY);
- 		videoPlayerAndControls.setLayoutX(locationX);
+     	videoPlayerAndControls.setLayoutY(getPixel("Y", locationY));
+ 		videoPlayerAndControls.setLayoutX(getPixel("X", locationX));
 		
 		Pane baseBox = new Pane();		
 		baseBox.getChildren().add(videoPlayerAndControls);
 		baseBox.autosize();
 		baseBox.setBackground(null);
+		
+		
 	
 		return  baseBox;
 	}
@@ -62,7 +71,7 @@ public class VideoPlayer{
 	 * Method to create the video player and displays it
 	 * @return mediaViewer - This displays the video
 	 */
-	protected MediaView setUpVideo(String videoFile, int videoWidth, int videoHeight) {
+	protected MediaView setUpVideo(String videoFile, float videoWidth, float videoHeight) {
 		//media resource
 		Media mediaToPlay = new Media(videoFile);
 			
@@ -169,5 +178,28 @@ public class VideoPlayer{
 		controlBar.getChildren().addAll(playButton,pauseButton,exitButton,volumeSlider,loopButton);
 				
 		return controlBar;
+	}
+	
+	/**
+	 * Converts a float representing a percentage of each axis into a
+	 * float pixel amount.
+	 * @param axis	A string representation of an axis
+	 * @param percentage	A float representation of percentage.
+	 * @return pixel	An float pixel position.
+	 */
+	private float getPixel(String axis, float percentage) {
+		float pixel;
+		
+		if (axis.equals("Y")) {
+			pixel = (float) (guiHeight * percentage);
+		}
+		else if (axis.equals("X")) {
+			pixel = (float) (guiWidth * percentage);
+		}
+		else {
+			pixel = 0;
+			throw new IllegalArgumentException("Invalid axis type, expected on of: 'X' or 'Y'");
+		}
+		return pixel;
 	}
 }
