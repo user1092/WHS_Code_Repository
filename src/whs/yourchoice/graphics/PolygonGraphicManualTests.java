@@ -6,6 +6,9 @@
 
 package whs.yourchoice.graphics;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
@@ -65,21 +68,22 @@ public class PolygonGraphicManualTests extends Application {
 		Stage primaryStage = new Stage();
 		int startTime = 0;
 		int duration = 0;
-		float[] x = {0.25f, 0.5f, 0.15f};
-		float[] y = {0.25f, 0.5f, 0.35f};
 		Pane polygon;
+		String path = new File("").getAbsolutePath() + "/src/whs/yourchoice/graphics/ArrowShape.csv";
 		
 		//set up shape entry
-		PolygonGraphic polygonEntry = new PolygonGraphic(startTime, duration, x, y, "/Users/williamsharrard/Desktop/ArrowShape.csv");
+		PolygonGraphic polygonEntry = new PolygonGraphic(startTime, duration, path);
 		
 		//set up shape and scene
 		polygonEntry.setShading(0.2f, 0.5f, 0.175f, 0.175f, "aa0000", "00aa00");
 		try {
 			polygonEntry.parseCSV();
 		}
-		catch (Exception e) {
-			System.out.println("Error openeing file");
+		catch (FileNotFoundException e) {
+			System.out.println(e);
 		}
+		//polygonEntry.parseCSV();
+		
 		polygon = polygonEntry.drawPolygon();
 		Scene scene = new Scene(polygon, 600, 600);
 				
