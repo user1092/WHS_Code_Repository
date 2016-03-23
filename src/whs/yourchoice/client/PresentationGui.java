@@ -1,14 +1,20 @@
 package whs.yourchoice.client;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.sun.jna.Native;
+import com.sun.jna.NativeLibrary;
 
 import presentech.TextHandler;
+
 import stammtisch.Objects.Images;
 import stammtisch.handlers.ImageHandler;
+import uk.co.caprica.vlcj.binding.LibVlc;
+import uk.co.caprica.vlcj.player.MediaPlayerFactory;
+import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 
+import whs.yourchoice.audio.AudioPlayer;
 import whs.yourchoice.graphics.PolygonGraphic;
 import whs.yourchoice.graphics.ShapeGraphic;
+import whs.yourchoice.presentation.AudioEntry;
 import whs.yourchoice.presentation.ImageEntry;
 import whs.yourchoice.presentation.PolygonEntry;
 import whs.yourchoice.presentation.PresentationEntry;
@@ -17,15 +23,14 @@ import whs.yourchoice.presentation.SlideEntry;
 import whs.yourchoice.presentation.TextEntry;
 import whs.yourchoice.presentation.VideoEntry;
 import whs.yourchoice.video.VideoPlayer;
+
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.control.Label;
 import javafx.scene.control.Pagination;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Slider;
@@ -35,19 +40,17 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.TextFlow;
 import javafx.scene.transform.Scale;
 import javafx.stage.Stage;
+
 /**
 * Class for creation of the presentation window and adding functionality
 *
 * @author user828 & user1092
-* @version v0.5 10/03/16
+* @version v0.6 23/03/16
 */
 public class PresentationGui extends Application {
 	
@@ -60,9 +63,11 @@ public class PresentationGui extends Application {
 	final int CONTROL_BAR_HEIGHT = 60;
 	final int PRESENTATION_WIDTH = WINDOW_WIDTH;
 	final int PRESENTATION_HEIGHT = WINDOW_HEIGHT - (CONTROL_BAR_HEIGHT/2) - CONTROL_BAR_HEIGHT;
+	//TODO May consider implementing in the xml file
+	final float VIDEO_WIDTH = 0.3f;
+	final float VIDEO_HEIGHT = 0.3f;
 	
-	
-    private StackPane presentationLayout;
+	private StackPane presentationLayout;
     private BorderPane subPresentationLayout;
 	private BorderPane windowLayout;
 	
@@ -70,7 +75,7 @@ public class PresentationGui extends Application {
 	// private Integer currentSlideNumber;
 	private Integer totalSlideNumber = 7;
 	
-	// variables for the scaling of all the objects on the window
+	// Variables for the scaling of all the objects on the window
 	private double scaleWidthRatio = 1;
     private double scaleHeightRatio = 1;
     private double stageInitialWidth = 0;
@@ -79,7 +84,7 @@ public class PresentationGui extends Application {
     
     private ToolBar controlBar;
     
-    // objects present on the control bar
+    // Objects present on the control bar
 	private ToggleButton transitionButton;
 	private ToggleButton muteButton;
 	private Image muteImage;
@@ -94,213 +99,48 @@ public class PresentationGui extends Application {
 	private ToggleButton fullScreenButton;
 	
 	private PresentationEntry presentation;
-	private List<AnchorPane> textList = new ArrayList<AnchorPane>();
-	private List<Canvas> imageList = new ArrayList<Canvas>();
-	private List<Pane> shapeList = new ArrayList<Pane>();
-	private List<Pane> polygonList = new ArrayList<Pane>();
-	private List<Pane> videoList = new ArrayList<Pane>();
+	
+	// Location of where VLC is installed
+	private final String VLC_LIBRARY_LOCATION = "M:/vlc-2.1.0";
+	// Set VLC video output to a dummy, waveout used as bug with DX
+	private final String[] VLC_ARGS = {"--vout", "dummy", "--aout", "waveout"};
+	private MediaPlayerFactory mediaPlayerFactory;
+	private AudioPlayer audioPlayer;
 	
 
-	public PresentationGui(PresentationEntry presentation) {
-		//presentation = passedPresentation;
+	/**
+	 * Constructor requires a presentation to display
+	 * 
+	 * @param passedPresentation	-	The presentation to be played
+	 */
+	public PresentationGui(PresentationEntry passedPresentation) {
+		presentation = passedPresentation;
 		
+		// Find and load VLC libraries
+		NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), VLC_LIBRARY_LOCATION);
+		System.setProperty("jna.library.path", VLC_LIBRARY_LOCATION);
+		Native.loadLibrary(RuntimeUtil.getLibVlcLibraryName(), LibVlc.class);
 		
-		Canvas duffCanvas = new Canvas(PRESENTATION_WIDTH,  PRESENTATION_HEIGHT);
+		// Create a media player factory
+		mediaPlayerFactory = new MediaPlayerFactory(VLC_ARGS);
 		
-		SlideEntry currentSlide;
-		TextEntry currentText;
-		String sourceFile = null;
-		ImageEntry currentImage;
-		Images tempImage;
-		ShapeEntry currentShape;
-		PolygonEntry currentPolygon;
-		VideoEntry currentVideo;
-		
-		float[] polygonX = {0.1f, 0.2f, 0.3f};
-		float[] polygonY = {0.0f, 0.2f, 0.0f};
-		int numberOfSlides;
-		int numberOfTexts;
-		int numberOfImages;
-		int numberOfShapes;
-		int numberOfPolygons;
-		int numberOfVideos;
-		
-		numberOfSlides = presentation.slideList.size();
-		for(int slide = 0; slide < numberOfSlides; slide++) {
-			currentSlide = presentation.slideList.get(slide);
-			
-			numberOfTexts = currentSlide.textList.size();
-			numberOfImages = currentSlide.imageList.size();
-			numberOfShapes = currentSlide.shapeList.size();
-			numberOfPolygons = currentSlide.polygonList.size();
-			numberOfVideos = currentSlide.videoList.size();
-			
-			System.out.println(numberOfSlides);
-			
-			for(int text = 0; text < numberOfTexts; text++) {
-				AnchorPane tempPane = new AnchorPane();
-				currentText = new TextEntry();
-				currentText = currentSlide.textList.get(text);
-				tempPane.getChildren().add(TextHandler.createText(duffCanvas, sourceFile,
-						currentText.getTextContent(), currentText.getTextFont(),
-						currentText.getTextFontColour(), currentText.getTextFontSize(),
-						currentText.getTextXStart(), currentText.getTextYStart(),
-						currentText.getTextStartTime(), currentText.getTextDuration()));
-				textList.add(tempPane);
-				System.out.println(text);
-				System.out.println(currentText.getTextContent());
-				System.out.println(currentSlide.textList.get(text));
-			}
-			
-			for(int image = 0; image < numberOfImages; image++) {
-				ImageHandler imageHandler = new ImageHandler();
-				
-				currentImage = currentSlide.imageList.get(image);
-				
-				tempImage = new Images(currentImage.getImageSourceFile(),
-														currentImage.getImageStartTime(),
-														currentImage.getImageDuration(),
-														currentImage.getImageXStart(),
-														currentImage.getImageYStart(),
-														currentImage.getImageHeight(),
-														currentImage.getImageWidth());
-				imageList.add(imageHandler.drawCanvas(tempImage, PRESENTATION_WIDTH, PRESENTATION_HEIGHT));
-				System.out.println(image);
-				System.out.println(currentSlide.imageList.get(image));
-			}
-			
-			for(int shape = 0; shape < numberOfShapes; shape++) {
-				currentShape = currentSlide.shapeList.get(shape);
-				
-//				ShapeGraphic ShapeEntry = new ShapeGraphic(currentShape.getShapeStartTime(),
-//													currentShape.getShapeDuration(),
-//													currentShape.getShapeXStart(),
-//													currentShape.getShapeYStart(),
-//													currentShape.getShapeHeight(),
-//													currentShape.getShapeWidth(),
-//													currentShape.getShapeType(),
-//													currentShape.getShapeFillColour(),
-//													currentShape.getShapeLineColour());
-				ShapeGraphic tempShape = new ShapeGraphic(currentShape.getShapeStartTime(),
-														currentShape.getShapeDuration(),
-														currentShape.getShapeXStart(),
-														currentShape.getShapeYStart(),
-														currentShape.getShapeHeight(),
-														currentShape.getShapeWidth(),
-														currentShape.getShapeType());
-												
-				tempShape.setRes(PRESENTATION_WIDTH, PRESENTATION_HEIGHT);
-				shapeList.add(tempShape.drawShape());
-				System.out.println(shape);
-				System.out.println(currentSlide.shapeList.get(shape));
-			}
-			
-			for(int polygon = 0; polygon < numberOfPolygons; polygon++) {
-				currentPolygon = currentSlide.polygonList.get(polygon);
-				
-//				ShapeGraphic ShapeEntry = new ShapeGraphic(currentShape.getShapeStartTime(),
-//													currentShape.getShapeDuration(),
-//													currentShape.getShapeXStart(),
-//													currentShape.getShapeYStart(),
-//													currentShape.getShapeHeight(),
-//													currentShape.getShapeWidth(),
-//													currentShape.getShapeType(),
-//													currentShape.getShapeFillColour(),
-//													currentShape.getShapeLineColour());
-				PolygonGraphic tempPolygon = new PolygonGraphic(currentPolygon.getPolygonStartTime(),
-															currentPolygon.getPolygonDuration(),
-															polygonX, polygonY,
-															currentPolygon.getPolygonFillColour(),
-															currentPolygon.getPolygonLineColour(),
-															currentPolygon.getPolygonSourceFile());
-				
-				tempPolygon.setRes(PRESENTATION_WIDTH, PRESENTATION_HEIGHT);
-				shapeList.add(tempPolygon.drawPolygon());
-				System.out.println(polygon);
-				System.out.println(currentSlide.polygonList.get(polygon));
-			}
-			
-			for(int video = 0; video < numberOfVideos; video++) {
-				currentVideo = currentSlide.videoList.get(video);
-				
-				VideoPlayer tempVideo = new VideoPlayer();
-				
-				videoList.add(tempVideo.videoPlayerWindow(currentVideo.getVideoSourceFile(),
-													currentVideo.getVideoYStart(),
-													currentVideo.getVideoXStart(),
-													0.3f, 0.3f, duffCanvas));
-				System.out.println(video);
-				System.out.println(currentSlide.videoList.get(video));
-			}
-			
-		}
+		// Create a audio player
+		audioPlayer = new AudioPlayer(mediaPlayerFactory);
 		
 	}
 	
-	private void displayPresentation() {
-		for(int text = 0; text < textList.size(); text++) {
-			System.out.println(text);
-			System.out.println(textList.get(text));
-			presentationLayout.getChildren().add(textList.get(text));
-		}
-//		presentationLayout.getChildren().add(textList.get(0));
-		
-		for(int image = 0; image < imageList.size(); image++) {
-			System.out.println("disp image number: " + image);
-			System.out.println(textList.get(image));
-			presentationLayout.getChildren().add(imageList.get(image));
-		}
-		
-		for(int shape = 0; shape < shapeList.size(); shape++) {
-			System.out.println("disp shape number: " + shape);
-			System.out.println(shapeList.get(shape));
-			presentationLayout.getChildren().add(shapeList.get(shape));
-		}
-		
-		for(int polygon = 0; polygon < polygonList.size(); polygon++) {
-			System.out.println("disp polygon number: " + polygon);
-			System.out.println(polygonList.get(polygon));
-			presentationLayout.getChildren().add(polygonList.get(polygon));
-		}
-		
-		for(int video = 0; video < videoList.size(); video++) {
-			System.out.println("disp video number: " + video);
-			System.out.println(videoList.get(video));
-			presentationLayout.getChildren().add(videoList.get(video));
-		}
-	}
 	
-//	private void populateSlide(int slideId) {
-//		Canvas duffCanvas = new Canvas(PRESENTATION_WIDTH,  PRESENTATION_HEIGHT);
-//		
-//		SlideEntry currentSlide = presentation.slideList.get(slideId);
-//		
-//		int numberOfTexts = currentSlide.textList.size();
-//		
-//		String sourceFile = null;
-//		
-//		for(int text = 0; text < numberOfTexts; text++) {
-//			Pane tempPane = new Pane();
-//			TextEntry currentText = new TextEntry();
-//			currentText = currentSlide.textList.get(text);
-//			tempPane.getChildren().add(TextHandler.createText(duffCanvas, sourceFile,
-//					currentText.getTextContent(), currentText.getTextFont(),
-//					currentText.getTextFontColour(), currentText.getTextFontSize(),
-//					currentText.getTextXStart(), currentText.getTextYStart(),
-//					currentText.getTextStartTime(), currentText.getTextDuration()));
-//			presentationLayout.getChildren().add(tempPane);
-//			System.out.println(text);
-//			System.out.println(currentText.getTextContent());
-//			System.out.println(currentSlide.textList.get(text));
-//		}
-//	}
-	
+	/**
+	 * Main method to launch the GUI
+	 * 
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		launch(PresentationGui.class, args);
 	}
 	
 	@Override
-	public void start(Stage slideStage) throws Exception {		
+	public void start(Stage slideStage) throws Exception {
 		presentationLayout = new StackPane();
 		subPresentationLayout = new BorderPane();
 		windowLayout = new BorderPane();
@@ -385,17 +225,23 @@ public class PresentationGui extends Application {
 
              }
         });
-		
-        displayPresentation();
-        
-        //populateSlide(0);
-        
+		       
+        displaySlide(0);
+                
         // initialise full screen
 		slideStage.setFullScreen(true);
 	}
 	
+	@Override
+	public void stop() throws Exception {
+	    audioPlayer.releasePlayer();
+		mediaPlayerFactory.release();
+	}
+
+
 	/**
 	 * Method for creating the control tool bar at the bottom of each slide
+	 * 
 	 * @param slideStage  -  window contains the control bar on
 	 * @return ToolBar  -  returns the tool bar which was created
 	 */
@@ -430,6 +276,7 @@ public class PresentationGui extends Application {
 	
 	/**
 	 * Method for creating the master volume slider with all its attributes
+	 * 
 	 * @return volumeSlider  -  master volume slider which is placed on the control bar
 	 */
 	private Slider createVolumeSlider() {
@@ -456,6 +303,7 @@ public class PresentationGui extends Application {
 
 	/**
 	 * Method for creating the automatic/manual slide transition button
+	 * 
 	 * @return transitionButton  -  toggle button for switching the type of slide transition
 	 */
 	private ToggleButton createTransitionButton() {
@@ -479,6 +327,7 @@ public class PresentationGui extends Application {
 
 	/**
 	 * Method for creating the mute button on the control bar
+	 * 
 	 * @return muteButton  -  toggle button for muting/unmuting the media
 	 */
 	private ToggleButton createMuteButton() {
@@ -508,7 +357,8 @@ public class PresentationGui extends Application {
 	}
 	
 	/**
-	 * method for creating the play button on the control bar
+	 * Method for creating the play button on the control bar
+	 * 
 	 * @return playButton  -  toggle button for the pause/play of media
 	 */
 	private ToggleButton createPlayButton() {
@@ -540,7 +390,8 @@ public class PresentationGui extends Application {
 	}
 	
 	/**
-	 * method for creating the full screen toggle button
+	 * Method for creating the full screen toggle button
+	 * 
 	 * @param slideStage  -  window that will switch from full screen to normal size
 	 * @return fullScreenButton  -  the toggle button that enters and exits full screen
 	 */
@@ -565,5 +416,222 @@ public class PresentationGui extends Application {
 			}
 		});
 		return fullScreenButton;
+	}
+
+
+	/**
+	 * Method for displaying all objects on a slide within the current presentation
+	 * 
+	 * @param slideId - The slide number in the presentation to be displayed
+	 */
+	private void displaySlide(int slideId) {
+		// An empty canvas to represent the size of the slide area
+		Canvas duffCanvas = new Canvas(PRESENTATION_WIDTH,  PRESENTATION_HEIGHT);
+		
+		// Retrieve the slide information that was requested
+		SlideEntry currentSlide = presentation.slideList.get(slideId);
+		
+		displayTexts(currentSlide, duffCanvas);
+				
+		displayImages(currentSlide);
+		
+		displayShapes(currentSlide);
+		
+		displayPolygons(currentSlide);
+		
+		displayVideos(currentSlide, duffCanvas);
+		
+		// Get the total number of audio files to be played
+		int numberOfAudios = currentSlide.audioList.size();
+				
+		// Display all text
+		for(int audio = 0; audio < numberOfAudios; audio++) {
+			
+			
+			AudioEntry currentAudio = new AudioEntry();
+			
+			currentAudio = currentSlide.audioList.get(audio);
+			
+			audioPlayer.playAudio(currentAudio.getAudioSourceFile());
+			audioPlayer.loopAudio(currentAudio.getAudioLoop());
+			
+			System.out.println("audio entry: " + audio + "\n");
+		}
+		//audioPlayer.toggleLoopAudio();
+	}
+
+
+	/**
+	 * Method to display all text on the current slide
+	 * 
+	 * @param currentSlide	-	The slide of which elements are to be displayed
+	 * @param duffCanvas	-	A reference canvas for getting the size of the presentation area
+	 */
+	private void displayTexts(SlideEntry currentSlide, Canvas duffCanvas) {
+		// Get the total number of images to be displayed
+		int numberOfTexts = currentSlide.textList.size();
+		
+		// Set sourceFile to null as not used by Wooly Hat Software 
+		String sourceFile = null;
+		
+		// Display all text
+		for(int text = 0; text < numberOfTexts; text++) {
+			Pane tempPane = new Pane();
+			TextEntry currentText = new TextEntry();
+			
+			currentText = currentSlide.textList.get(text);
+			
+			tempPane.getChildren().add(TextHandler.createText(duffCanvas, sourceFile,
+					currentText.getTextContent(), currentText.getTextFont(),
+					currentText.getTextFontColour(), currentText.getTextFontSize(),
+					currentText.getTextXStart(), currentText.getTextYStart(),
+					currentText.getTextStartTime(), currentText.getTextDuration()));
+			
+			presentationLayout.getChildren().add(tempPane);
+			
+			System.out.println("text entry: " + text + "\n");
+			System.out.println(currentText.getTextContent() + "\n");
+		}
+	}
+
+
+	/**
+	 * Method to display all images on the current slide
+	 * 
+	 * @param currentSlide	-	The slide of which elements are to be displayed
+	 */
+	private void displayImages(SlideEntry currentSlide) {
+		// Get the total number of images to be displayed
+		int numberOfImages = currentSlide.imageList.size();
+		
+		// Display all images
+		for(int image = 0; image < numberOfImages; image++) {
+			ImageHandler imageHandler = new ImageHandler();
+			Images tempImage = new Images();
+			
+			ImageEntry currentImage = currentSlide.imageList.get(image);
+			
+			tempImage = new Images(currentImage.getImageSourceFile(),
+													currentImage.getImageStartTime(),
+													currentImage.getImageDuration(),
+													currentImage.getImageXStart(),
+													currentImage.getImageYStart(),
+													currentImage.getImageHeight(),
+													currentImage.getImageWidth());
+			
+			presentationLayout.getChildren().add(imageHandler.drawCanvas(tempImage, PRESENTATION_WIDTH, PRESENTATION_HEIGHT));
+			
+			System.out.println("image entry: " + image + "\n");
+		}
+	}
+
+
+	/**
+	 * Method to display all shapes on the current slide
+	 * 
+	 * @param currentSlide	-	The slide of which elements are to be displayed
+	 */
+	private void displayShapes(SlideEntry currentSlide) {
+		// Get the total number of shapes to be displayed
+		int numberOfShapes = currentSlide.shapeList.size();
+		
+		// Display all shapes
+		for(int shape = 0; shape < numberOfShapes; shape++) {
+			ShapeEntry currentShape = currentSlide.shapeList.get(shape);
+			
+			//TODO Should be what is in the commented code but parser doesn't set defaults.
+//			ShapeGraphic ShapeEntry = new ShapeGraphic(currentShape.getShapeStartTime(),
+//												currentShape.getShapeDuration(),
+//												currentShape.getShapeXStart(),
+//												currentShape.getShapeYStart(),
+//												currentShape.getShapeHeight(),
+//												currentShape.getShapeWidth(),
+//												currentShape.getShapeType(),
+//												currentShape.getShapeFillColour(),
+//												currentShape.getShapeLineColour());
+			ShapeGraphic tempShape = new ShapeGraphic(currentShape.getShapeStartTime(),
+													currentShape.getShapeDuration(),
+													currentShape.getShapeXStart(),
+													currentShape.getShapeYStart(),
+													currentShape.getShapeHeight(),
+													currentShape.getShapeWidth(),
+													currentShape.getShapeType());
+			
+			// Scale the shape to the resolution of the presentation area
+			tempShape.setRes(PRESENTATION_WIDTH, PRESENTATION_HEIGHT);
+			
+			presentationLayout.getChildren().add(tempShape.drawShape());
+			
+			System.out.println("shape entry: " + shape + "\n");
+		}
+	}
+
+
+	/**
+	 * Method to display all polygons on the current slide
+	 * 
+	 * @param currentSlide	-	The slide of which elements are to be displayed
+	 */
+	private void displayPolygons(SlideEntry currentSlide) {
+		// Get the total number of polygons to be displayed
+		int numberOfPolygons = currentSlide.polygonList.size();
+		
+		//TODO Currently broken uses this as default
+		float[] polygonX = {0.1f, 0.2f, 0.3f};
+		float[] polygonY = {0.2f, 0.4f, 0.2f};
+		
+		// Display all polygons
+		for(int polygon = 0; polygon < numberOfPolygons; polygon++) {
+			PolygonEntry currentPolygon = currentSlide.polygonList.get(polygon);
+			
+			//TODO modifiy below
+//			ShapeGraphic ShapeEntry = new ShapeGraphic(currentShape.getShapeStartTime(),
+//												currentShape.getShapeDuration(),
+//												currentShape.getShapeXStart(),
+//												currentShape.getShapeYStart(),
+//												currentShape.getShapeHeight(),
+//												currentShape.getShapeWidth(),
+//												currentShape.getShapeType(),
+//												currentShape.getShapeFillColour(),
+//												currentShape.getShapeLineColour());
+			PolygonGraphic tempPolygon = new PolygonGraphic(currentPolygon.getPolygonStartTime(),
+														currentPolygon.getPolygonDuration(),
+														polygonX, polygonY,
+														currentPolygon.getPolygonFillColour(),
+														currentPolygon.getPolygonLineColour(),
+														currentPolygon.getPolygonSourceFile());
+			
+			tempPolygon.setRes(PRESENTATION_WIDTH, PRESENTATION_HEIGHT);
+			
+			presentationLayout.getChildren().add(tempPolygon.drawPolygon());
+			
+			System.out.println("polygon entry: " + polygon + "\n");
+		}
+	}
+
+
+	/**
+	 * Method to display all videos on the current slide
+	 * 
+	 * @param currentSlide	-	The slide of which elements are to be displayed
+	 * @param duffCanvas	-	A reference canvas for getting the size of the presentation area
+	 */
+	private void displayVideos(SlideEntry currentSlide, Canvas duffCanvas) {
+		// Get the total number of videos to be displayed
+		int numberOfVideos = currentSlide.videoList.size();
+				
+		// Display all videos
+		for(int video = 0; video < numberOfVideos; video++) {
+			VideoEntry currentVideo = currentSlide.videoList.get(video);
+			
+			VideoPlayer tempVideo = new VideoPlayer();
+			
+			presentationLayout.getChildren().add(tempVideo.videoPlayerWindow(currentVideo.getVideoSourceFile(),
+												currentVideo.getVideoYStart(),
+												currentVideo.getVideoXStart(),
+												VIDEO_WIDTH, VIDEO_HEIGHT, duffCanvas));
+			
+			System.out.println("video entry: " + video + "\n");
+		}
 	}
 }
