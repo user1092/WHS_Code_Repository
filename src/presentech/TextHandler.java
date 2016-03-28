@@ -31,7 +31,7 @@ public class TextHandler {
 	//This class can return the following variables
 	static int tStartTime;
 	static int tDuration;
-	static TextFlow textFlow = new TextFlow();
+
 	
 	//Variables used by handler
 	static Text prevText;
@@ -47,7 +47,7 @@ public class TextHandler {
 	 **This method accepts all the parameters to do with the parsed text and creates 
 	a text object to display on a JavaFX canvas.*/
 	public static TextFlow createText(Canvas canvas, String filePath, String text, String font, String fontColor, int fontSize, double xStart, double yStart, int startTime, int duration){
-
+		TextFlow textFlow = new TextFlow();
 		//Position and wrapping calculations.
 		// Note: if you would like to use floats instead of doubles change 
 		// the doubles to floats in the parameters above. Change the doubles below to floats
@@ -84,10 +84,9 @@ public class TextHandler {
 		boolean italic = false;
 		for (int i = 0; i<string.length(); i++){
 			if (string.charAt(i) == '<'){
-				// If it is not the first character in the string and there is not an immediately 
-				// preceding tag, create a new text object containing the string up to the point
-				// of the tag.
-				if ((i != 0) && (string.charAt(i-1) != '>')) {
+				// If there are not 2 consecutive bold/italic tags, create a new text 
+				// object containing the string up to the point of the tag.
+				if (tagTracker != i) {
 					prevText = new Text(string.substring(tagTracker, i));
 					prevText.setFont(Font.font(font, fontSize));
 					prevText.setFill(Color.web(fontColor));
