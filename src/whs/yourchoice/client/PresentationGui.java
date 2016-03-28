@@ -1,5 +1,7 @@
 package whs.yourchoice.client;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -552,22 +554,15 @@ public class PresentationGui extends Application {
 			ShapeEntry currentShape = currentSlide.shapeList.get(shape);
 			
 			//TODO Should be what is in the commented code but parser doesn't set defaults.
-//			ShapeGraphic ShapeEntry = new ShapeGraphic(currentShape.getShapeStartTime(),
-//												currentShape.getShapeDuration(),
-//												currentShape.getShapeXStart(),
-//												currentShape.getShapeYStart(),
-//												currentShape.getShapeHeight(),
-//												currentShape.getShapeWidth(),
-//												currentShape.getShapeType(),
-//												currentShape.getShapeFillColour(),
-//												currentShape.getShapeLineColour());
 			ShapeGraphic tempShape = new ShapeGraphic(currentShape.getShapeStartTime(),
-													currentShape.getShapeDuration(),
-													currentShape.getShapeXStart(),
-													currentShape.getShapeYStart(),
-													currentShape.getShapeHeight(),
-													currentShape.getShapeWidth(),
-													currentShape.getShapeType());
+														currentShape.getShapeDuration(),
+														currentShape.getShapeXStart(),
+														currentShape.getShapeYStart(),
+														currentShape.getShapeHeight(),
+														currentShape.getShapeWidth(),
+														currentShape.getShapeType(),
+														currentShape.getShapeFillColour(),
+														currentShape.getShapeLineColour());
 			
 			// Scale the shape to the resolution of the presentation area
 			tempShape.setRes(PRESENTATION_WIDTH, PRESENTATION_HEIGHT);
@@ -589,29 +584,34 @@ public class PresentationGui extends Application {
 		int numberOfPolygons = currentSlide.polygonList.size();
 		
 		//TODO Currently broken uses this as default
-		float[] polygonX = {0.1f, 0.2f, 0.3f};
-		float[] polygonY = {0.2f, 0.4f, 0.2f};
+		//float[] polygonX = {0.1f, 0.2f, 0.3f};
+		//float[] polygonY = {0.2f, 0.4f, 0.2f};
 		
 		// Display all polygons
 		for(int polygon = 0; polygon < numberOfPolygons; polygon++) {
 			PolygonEntry currentPolygon = currentSlide.polygonList.get(polygon);
 			
-			//TODO modifiy below
-//			ShapeGraphic ShapeEntry = new ShapeGraphic(currentShape.getShapeStartTime(),
-//												currentShape.getShapeDuration(),
-//												currentShape.getShapeXStart(),
-//												currentShape.getShapeYStart(),
-//												currentShape.getShapeHeight(),
-//												currentShape.getShapeWidth(),
-//												currentShape.getShapeType(),
-//												currentShape.getShapeFillColour(),
-//												currentShape.getShapeLineColour());
 			PolygonGraphic tempPolygon = new PolygonGraphic(currentPolygon.getPolygonStartTime(),
-														currentPolygon.getPolygonDuration(),
-														polygonX, polygonY,
-														currentPolygon.getPolygonFillColour(),
-														currentPolygon.getPolygonLineColour(),
-														currentPolygon.getPolygonSourceFile());
+															currentPolygon.getPolygonDuration(),
+															new File("").getAbsolutePath() + "\\" +
+															currentPolygon.getPolygonSourceFile());
+			
+			tempPolygon.setShading(currentPolygon.getPolygonShadeX1(), currentPolygon.getPolygonShadeX2(),
+									currentPolygon.getPolygonShadeY1(), currentPolygon.getPolygonShadeY2(),
+									currentPolygon.getPolygonShadeColour1(), currentPolygon.getPolygonShadeColour2());
+			try {
+				tempPolygon.parseCSV();
+			}
+			catch (FileNotFoundException e) {
+				System.out.println(e);
+			}
+			//TODO Consider if both techniques are required			
+//			PolygonGraphic tempPolygon = new PolygonGraphic(currentPolygon.getPolygonStartTime(),
+//														currentPolygon.getPolygonDuration(),
+//														polygonX, polygonY,
+//														currentPolygon.getPolygonFillColour(),
+//														currentPolygon.getPolygonLineColour(),
+//														currentPolygon.getPolygonSourceFile());
 			
 			tempPolygon.setRes(PRESENTATION_WIDTH, PRESENTATION_HEIGHT);
 			

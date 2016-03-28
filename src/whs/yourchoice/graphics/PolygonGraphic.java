@@ -47,6 +47,35 @@ public class PolygonGraphic {
 	protected String sourceFile;
 	protected List<Float> xList = new ArrayList<Float>();
 	protected List<Float> yList = new ArrayList<Float>();
+	private Scanner scanner;
+	
+	/**
+	 * Constructor containing the minimal arguments to create a valid shapeEntry.
+	 * 
+	 */
+	public PolygonGraphic(int inStart, int inDuration, String inSourceFile) {
+		// assign variables
+			this.startTime = inStart;
+			this.duration = inDuration;
+			this.lineColourString = "ffffff";
+			this.fillColourString = "ffffff";
+			this.sourceFile = inSourceFile;
+				
+				//set outer line colour, default same as fill colour
+				if (lineColourString.equals("FALSE")){
+					lineColour = setColour(fillColourString);
+				}
+				else {
+					lineColour = setColour(lineColourString);
+				}
+				fillColour = setColour(fillColourString);
+				try {
+					parseCSV();
+				}
+				catch (FileNotFoundException fe) {
+					System.out.println(sourceFile + " not found");
+				}
+	}
 	
 	/**
 	 * Constructor containing the minimal arguments to create a valid shapeEntry.
@@ -270,7 +299,12 @@ public class PolygonGraphic {
 	 * @throws FileNotFoundException
 	 */
 	public void parseCSV() throws FileNotFoundException {
-		Scanner scanner = new Scanner(new File(sourceFile));
+		try {
+			scanner = new Scanner(new File(sourceFile));
+		}
+		catch (FileNotFoundException fe) {
+			throw new FileNotFoundException(sourceFile + " not found");
+		}
 		scanner.useDelimiter(",");
 		xList = new ArrayList<Float>();
 		yList = new ArrayList<Float>();
