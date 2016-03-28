@@ -29,8 +29,8 @@ import whs.yourchoice.presentation.VideoEntry;
 /**
 * This class is responsible for parsing a given XML file and populating a PresentationEntry class with its contents
 *
-* @author Antonio Figueiredo and Sabrina Quinn
-* @version v1.0 10/03/16
+* @author Antonio Figueiredo and Sabrina Quinn & CH1092
+* @version v1.1 28/03/16
 */
 
 public class PresentationParser 
@@ -39,22 +39,25 @@ public class PresentationParser
 	
 	PresentationEntry presentation = new PresentationEntry();
 	
+	
 	/**
 	* Main method. Starts the ParsePresentation method and gives it the path to the XML file location.
 	*/
-	public static void main(String[] args)
-	{
-		PresentationParser newMain = new PresentationParser();
-		newMain.parsePresention("src/test_file.xml");
-	}
+	//TODO WHY IS THIS HERE??
+//	public static void main(String[] args)
+//	{
+//		PresentationParser newMain = new PresentationParser();
+//		newMain.parsePresention("src/test_file.xml", null);
+//	}
 	
 	/**
 	* parsePresention method. Sets up the necessary parsing elements. It detects the root node of the XML file (Presentation in our case),
 	* and calls the continueParsingForChildren method, giving it the children of the root node.
 	* @param filePath The path of the XML file to be parsed.
+	* @param presentationPath 
 	* @return presentation The completely populated presentation.
 	*/
-	public PresentationEntry parsePresention(String filePath) 
+	public PresentationEntry parsePresention(String filePath, String presentationPath) 
 	{
 		try 
 		{
@@ -63,6 +66,8 @@ public class PresentationParser
 			DocumentBuilder dBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 
 			Document doc = dBuilder.parse(file);
+			
+			presentation.setPath(presentationPath);
 			
 			doc.getDocumentElement().normalize();
 
