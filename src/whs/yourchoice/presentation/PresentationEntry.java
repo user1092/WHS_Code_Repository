@@ -210,6 +210,16 @@ public class PresentationEntry
 		
 		return slide;
 	}
+	
+	/**
+	 * getTotalSlideNumber method. Gets the total number of slides
+	 * in the presentation.
+	 * @return slideList.size() Returns the size of the slide list array
+	 */
+	public Integer getTotalSlideNumber() 
+	{
+		return slideList.size();
+	}
 
 	/**
 	 * Method to set the path to the XML file

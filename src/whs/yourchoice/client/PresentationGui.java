@@ -35,11 +35,15 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.control.Button;
 import javafx.scene.control.Pagination;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToolBar;
 import javafx.scene.image.Image;
@@ -47,11 +51,13 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.transform.Scale;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import javafx.util.StringConverter;
 
 /**
 * Class for creation of the presentation window and adding functionality
@@ -78,20 +84,31 @@ public class PresentationGui extends Application {
     private BorderPane subPresentationLayout;
 	private BorderPane windowLayout;
 	
-	// temporary number for the pagination system
-	// private Integer currentSlideNumber;
-	private Integer totalSlideNumber = 7;
-	
 	// Variables for the scaling of all the objects on the window
 	private double scaleWidthRatio = 1;
     private double scaleHeightRatio = 1;
     private double stageInitialWidth = 0;
     private double stageInitialHeight = 0;
 	
+    private int slideNumber = 0;
     
     private ToolBar controlBar;
     
+    
+    
     // Objects present on the control bar
+    private Slider volumeSlider;
+    
+    private HBox slideButtonsHBox;
+    private Button previousSlideButton;
+    private Image previousSlideImage;
+    private ImageView previousSlideView;
+    private TextField slideNumberTextField;
+    private Button nextSlideButton;
+    private Image nextSlideImage;
+    private ImageView nextSlideView;
+    
+    
 	private ToggleButton transitionButton;
 	private ToggleButton muteButton;
 	private Image muteImage;
@@ -104,16 +121,22 @@ public class PresentationGui extends Application {
 	private Image pauseImage;
 	private ImageView pauseView;
 	private ToggleButton fullScreenButton;
+	private Image exitImage;
+	private ImageView exitView;
 	
 	private PresentationEntry presentation;
 	
 	// Location of where VLC is installed
 	private String vlcLibraryLocation;
+	
 	// Set VLC video output to a dummy, waveout used as bug with DX
 	private final String[] VLC_ARGS = {"--vout", "dummy", "--aout", "waveout"};
 	private MediaPlayerFactory mediaPlayerFactory;
 	private List<AudioPlayer> audioPlayerList = new ArrayList<AudioPlayer>();
 	//private AudioPlayer audioPlayer;
+	
+	// object for formatting the text fields to only accept integers
+	private StringConverter<Integer> integerFormatter;
 	
 
 	/**
@@ -171,10 +194,8 @@ public class PresentationGui extends Application {
 		           "-fx-background-repeat: stretch;");
 		
 		// call method for creating the control bar
-		controlBar = createControlBar(slideStage);
-		controlBar.setMaxHeight(CONTROL_BAR_HEIGHT);
-		controlBar.setMinHeight(CONTROL_BAR_HEIGHT);
-		controlBar.setPrefHeight(CONTROL_BAR_HEIGHT);
+		createControlBar(slideStage);
+		
 		
 		// place the control bar at the bottom of the window
 		windowLayout.setBottom(controlBar);
@@ -264,43 +285,122 @@ public class PresentationGui extends Application {
 	 * @param slideStage  -  window contains the control bar on
 	 * @return ToolBar  -  returns the tool bar which was created
 	 */
-	private ToolBar createControlBar(Stage slideStage) {
+	private void createControlBar(Stage slideStage) {
 		// instantiation of the control bar
-		ToolBar controlBar = new ToolBar();
-		// instantiation of new slider calling the createVolumeSlider() method
-		Slider volumeSlider = createVolumeSlider();
+		controlBar = new ToolBar();
+		controlBar.setMaxHeight(CONTROL_BAR_HEIGHT);
+		controlBar.setMinHeight(CONTROL_BAR_HEIGHT);
+		controlBar.setPrefHeight(CONTROL_BAR_HEIGHT);
 		
-		// instantiation of transition toggle button
-		ToggleButton transitionButton = createTransitionButton();
-		// instantiation of mute toggle button
-		ToggleButton muteButton = createMuteButton();
-		// instantiation of play button
-		ToggleButton playButton = createPlayButton();		
-		// instantiation of full screen button
-		ToggleButton fullScreenButton = createFullScreenButton(slideStage);
+		createVolumeSlider();
 		
-		// pagination for the slides in the presentation
-		Pagination slidePagination = new Pagination(totalSlideNumber);
-		slidePagination.getStyleClass().add(Pagination.STYLE_CLASS_BULLET);
+		createTransitionButton();
 		
-	
+		createMuteButton();
+		
+		createPlayButton();		
+		
+		createFullScreenButton(slideStage);
+		
+		createSlideButtonsHBox();
 		
 		// instantiation of the separator on the control bar
 		Separator separator = new Separator();
 		// adding all the items on the control bar
-		controlBar.getItems().addAll(slidePagination, separator, playButton, transitionButton, volumeSlider, 
+		controlBar.getItems().addAll(slideButtonsHBox, separator, playButton, transitionButton, volumeSlider, 
 													muteButton, fullScreenButton);
-		return controlBar;
 	}
 	
+	/**
+	 * Method for the creation of the HBox that containts the 
+	 * slide navigation controls. Previous/Next slide buttons and the slide number text field
+	 */
+	private void createSlideButtonsHBox() {
+		slideButtonsHBox = new HBox();
+		slideButtonsHBox.setPadding(new Insets(10, 10, 10, 10));
+		slideButtonsHBox.setSpacing(5);
+		slideNumberTextField = new TextField();
+		slideNumberTextField.setPrefWidth(25);
+		slideNumberTextField.setPrefHeight(30);
+		slideNumberTextField.setEditable(false);
+		//call method for setting the format of text fields
+		integerFormatter = new IntRangeStringConverter(0, presentation.getTotalSlideNumber(), 1);
+		slideNumberTextField.setTextFormatter(new TextFormatter<>(integerFormatter, slideNumber));
+		slideNumberTextField.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent e) {
+				presentationLayout.getChildren().clear();
+				slideNumber = Integer.parseInt(slideNumberTextField.getText());
+				displaySlide(slideNumber);
+				slideNumberTextField.setText("" + slideNumber);
+			}
+		});
+		previousSlideButtonSetup();
+		nextSlideButtonSetup();
+		slideButtonsHBox.getChildren().addAll(previousSlideButton, slideNumberTextField, nextSlideButton);
+		
+		
+	}
+	
+	/**
+	 * Method for the setup of the next slide button
+	 */
+	private void nextSlideButtonSetup() {
+		// image for mute button
+		nextSlideImage = new Image(getClass().getResourceAsStream("resources/nextbutton.png"));
+		nextSlideView = new ImageView(nextSlideImage);
+		//instantiation of next slide button
+		nextSlideButton = new Button();
+		nextSlideButton.setGraphic(nextSlideView);
+		nextSlideButton.setMaxSize(35, 30);
+		nextSlideButton.setPrefSize(35, 30);
+		nextSlideButton.setMinSize(35, 30);
+		nextSlideButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent e) {
+				if (slideNumber < (presentation.getTotalSlideNumber() - 1)) {
+					presentationLayout.getChildren().clear();
+					slideNumber++;
+					displaySlide(slideNumber);
+					slideNumberTextField.setText("" + slideNumber);
+				}
+			}
+		});
+	}
+	
+	/**
+	 * Method for the setup of the previous slide button
+	 */
+	private void previousSlideButtonSetup() {
+		// image for mute button
+		previousSlideImage = new Image(getClass().getResourceAsStream("resources/previousbutton.png"));
+		previousSlideView = new ImageView(previousSlideImage);
+		//instantiation of next slide button
+		previousSlideButton = new Button();
+		previousSlideButton.setGraphic(previousSlideView);
+		previousSlideButton.setMaxSize(35, 30);
+		previousSlideButton.setPrefSize(35, 30);
+		previousSlideButton.setMinSize(35, 30);
+		previousSlideButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent e) {
+				if (slideNumber > 0) {
+					presentationLayout.getChildren().clear();
+					slideNumber--;
+					displaySlide(slideNumber);
+					slideNumberTextField.setText("" + slideNumber);
+				}
+			}
+		});
+	}
 	/**
 	 * Method for creating the master volume slider with all its attributes
 	 * 
 	 * @return volumeSlider  -  master volume slider which is placed on the control bar
 	 */
-	private Slider createVolumeSlider() {
+	private void createVolumeSlider() {
 		// instantiation of volume slider
-		Slider volumeSlider = new Slider();
+		volumeSlider = new Slider();
 		// setting the attributes of the slider
 		volumeSlider.setMin(0);
 		volumeSlider.setMax(100);
@@ -317,7 +417,6 @@ public class PresentationGui extends Application {
                     System.out.println(new_val.doubleValue());
             }
         });
-		return volumeSlider;
 	}
 
 	/**
@@ -325,7 +424,7 @@ public class PresentationGui extends Application {
 	 * 
 	 * @return transitionButton  -  toggle button for switching the type of slide transition
 	 */
-	private ToggleButton createTransitionButton() {
+	private void createTransitionButton() {
 		transitionButton = new ToggleButton("Automatic");
 		transitionButton.setMaxSize(80, 30);
 		transitionButton.setPrefSize(80, 30);
@@ -341,7 +440,6 @@ public class PresentationGui extends Application {
             	}
             }
         });
-		return transitionButton;
 	}
 
 	/**
@@ -349,7 +447,7 @@ public class PresentationGui extends Application {
 	 * 
 	 * @return muteButton  -  toggle button for muting/unmuting the media
 	 */
-	private ToggleButton createMuteButton() {
+	private void createMuteButton() {
 		// image for mute button
 		muteImage = new Image(getClass().getResourceAsStream("resources/mute.png"));
 		muteView = new ImageView(muteImage);
@@ -372,7 +470,6 @@ public class PresentationGui extends Application {
 				}
 			}
 		});
-		return muteButton;
 	}
 	
 	/**
@@ -380,7 +477,7 @@ public class PresentationGui extends Application {
 	 * 
 	 * @return playButton  -  toggle button for the pause/play of media
 	 */
-	private ToggleButton createPlayButton() {
+	private void createPlayButton() {
 		// image for the play button
 		playImage = new Image(getClass().getResourceAsStream("resources/play.png"));
 		playView = new ImageView(playImage);
@@ -405,7 +502,6 @@ public class PresentationGui extends Application {
 				}
 			}
 		});
-		return playButton;
 	}
 	
 	/**
@@ -414,10 +510,10 @@ public class PresentationGui extends Application {
 	 * @param slideStage  -  window that will switch from full screen to normal size
 	 * @return fullScreenButton  -  the toggle button that enters and exits full screen
 	 */
-	private ToggleButton createFullScreenButton(final Stage slideStage) {
+	private void createFullScreenButton(final Stage slideStage) {
 		// image for the full screen button
-		Image exitImage = new Image(getClass().getResource("resources/exit.png").toExternalForm());
-		ImageView exitView = new ImageView(exitImage);
+		exitImage = new Image(getClass().getResource("resources/exit.png").toExternalForm());
+		exitView = new ImageView(exitImage);
 		// instantiation of full screen button
 		fullScreenButton = new ToggleButton();
 		// set the image on the button
@@ -434,7 +530,6 @@ public class PresentationGui extends Application {
 				}
 			}
 		});
-		return fullScreenButton;
 	}
 
 
