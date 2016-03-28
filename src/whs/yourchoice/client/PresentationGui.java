@@ -39,7 +39,6 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
-import javafx.scene.control.Pagination;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
@@ -94,7 +93,7 @@ public class PresentationGui extends Application {
     
     private ToolBar controlBar;
     
-    
+    private Number masterVolume;
     
     // Objects present on the control bar
     private Slider volumeSlider;
@@ -120,6 +119,9 @@ public class PresentationGui extends Application {
 	private ImageView playView;
 	private Image pauseImage;
 	private ImageView pauseView;
+	private Button stopButton;
+	private Image stopImage;
+	private ImageView stopView;
 	private ToggleButton fullScreenButton;
 	private Image exitImage;
 	private ImageView exitView;
@@ -173,8 +175,62 @@ public class PresentationGui extends Application {
 		launch(PresentationGui.class, args);
 	}
 	
+	
 	@Override
 	public void start(Stage slideStage) throws Exception {
+		
+		Scene scene = setupLayout(slideStage);
+		
+		//import and set background image
+		String background = getClass().getResource("resources/SlideBackground.jpg").toExternalForm();
+		windowLayout.setStyle("-fx-background-image: url('" + background + "'); " +
+		           "-fx-background-position: center center; " +
+		           "-fx-background-repeat: stretch;");
+		
+		// Scale the presentation for any window size
+		scalePresentation(scene);
+        
+		// listen to the stage if it closes
+        closeListener(slideStage);
+		
+        // Display slide 0 as default
+        displaySlide(0);
+        
+        setupFullscreen(slideStage, scene);
+	}
+
+
+	/**
+	 * Method to listen for an Esc key to exit fullscreen, and set to fullscreen
+	 * 
+	 * @param slideStage	-	The stage make fullscreen
+	 * @param scene			-	The scene to listen to a Esc key
+	 */
+	private void setupFullscreen(Stage slideStage, Scene scene) {
+		/* 
+		 * Handler to change state of full screen toggle button
+		 * when the user exits fullscreen using esc button
+		 */ 
+		scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
+	        public void handle(KeyEvent ke) {
+	            if (ke.getCode() == KeyCode.ESCAPE) {
+	            	fullScreenButton.setSelected(true);
+	            }
+	        }
+	    });
+		
+        // Initialise full screen
+		slideStage.setFullScreen(true);
+	}
+
+	
+	/**
+	 * Method to setup a scene for the presentation 
+	 * 
+	 * @param slideStage	-	The stage to be setup
+	 * @return scene		-	The populated scene
+	 */
+	private Scene setupLayout(Stage slideStage) {
 		presentationLayout = new StackPane();
 		subPresentationLayout = new BorderPane();
 		windowLayout = new BorderPane();
@@ -187,29 +243,6 @@ public class PresentationGui extends Application {
 		slideStage.setMinHeight(WINDOW_MIN_HEIGHT);
 		slideStage.setMinWidth(WINDOW_MIN_WIDTH);
 		
-		//import and set background image
-		String background = getClass().getResource("resources/SlideBackground.jpg").toExternalForm();
-		windowLayout.setStyle("-fx-background-image: url('" + background + "'); " +
-		           "-fx-background-position: center center; " +
-		           "-fx-background-repeat: stretch;");
-		
-		// call method for creating the control bar
-		createControlBar(slideStage);
-		
-		
-		// place the control bar at the bottom of the window
-		windowLayout.setBottom(controlBar);
-
-		// Handler to change state of full screen toggle button
-		// when the user exits fullscreen using esc button
-		scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
-	        public void handle(KeyEvent ke) {
-	            if (ke.getCode() == KeyCode.ESCAPE) {
-	            	fullScreenButton.setSelected(true);
-	            }
-	        }
-	    });
-		
 		//main stage set up with appropriate scene and size
 		slideStage.setScene(scene);
 		slideStage.setWidth(WINDOW_WIDTH);
@@ -217,7 +250,43 @@ public class PresentationGui extends Application {
 		slideStage.setTitle("Presentation Slide");
 		slideStage.show();
 		
+		// call method for creating the control bar
+		createControlBar(slideStage);
+				
+		// place the control bar at the bottom of the window
+		windowLayout.setBottom(controlBar);
 		
+		return scene;
+	}
+
+	
+	/**
+	 * Method to listen for the stage closing to tidy up
+	 * 
+	 * @param slideStage	-	The stage to listen to
+	 */
+	private void closeListener(Stage slideStage) {
+		// Listen for the stage closing to release all audio players
+        slideStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+        	public void handle(WindowEvent we) {
+        		
+        		for(int audio = 0; audio <audioPlayerList.size(); audio++) {
+        			audioPlayerList.get(audio).releasePlayer();
+        		}
+        		
+        		mediaPlayerFactory.release();
+        		System.out.println("Exit of audio players successful");
+        	}
+        });
+	}
+
+	
+	/**
+	 * Method to scale the scene to keep the same positions of items
+	 * 
+	 * @param scene	-	The scene to scale
+	 */
+	private void scalePresentation(Scene scene) {
 		stageInitialWidth = scene.getWidth();
         stageInitialHeight = scene.getHeight();
 
@@ -257,33 +326,13 @@ public class PresentationGui extends Application {
 
              }
         });
-        
-        // Listen for the stage closing to release all audio players
-        slideStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-        	public void handle(WindowEvent we) {
-        		
-        		System.out.println("audioPlayerList size: " + audioPlayerList.size());
-        		
-        		for(int audio = 0; audio <audioPlayerList.size(); audio++) {
-        			audioPlayerList.get(audio).releasePlayer();
-        		}
-        		
-        		mediaPlayerFactory.release();
-        		System.out.println("Exit of audio players successful");
-        	}
-        });
-		       
-        displaySlide(0);
-                
-        // initialise full screen
-		slideStage.setFullScreen(true);
 	}
+	
 	
 	/**
 	 * Method for creating the control tool bar at the bottom of each slide
 	 * 
 	 * @param slideStage  -  window contains the control bar on
-	 * @return ToolBar  -  returns the tool bar which was created
 	 */
 	private void createControlBar(Stage slideStage) {
 		// instantiation of the control bar
@@ -298,7 +347,9 @@ public class PresentationGui extends Application {
 		
 		createMuteButton();
 		
-		createPlayButton();		
+		createPlayButton();
+		
+		createStopButton();
 		
 		createFullScreenButton(slideStage);
 		
@@ -307,13 +358,15 @@ public class PresentationGui extends Application {
 		// instantiation of the separator on the control bar
 		Separator separator = new Separator();
 		// adding all the items on the control bar
-		controlBar.getItems().addAll(slideButtonsHBox, separator, playButton, transitionButton, volumeSlider, 
+		controlBar.getItems().addAll(slideButtonsHBox, separator, playButton, stopButton, transitionButton, volumeSlider, 
 													muteButton, fullScreenButton);
 	}
 	
+	
 	/**
-	 * Method for the creation of the HBox that containts the 
-	 * slide navigation controls. Previous/Next slide buttons and the slide number text field
+	 * Method for the creation of the HBox that contains the 
+	 * slide navigation controls.
+	 * Previous/Next slide buttons and the slide number text field.
 	 */
 	private void createSlideButtonsHBox() {
 		slideButtonsHBox = new HBox();
@@ -339,8 +392,8 @@ public class PresentationGui extends Application {
 		nextSlideButtonSetup();
 		slideButtonsHBox.getChildren().addAll(previousSlideButton, slideNumberTextField, nextSlideButton);
 		
-		
 	}
+	
 	
 	/**
 	 * Method for the setup of the next slide button
@@ -368,6 +421,7 @@ public class PresentationGui extends Application {
 		});
 	}
 	
+	
 	/**
 	 * Method for the setup of the previous slide button
 	 */
@@ -393,10 +447,10 @@ public class PresentationGui extends Application {
 			}
 		});
 	}
+	
+	
 	/**
 	 * Method for creating the master volume slider with all its attributes
-	 * 
-	 * @return volumeSlider  -  master volume slider which is placed on the control bar
 	 */
 	private void createVolumeSlider() {
 		// instantiation of volume slider
@@ -412,17 +466,21 @@ public class PresentationGui extends Application {
 		volumeSlider.setBlockIncrement(10);
 		// listener to change the volume of the media when the slider is adjusted
 		volumeSlider.valueProperty().addListener(new ChangeListener<Number>() {
-            public void changed(ObservableValue<? extends Number> ov,
+            
+			public void changed(ObservableValue<? extends Number> ov,
                 Number old_val, Number new_val) {
-                    System.out.println(new_val.doubleValue());
+                    //System.out.println(new_val.doubleValue());
+                    masterVolume = new_val;
+                    for(int audio = 0; audio <audioPlayerList.size(); audio++) {
+            			audioPlayerList.get(audio).setAudioVolume(new_val.intValue());
+            		}
             }
         });
 	}
 
+	
 	/**
 	 * Method for creating the automatic/manual slide transition button
-	 * 
-	 * @return transitionButton  -  toggle button for switching the type of slide transition
 	 */
 	private void createTransitionButton() {
 		transitionButton = new ToggleButton("Automatic");
@@ -442,10 +500,9 @@ public class PresentationGui extends Application {
         });
 	}
 
+	
 	/**
 	 * Method for creating the mute button on the control bar
-	 * 
-	 * @return muteButton  -  toggle button for muting/unmuting the media
 	 */
 	private void createMuteButton() {
 		// image for mute button
@@ -464,18 +521,23 @@ public class PresentationGui extends Application {
 			public void handle(ActionEvent e) {
 				if (muteButton.isSelected() == true) {
 					muteButton.setGraphic(muteView);
+					for(int audio = 0; audio <audioPlayerList.size(); audio++) {
+	        			audioPlayerList.get(audio).muteAudio(true);
+	        		}
 				}
 				else {
 					muteButton.setGraphic(unmutedView);
+					for(int audio = 0; audio <audioPlayerList.size(); audio++) {
+	        			audioPlayerList.get(audio).muteAudio(false);
+	        		}
 				}
 			}
 		});
 	}
 	
+	
 	/**
 	 * Method for creating the play button on the control bar
-	 * 
-	 * @return playButton  -  toggle button for the pause/play of media
 	 */
 	private void createPlayButton() {
 		// image for the play button
@@ -487,7 +549,8 @@ public class PresentationGui extends Application {
 		// instantiation of play button
 		playButton = new ToggleButton();
 		// set the image on the button
-		playButton.setGraphic(playView);
+		playButton.setSelected(true);
+		playButton.setGraphic(pauseView);
 		playButton.setMaxSize(40, 30);
 		playButton.setPrefSize(40, 30);
 		playButton.setMinSize(40, 30);
@@ -496,19 +559,62 @@ public class PresentationGui extends Application {
 			public void handle(ActionEvent e) {
 				if (playButton.isSelected() == true) {
 					playButton.setGraphic(pauseView);
+					for(int audio = 0; audio <audioPlayerList.size(); audio++) {
+            			audioPlayerList.get(audio).playAudio();
+            			// Fixes bug with vlc
+            			while(-1 == audioPlayerList.get(0).getAudioVolume());
+            			if(muteButton.isSelected()) {
+            				audioPlayerList.get(0).muteAudio(true);
+            			}
+            			else {
+            				audioPlayerList.get(0).setAudioVolume(masterVolume.intValue());
+            			}
+            		}
 				}
 				else {
 					playButton.setGraphic(playView);
+					for(int audio = 0; audio <audioPlayerList.size(); audio++) {
+            			audioPlayerList.get(audio).pauseAudio();
+            		}
 				}
 			}
 		});
 	}
 	
+	
+	/**
+	 * Method for creating the stop button on the control bar
+	 */
+	private void createStopButton() {
+		// image for the stop button
+		stopImage = new Image(getClass().getResourceAsStream("resources/stop.png"));
+		stopView = new ImageView(stopImage);
+		// instantiation of play button
+		stopButton = new Button();
+		// set the image on the button
+		stopButton.setGraphic(stopView);
+		stopButton.setMaxSize(40, 30);
+		stopButton.setPrefSize(40, 30);
+		stopButton.setMinSize(40, 30);
+		stopButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent e) {
+				// Stop all audio players
+				for(int audio = 0; audio <audioPlayerList.size(); audio++) {
+        			audioPlayerList.get(audio).stopAudio();
+        		}
+				// Set playButton back to wait to play
+				playButton.setSelected(false);
+				playButton.setGraphic(playView);
+			}
+		});
+	}
+	
+	
 	/**
 	 * Method for creating the full screen toggle button
 	 * 
 	 * @param slideStage  -  window that will switch from full screen to normal size
-	 * @return fullScreenButton  -  the toggle button that enters and exits full screen
 	 */
 	private void createFullScreenButton(final Stage slideStage) {
 		// image for the full screen button
@@ -637,7 +743,6 @@ public class PresentationGui extends Application {
 		for(int shape = 0; shape < numberOfShapes; shape++) {
 			ShapeEntry currentShape = currentSlide.shapeList.get(shape);
 			
-			//TODO Should be what is in the commented code but parser doesn't set defaults.
 			ShapeGraphic tempShape = new ShapeGraphic(currentShape.getShapeStartTime(),
 														currentShape.getShapeDuration(),
 														currentShape.getShapeXStart(),

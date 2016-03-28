@@ -72,7 +72,7 @@ public class AudioPlayer {
 	public void playAudio(String audioFile) {
 		mediaPlayer.playMedia(audioFile);
 	}
-	
+		
 	/**
 	 * Method to pause a loaded audio file.
 	 */
@@ -110,6 +110,10 @@ public class AudioPlayer {
 	 */
 	public void setAudioVolume(int level) {
 		mediaPlayer.setVolume(level);
+	}
+	
+	public int getAudioVolume() {
+		return mediaPlayer.getVolume();
 	}
 	
 	/**
