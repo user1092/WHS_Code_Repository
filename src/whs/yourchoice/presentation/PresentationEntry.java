@@ -14,8 +14,8 @@ import java.util.List;
 * This class is responsible for storing the presentation object contained in the XML file.
 * It also stores a list of all instances of all slides contained in the XML file.
 *
-* @author Antonio Figueiredo and Sabrina Quinn
-* @version v1.0 10/03/16
+* @author Antonio Figueiredo and Sabrina Quinn & CH1092
+* @version v1.1 28/03/16
 */
 
 public class PresentationEntry 
@@ -30,6 +30,8 @@ public class PresentationEntry
 	private String defaultFontColour = null;
 	private String defaultLineColour = null;
 	private String defaultFillColour = null;
+	
+	private String presentationPath;
 	
 	public List<SlideEntry> slideList = new ArrayList<SlideEntry>();
 	
@@ -218,17 +220,24 @@ public class PresentationEntry
 	{
 		return slideList.size();
 	}
-	
-	
-	
-	
-	
-	
-	
 
-
-
-
-
-
+	/**
+	 * Method to set the path to the XML file
+	 * 
+	 * @param path	-	The location of the XML file
+	 */
+	public void setPath(String presentationPath) {
+		// TODO Auto-generated method stub
+		this.presentationPath = presentationPath;
+	}
+	
+	/**
+	 * Method to retrieve the path to the XML file
+	 * 
+	 * @return presentationPath	-	The location of the XML file
+	 */
+	public String getPath() {
+		return presentationPath;
+	}
+		
 }

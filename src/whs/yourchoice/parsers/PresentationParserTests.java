@@ -36,7 +36,7 @@ public class PresentationParserTests
 	{		
 		PresentationParser parser = new PresentationParser();		
 		PresentationEntry presentation;
-		presentation = parser.parsePresention("src/test_file.xml");
+		presentation = parser.parsePresention("src/test_file.xml", "src");
 		
 		assertEquals("Your Choice", presentation.getPresentationTitle());
 		assertEquals("Woolly Hat Software", presentation.getPresentationAuthor());
@@ -58,7 +58,7 @@ public class PresentationParserTests
 	{
 		PresentationParser parser = new PresentationParser();
 		PresentationEntry presentation = new PresentationEntry();		
-		presentation = parser.parsePresention("src/test_file.xml");
+		presentation = parser.parsePresention("src/test_file.xml", "src");
 		
 		SlideEntry currentSlide;
 		TextEntry currentText;
