@@ -54,7 +54,7 @@ public class PresentationParser
 	* @param filePath The path of the XML file to be parsed.
 	* @return presentation The completely populated presentation.
 	*/
-	protected PresentationEntry parsePresention(String filePath) 
+	public PresentationEntry parsePresention(String filePath) 
 	{
 		try 
 		{
@@ -393,8 +393,21 @@ public class PresentationParser
 			
 			if (temporaryNodeAttributeElement.getNodeName() == "fontColour")
 			{
-				temporaryText.setTextFontColour(temporaryNodeAttributeElement.getNodeValue());
+				temporaryText.setTextFontColour(temporaryNodeAttributeElement.getNodeValue());							
 			}
+		}
+		
+		if(temporaryText.getTextFontColour() == null)
+		{
+			temporaryText.setTextFontColour(presentation.getDefaultFontColour());				
+		}
+		if(temporaryText.getTextFont() == null)
+		{
+			temporaryText.setTextFont(presentation.getDefaultFont());
+		}
+		if(temporaryText.getTextFontSize() == -10)
+		{
+			temporaryText.setTextFontSize(Integer.toString(presentation.getDefaultFontSize()));
 		}
 		
 		if (temporaryNode.hasChildNodes())
@@ -500,6 +513,15 @@ public class PresentationParser
 			}
 		}
 		
+		if(temporaryShape.getShapeLineColour() == null)
+		{
+			temporaryShape.setShapeLineColour(presentation.getDefaultLineColour());				
+		}
+		if(temporaryShape.getShapeFillColour() == null)
+		{
+			temporaryShape.setShapeFillColour(presentation.getDefaultFillColour());				
+		}
+		
         NodeList temporaryChildList = temporaryNode.getChildNodes();
         Node temporaryChildElement = temporaryChildList.item(1);       
         NamedNodeMap temporaryChildAttributesNodeList = temporaryChildElement.getAttributes();
@@ -584,6 +606,15 @@ public class PresentationParser
 			{
 				temporaryPolygon.setPolygonFillColour(temporaryNodeAttributeElement.getNodeValue());
 			}
+		}
+		
+		if(temporaryPolygon.getPolygonLineColour() == null)
+		{
+			temporaryPolygon.setPolygonLineColour(presentation.getDefaultLineColour());				
+		}
+		if(temporaryPolygon.getPolygonFillColour() == null)
+		{
+			temporaryPolygon.setPolygonFillColour(presentation.getDefaultFillColour());				
 		}
 		
 		NodeList temporaryChildList = temporaryNode.getChildNodes();
