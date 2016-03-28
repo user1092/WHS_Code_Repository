@@ -38,7 +38,7 @@ import javafx.util.StringConverter;
 * Class for creation of the Client GUI and adding functionality
 *
 * @author user828 & user1092
-* @version v0.2 28/01/16
+* @version v0.3 28/03/16
 */
 public class ClientGui extends Application{
 	// object for the file chooser for getting the XML file
@@ -365,9 +365,9 @@ public class ClientGui extends Application{
 					actionStatus.setText("File selected: " + xmlFile.getName());
 					PresentationParser parser = new PresentationParser();		
 					
-					presentation = parser.parsePresention(xmlFile.getPath());
-					PresentationGui presentationGui;
-					//presentationGui = new PresentationGui(presentation);
+					System.out.println(xmlFile.getParent());
+					presentation = parser.parsePresention(xmlFile.getAbsolutePath(), xmlFile.getParent());
+					
 					Platform.runLater(new Runnable() {
 				 	       public void run() {             
 				 	           try {

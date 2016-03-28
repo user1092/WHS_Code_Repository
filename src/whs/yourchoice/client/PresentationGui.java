@@ -57,7 +57,7 @@ import javafx.stage.WindowEvent;
 * Class for creation of the presentation window and adding functionality
 *
 * @author user828 & user1092
-* @version v0.6 23/03/16
+* @version v0.7 28/03/16
 */
 public class PresentationGui extends Application {
 	
@@ -108,7 +108,7 @@ public class PresentationGui extends Application {
 	private PresentationEntry presentation;
 	
 	// Location of where VLC is installed
-	private final String VLC_LIBRARY_LOCATION = "M:/vlc-2.1.0";
+	private String vlcLibraryLocation;
 	// Set VLC video output to a dummy, waveout used as bug with DX
 	private final String[] VLC_ARGS = {"--vout", "dummy", "--aout", "waveout"};
 	private MediaPlayerFactory mediaPlayerFactory;
@@ -124,9 +124,15 @@ public class PresentationGui extends Application {
 	public PresentationGui(PresentationEntry passedPresentation) {
 		presentation = passedPresentation;
 		
-		// Find and load VLC libraries
-		NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), VLC_LIBRARY_LOCATION);
-		System.setProperty("jna.library.path", VLC_LIBRARY_LOCATION);
+		// Find and load VLC libraries depending on the JVM
+		if("32".equals(System.getProperty("sun.arch.data.model"))) {
+			vlcLibraryLocation = new File("").getAbsolutePath() + "/vlc-2.1.0";
+		}
+		else {
+			vlcLibraryLocation = new File("").getAbsolutePath() + "/vlc-2.1.0-win64";
+		}
+		NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), vlcLibraryLocation);
+		System.setProperty("jna.library.path", vlcLibraryLocation);
 		Native.loadLibrary(RuntimeUtil.getLibVlcLibraryName(), LibVlc.class);
 		
 		// Create a media player factory
@@ -454,24 +460,7 @@ public class PresentationGui extends Application {
 		
 		displayVideos(currentSlide, duffCanvas);
 		
-		// Get the total number of audio files to be played
-		int numberOfAudios = currentSlide.audioList.size();
-				
-		// Display all audio
-		for(int audio = 0; audio < numberOfAudios; audio++) {
-			// Create a audio player
-			AudioPlayer audioPlayer = new AudioPlayer(mediaPlayerFactory);
-			audioPlayerList.add(audioPlayer);
-			
-			AudioEntry currentAudio = new AudioEntry();
-			
-			currentAudio = currentSlide.audioList.get(audio);
-			
-			audioPlayerList.get(audio).playAudio(currentAudio.getAudioSourceFile());
-			audioPlayerList.get(audio).loopAudio(currentAudio.getAudioLoop());
-			
-			System.out.println("audio entry: " + audio + "\n");
-		}
+		displayAudios(currentSlide);
 	}
 
 
@@ -525,7 +514,7 @@ public class PresentationGui extends Application {
 			
 			ImageEntry currentImage = currentSlide.imageList.get(image);
 			
-			tempImage = new Images(currentImage.getImageSourceFile(),
+			tempImage = new Images("file:" + presentation.getPath() + "/" +  currentImage.getImageSourceFile(),
 													currentImage.getImageStartTime(),
 													currentImage.getImageDuration(),
 													currentImage.getImageXStart(),
@@ -590,10 +579,10 @@ public class PresentationGui extends Application {
 		// Display all polygons
 		for(int polygon = 0; polygon < numberOfPolygons; polygon++) {
 			PolygonEntry currentPolygon = currentSlide.polygonList.get(polygon);
-			
+						
 			PolygonGraphic tempPolygon = new PolygonGraphic(currentPolygon.getPolygonStartTime(),
 															currentPolygon.getPolygonDuration(),
-															new File("").getAbsolutePath() + "\\" +
+															presentation.getPath() + "/" +
 															currentPolygon.getPolygonSourceFile());
 			
 			tempPolygon.setShading(currentPolygon.getPolygonShadeX1(), currentPolygon.getPolygonShadeX2(),
@@ -636,14 +625,45 @@ public class PresentationGui extends Application {
 		for(int video = 0; video < numberOfVideos; video++) {
 			VideoEntry currentVideo = currentSlide.videoList.get(video);
 			
+			File tempFile = new File(presentation.getPath() + "/" + currentVideo.getVideoSourceFile());
+			String videoPath = tempFile.toURI().toASCIIString();
+			
 			VideoPlayer tempVideo = new VideoPlayer();
 			
-			presentationLayout.getChildren().add(tempVideo.videoPlayerWindow(currentVideo.getVideoSourceFile(),
+			presentationLayout.getChildren().add(tempVideo.videoPlayerWindow(
+												videoPath,
 												currentVideo.getVideoYStart(),
 												currentVideo.getVideoXStart(),
 												VIDEO_WIDTH, VIDEO_HEIGHT, duffCanvas));
 			
 			System.out.println("video entry: " + video + "\n");
+		}
+	}
+
+
+	/**
+	 * Method to display all audio on the current slide
+	 * 
+	 * @param currentSlide	-	The slide of which elements are to be displayed
+	 */
+	private void displayAudios(SlideEntry currentSlide) {
+		// Get the total number of audio files to be played
+		int numberOfAudios = currentSlide.audioList.size();
+				
+		// Display all audio
+		for(int audio = 0; audio < numberOfAudios; audio++) {
+			// Create a audio player
+			AudioPlayer audioPlayer = new AudioPlayer(mediaPlayerFactory);
+			audioPlayerList.add(audioPlayer);
+			
+			AudioEntry currentAudio = new AudioEntry();
+			
+			currentAudio = currentSlide.audioList.get(audio);
+			
+			audioPlayerList.get(audio).playAudio(presentation.getPath() + "/" + currentAudio.getAudioSourceFile());
+			audioPlayerList.get(audio).loopAudio(currentAudio.getAudioLoop());
+			
+			System.out.println("audio entry: " + audio + "\n");
 		}
 	}
 }
