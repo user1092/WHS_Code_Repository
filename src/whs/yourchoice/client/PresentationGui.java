@@ -1,5 +1,8 @@
 package whs.yourchoice.client;
 
+import java.util.List;
+import java.util.ArrayList;
+
 import com.sun.jna.Native;
 import com.sun.jna.NativeLibrary;
 
@@ -7,6 +10,7 @@ import presentech.TextHandler;
 
 import stammtisch.Objects.Images;
 import stammtisch.handlers.ImageHandler;
+
 import uk.co.caprica.vlcj.binding.LibVlc;
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;
 import uk.co.caprica.vlcj.runtime.RuntimeUtil;
@@ -45,6 +49,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.transform.Scale;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 /**
 * Class for creation of the presentation window and adding functionality
@@ -105,7 +110,8 @@ public class PresentationGui extends Application {
 	// Set VLC video output to a dummy, waveout used as bug with DX
 	private final String[] VLC_ARGS = {"--vout", "dummy", "--aout", "waveout"};
 	private MediaPlayerFactory mediaPlayerFactory;
-	private AudioPlayer audioPlayer;
+	private List<AudioPlayer> audioPlayerList = new ArrayList<AudioPlayer>();
+	//private AudioPlayer audioPlayer;
 	
 
 	/**
@@ -123,10 +129,7 @@ public class PresentationGui extends Application {
 		
 		// Create a media player factory
 		mediaPlayerFactory = new MediaPlayerFactory(VLC_ARGS);
-		
-		// Create a audio player
-		audioPlayer = new AudioPlayer(mediaPlayerFactory);
-		
+			
 	}
 	
 	
@@ -225,6 +228,21 @@ public class PresentationGui extends Application {
 
              }
         });
+        
+        // Listen for the stage closing to release all audio players
+        slideStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+        	public void handle(WindowEvent we) {
+        		
+        		System.out.println("audioPlayerList size: " + audioPlayerList.size());
+        		
+        		for(int audio = 0; audio <audioPlayerList.size(); audio++) {
+        			audioPlayerList.get(audio).releasePlayer();
+        		}
+        		
+        		mediaPlayerFactory.release();
+        		System.out.println("Exit of audio players successful");
+        	}
+        });
 		       
         displaySlide(0);
                 
@@ -232,13 +250,6 @@ public class PresentationGui extends Application {
 		slideStage.setFullScreen(true);
 	}
 	
-	@Override
-	public void stop() throws Exception {
-	    audioPlayer.releasePlayer();
-		mediaPlayerFactory.release();
-	}
-
-
 	/**
 	 * Method for creating the control tool bar at the bottom of each slide
 	 * 
@@ -444,20 +455,21 @@ public class PresentationGui extends Application {
 		// Get the total number of audio files to be played
 		int numberOfAudios = currentSlide.audioList.size();
 				
-		// Display all text
+		// Display all audio
 		for(int audio = 0; audio < numberOfAudios; audio++) {
-			
+			// Create a audio player
+			AudioPlayer audioPlayer = new AudioPlayer(mediaPlayerFactory);
+			audioPlayerList.add(audioPlayer);
 			
 			AudioEntry currentAudio = new AudioEntry();
 			
 			currentAudio = currentSlide.audioList.get(audio);
 			
-			audioPlayer.playAudio(currentAudio.getAudioSourceFile());
-			audioPlayer.loopAudio(currentAudio.getAudioLoop());
+			audioPlayerList.get(audio).playAudio(currentAudio.getAudioSourceFile());
+			audioPlayerList.get(audio).loopAudio(currentAudio.getAudioLoop());
 			
 			System.out.println("audio entry: " + audio + "\n");
 		}
-		//audioPlayer.toggleLoopAudio();
 	}
 
 
