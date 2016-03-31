@@ -62,7 +62,7 @@ import javafx.util.StringConverter;
 * Class for creation of the presentation window and adding functionality
 *
 * @author user828 & user1092
-* @version v0.7 28/03/16
+* @version v0.8 31/03/16
 */
 public class PresentationGui extends Application {
 	
@@ -75,9 +75,14 @@ public class PresentationGui extends Application {
 	final int CONTROL_BAR_HEIGHT = 60;
 	final int PRESENTATION_WIDTH = WINDOW_WIDTH;
 	final int PRESENTATION_HEIGHT = WINDOW_HEIGHT - (CONTROL_BAR_HEIGHT/2) - CONTROL_BAR_HEIGHT;
+	// Values for the video player
 	//TODO May consider implementing in the xml file
 	final float VIDEO_WIDTH = 0.3f;
 	final float VIDEO_HEIGHT = 0.3f;
+	private static final int DEFAULT_START_VOLUME = 100;
+	private static final int DEFAULT_HALFWAY_VOLUME = 50; 
+	private static final int DEFAULT_VOLUMESLIDER_SCALE_DISPLAYED = 5; 
+	private static final int DEFAULT_VOLUMESLIDER_INCREMENTING_SCALE = 10;
 	
 	private StackPane presentationLayout;
     private BorderPane subPresentationLayout;
@@ -93,7 +98,7 @@ public class PresentationGui extends Application {
     
     private ToolBar controlBar;
     
-    private Number masterVolume;
+    private Number masterVolume = DEFAULT_START_VOLUME;
     
     // Objects present on the control bar
     private Slider volumeSlider;
@@ -106,8 +111,7 @@ public class PresentationGui extends Application {
     private Button nextSlideButton;
     private Image nextSlideImage;
     private ImageView nextSlideView;
-    
-    
+        
 	private ToggleButton transitionButton;
 	private ToggleButton muteButton;
 	private Image muteImage;
@@ -135,7 +139,8 @@ public class PresentationGui extends Application {
 	private final String[] VLC_ARGS = {"--vout", "dummy", "--aout", "waveout"};
 	private MediaPlayerFactory mediaPlayerFactory;
 	private List<AudioPlayer> audioPlayerList = new ArrayList<AudioPlayer>();
-	//private AudioPlayer audioPlayer;
+	
+	private List<VideoPlayer> videoPlayerList = new ArrayList<VideoPlayer>();
 	
 	// object for formatting the text fields to only accept integers
 	private StringConverter<Integer> integerFormatter;
@@ -269,15 +274,34 @@ public class PresentationGui extends Application {
 		// Listen for the stage closing to release all audio players
         slideStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
         	public void handle(WindowEvent we) {
-        		
-        		for(int audio = 0; audio <audioPlayerList.size(); audio++) {
-        			audioPlayerList.get(audio).releasePlayer();
-        		}
-        		
+        		releaseMediaPlayers();
         		mediaPlayerFactory.release();
-        		System.out.println("Exit of audio players successful");
         	}
         });
+	}
+	
+	/**
+	 * Method to release all media players
+	 */
+	private void releaseMediaPlayers() {
+		// Release all audio players
+		for(int audio = 0; audio < audioPlayerList.size(); audio++) {
+			System.out.println("audio: " + audio);
+			audioPlayerList.get(audio).releasePlayer();
+			
+		}		
+		audioPlayerList.clear();
+		
+		System.out.println("Exit of audio players successful");
+		
+		// Release all video players
+		for(int video = 0; video < videoPlayerList.size(); video++) {
+			videoPlayerList.get(video).releasePlayer();
+			
+		}
+		videoPlayerList.clear();
+		
+		System.out.println("Exit of video players successful");
 	}
 
 	
@@ -290,8 +314,10 @@ public class PresentationGui extends Application {
 		stageInitialWidth = scene.getWidth();
         stageInitialHeight = scene.getHeight();
 
-        // listener for getting the width of the window
-        // and scaling everything according to the change in the window size
+        /*
+         *  Listener for getting the width of the window
+         *  and scaling everything according to the change in the window size
+         */
         windowLayout.getScene().widthProperty()
         .addListener(new ChangeListener<Number>() {
              @Override
@@ -308,8 +334,10 @@ public class PresentationGui extends Application {
              }
         });
 
-        // listener for getting the height of the window
-        // and scaling everything according to the change in the window size
+        /* 
+         * listener for getting the height of the window
+         * and scaling everything according to the change in the window size
+         */
         windowLayout.getScene().heightProperty()
         .addListener(new ChangeListener<Number>() {
              @Override
@@ -335,7 +363,7 @@ public class PresentationGui extends Application {
 	 * @param slideStage  -  window contains the control bar on
 	 */
 	private void createControlBar(Stage slideStage) {
-		// instantiation of the control bar
+		// Instantiation of the control bar
 		controlBar = new ToolBar();
 		controlBar.setMaxHeight(CONTROL_BAR_HEIGHT);
 		controlBar.setMinHeight(CONTROL_BAR_HEIGHT);
@@ -355,9 +383,9 @@ public class PresentationGui extends Application {
 		
 		createSlideButtonsHBox();
 		
-		// instantiation of the separator on the control bar
+		// Instantiation of the separator on the control bar
 		Separator separator = new Separator();
-		// adding all the items on the control bar
+		// Adding all the items on the control bar
 		controlBar.getItems().addAll(slideButtonsHBox, separator, playButton, stopButton, transitionButton, volumeSlider, 
 													muteButton, fullScreenButton);
 	}
@@ -365,8 +393,8 @@ public class PresentationGui extends Application {
 	
 	/**
 	 * Method for the creation of the HBox that contains the 
-	 * slide navigation controls.
-	 * Previous/Next slide buttons and the slide number text field.
+	 * slide navigation controls, Previous/Next slide buttons 
+	 * and the slide number text field.
 	 */
 	private void createSlideButtonsHBox() {
 		slideButtonsHBox = new HBox();
@@ -375,13 +403,15 @@ public class PresentationGui extends Application {
 		slideNumberTextField = new TextField();
 		slideNumberTextField.setPrefWidth(25);
 		slideNumberTextField.setPrefHeight(30);
+		// TODO fix so a slide number can be entered
 		slideNumberTextField.setEditable(false);
-		//call method for setting the format of text fields
+		// Call method for setting the format of text fields
 		integerFormatter = new IntRangeStringConverter(0, presentation.getTotalSlideNumber(), 1);
 		slideNumberTextField.setTextFormatter(new TextFormatter<>(integerFormatter, slideNumber));
 		slideNumberTextField.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
+				releaseMediaPlayers();
 				presentationLayout.getChildren().clear();
 				slideNumber = Integer.parseInt(slideNumberTextField.getText());
 				displaySlide(slideNumber);
@@ -399,10 +429,10 @@ public class PresentationGui extends Application {
 	 * Method for the setup of the next slide button
 	 */
 	private void nextSlideButtonSetup() {
-		// image for mute button
+		// Image for mute button
 		nextSlideImage = new Image(getClass().getResourceAsStream("resources/nextbutton.png"));
 		nextSlideView = new ImageView(nextSlideImage);
-		//instantiation of next slide button
+		// Instantiation of next slide button
 		nextSlideButton = new Button();
 		nextSlideButton.setGraphic(nextSlideView);
 		nextSlideButton.setMaxSize(35, 30);
@@ -412,6 +442,7 @@ public class PresentationGui extends Application {
 			@Override
 			public void handle(ActionEvent e) {
 				if (slideNumber < (presentation.getTotalSlideNumber() - 1)) {
+					releaseMediaPlayers();
 					presentationLayout.getChildren().clear();
 					slideNumber++;
 					displaySlide(slideNumber);
@@ -426,10 +457,10 @@ public class PresentationGui extends Application {
 	 * Method for the setup of the previous slide button
 	 */
 	private void previousSlideButtonSetup() {
-		// image for mute button
+		// Image for mute button
 		previousSlideImage = new Image(getClass().getResourceAsStream("resources/previousbutton.png"));
 		previousSlideView = new ImageView(previousSlideImage);
-		//instantiation of next slide button
+		// Instantiation of next slide button
 		previousSlideButton = new Button();
 		previousSlideButton.setGraphic(previousSlideView);
 		previousSlideButton.setMaxSize(35, 30);
@@ -439,6 +470,7 @@ public class PresentationGui extends Application {
 			@Override
 			public void handle(ActionEvent e) {
 				if (slideNumber > 0) {
+					releaseMediaPlayers();
 					presentationLayout.getChildren().clear();
 					slideNumber--;
 					displaySlide(slideNumber);
@@ -453,27 +485,30 @@ public class PresentationGui extends Application {
 	 * Method for creating the master volume slider with all its attributes
 	 */
 	private void createVolumeSlider() {
-		// instantiation of volume slider
+		// Instantiation of volume slider
 		volumeSlider = new Slider();
-		// setting the attributes of the slider
+		// Setting the attributes of the slider
 		volumeSlider.setMin(0);
 		volumeSlider.setMax(100);
-		volumeSlider.setValue(50);
+		volumeSlider.setValue(DEFAULT_START_VOLUME);
 		volumeSlider.setShowTickLabels(true);
 		volumeSlider.setShowTickMarks(true);
-		volumeSlider.setMajorTickUnit(50);
-		volumeSlider.setMinorTickCount(5);
-		volumeSlider.setBlockIncrement(10);
-		// listener to change the volume of the media when the slider is adjusted
+		volumeSlider.setMajorTickUnit(DEFAULT_HALFWAY_VOLUME);
+		volumeSlider.setMinorTickCount(DEFAULT_VOLUMESLIDER_SCALE_DISPLAYED);
+		volumeSlider.setBlockIncrement(DEFAULT_VOLUMESLIDER_INCREMENTING_SCALE);
+		// Listener to change the volume of the media when the slider is adjusted
 		volumeSlider.valueProperty().addListener(new ChangeListener<Number>() {
-            
 			public void changed(ObservableValue<? extends Number> ov,
                 Number old_val, Number new_val) {
-                    //System.out.println(new_val.doubleValue());
                     masterVolume = new_val;
-                    for(int audio = 0; audio <audioPlayerList.size(); audio++) {
+                    // Set volume on all audio players
+                    for(int audio = 0; audio < audioPlayerList.size(); audio++) {
             			audioPlayerList.get(audio).setAudioVolume(new_val.intValue());
             		}
+                    // Set volume on all video players
+                    for(int video = 0; video < videoPlayerList.size(); video++) {
+	        			videoPlayerList.get(video).setVolume(new_val.intValue());
+	        		}
             }
         });
 	}
@@ -505,12 +540,12 @@ public class PresentationGui extends Application {
 	 * Method for creating the mute button on the control bar
 	 */
 	private void createMuteButton() {
-		// image for mute button
+		// Image for mute button
 		muteImage = new Image(getClass().getResourceAsStream("resources/mute.png"));
 		muteView = new ImageView(muteImage);
 		unmutedImage = new Image(getClass().getResourceAsStream("resources/unmute.png"));
 		unmutedView = new ImageView(unmutedImage);
-		// instantiation of mute button
+		// Instantiation of mute button
 		muteButton = new ToggleButton();
 		muteButton.setGraphic(unmutedView);
 		muteButton.setMaxSize(50, 30);
@@ -521,14 +556,24 @@ public class PresentationGui extends Application {
 			public void handle(ActionEvent e) {
 				if (muteButton.isSelected() == true) {
 					muteButton.setGraphic(muteView);
-					for(int audio = 0; audio <audioPlayerList.size(); audio++) {
+					// Mute all audio players
+					for(int audio = 0; audio < audioPlayerList.size(); audio++) {
 	        			audioPlayerList.get(audio).muteAudio(true);
+	        		}
+					// Mute all video players
+					for(int video = 0; video < videoPlayerList.size(); video++) {
+	        			videoPlayerList.get(video).muteAudio(true);
 	        		}
 				}
 				else {
 					muteButton.setGraphic(unmutedView);
-					for(int audio = 0; audio <audioPlayerList.size(); audio++) {
+					// Unmute all audio players
+					for(int audio = 0; audio < audioPlayerList.size(); audio++) {
 	        			audioPlayerList.get(audio).muteAudio(false);
+	        		}
+					// Unmute all video players
+					for(int video = 0; video < videoPlayerList.size(); video++) {
+	        			videoPlayerList.get(video).muteAudio(false);
 	        		}
 				}
 			}
@@ -540,15 +585,15 @@ public class PresentationGui extends Application {
 	 * Method for creating the play button on the control bar
 	 */
 	private void createPlayButton() {
-		// image for the play button
+		// Image for the play button
 		playImage = new Image(getClass().getResourceAsStream("resources/play.png"));
 		playView = new ImageView(playImage);
-		// image for the pause button
+		// Image for the pause button
 		pauseImage = new Image(getClass().getResourceAsStream("resources/pause.png"));
 		pauseView = new ImageView(pauseImage);
-		// instantiation of play button
+		// Instantiation of play button
 		playButton = new ToggleButton();
-		// set the image on the button
+		// Set the image on the button
 		playButton.setSelected(true);
 		playButton.setGraphic(pauseView);
 		playButton.setMaxSize(40, 30);
@@ -557,25 +602,36 @@ public class PresentationGui extends Application {
 		playButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
-				if (playButton.isSelected() == true) {
+				if (playButton.isSelected()) {
 					playButton.setGraphic(pauseView);
-					for(int audio = 0; audio <audioPlayerList.size(); audio++) {
+					// Set all audio players to play 
+					for(int audio = 0; audio < audioPlayerList.size(); audio++) {
             			audioPlayerList.get(audio).playAudio();
             			// Fixes bug with vlc
-            			while(-1 == audioPlayerList.get(0).getAudioVolume());
+            			while(-1 == audioPlayerList.get(audio).getAudioVolume());
             			if(muteButton.isSelected()) {
-            				audioPlayerList.get(0).muteAudio(true);
+            				audioPlayerList.get(audio).muteAudio(true);
             			}
             			else {
-            				audioPlayerList.get(0).setAudioVolume(masterVolume.intValue());
+            				audioPlayerList.get(audio).setAudioVolume(masterVolume.intValue());
             			}
             		}
+					// Set all video players to play 
+					for(int video = 0; video < videoPlayerList.size(); video++) {
+						System.out.println(videoPlayerList.get(video).toString());
+	        			videoPlayerList.get(video).playVideo();
+	        		}
 				}
 				else {
 					playButton.setGraphic(playView);
-					for(int audio = 0; audio <audioPlayerList.size(); audio++) {
+					// Set all audio players to pause 
+					for(int audio = 0; audio < audioPlayerList.size(); audio++) {
             			audioPlayerList.get(audio).pauseAudio();
             		}
+					// Set all video players to pause 
+					for(int video = 0; video < videoPlayerList.size(); video++) {
+	        			videoPlayerList.get(video).pauseVideo();
+	        		}
 				}
 			}
 		});
@@ -586,12 +642,12 @@ public class PresentationGui extends Application {
 	 * Method for creating the stop button on the control bar
 	 */
 	private void createStopButton() {
-		// image for the stop button
+		// Image for the stop button
 		stopImage = new Image(getClass().getResourceAsStream("resources/stop.png"));
 		stopView = new ImageView(stopImage);
-		// instantiation of play button
+		// Instantiation of play button
 		stopButton = new Button();
-		// set the image on the button
+		// Set the image on the button
 		stopButton.setGraphic(stopView);
 		stopButton.setMaxSize(40, 30);
 		stopButton.setPrefSize(40, 30);
@@ -600,9 +656,14 @@ public class PresentationGui extends Application {
 			@Override
 			public void handle(ActionEvent e) {
 				// Stop all audio players
-				for(int audio = 0; audio <audioPlayerList.size(); audio++) {
+				for(int audio = 0; audio < audioPlayerList.size(); audio++) {
         			audioPlayerList.get(audio).stopAudio();
         		}
+				// Stop all video players
+				for(int video = 0; video < videoPlayerList.size(); video++) {
+        			videoPlayerList.get(video).stopVideo();
+        		}
+				
 				// Set playButton back to wait to play
 				playButton.setSelected(false);
 				playButton.setGraphic(playView);
@@ -617,12 +678,12 @@ public class PresentationGui extends Application {
 	 * @param slideStage  -  window that will switch from full screen to normal size
 	 */
 	private void createFullScreenButton(final Stage slideStage) {
-		// image for the full screen button
+		// Image for the full screen button
 		exitImage = new Image(getClass().getResource("resources/exit.png").toExternalForm());
 		exitView = new ImageView(exitImage);
-		// instantiation of full screen button
+		// Instantiation of full screen button
 		fullScreenButton = new ToggleButton();
-		// set the image on the button
+		// Set the image on the button
 		fullScreenButton.setGraphic(exitView);
 		
 		fullScreenButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -828,13 +889,19 @@ public class PresentationGui extends Application {
 			File tempFile = new File(presentation.getPath() + "/" + currentVideo.getVideoSourceFile());
 			String videoPath = tempFile.toURI().toASCIIString();
 			
-			VideoPlayer tempVideo = new VideoPlayer();
+			VideoPlayer videoPlayer = new VideoPlayer();
+			videoPlayerList.add(videoPlayer);
 			
-			presentationLayout.getChildren().add(tempVideo.videoPlayerWindow(
-												videoPath,
-												currentVideo.getVideoYStart(),
-												currentVideo.getVideoXStart(),
-												VIDEO_WIDTH, VIDEO_HEIGHT, duffCanvas));
+			Pane tempPane = videoPlayerList.get(video).videoPlayerWindow(
+					videoPath,
+					currentVideo.getVideoYStart(),
+					currentVideo.getVideoXStart(),
+					VIDEO_WIDTH, VIDEO_HEIGHT, duffCanvas);
+			
+			// Allow mouse clicks through the pane where the video is not located
+			tempPane.setPickOnBounds(false);
+			
+			presentationLayout.getChildren().add(tempPane);
 			
 			System.out.println("video entry: " + video + "\n");
 		}
@@ -850,15 +917,13 @@ public class PresentationGui extends Application {
 		// Get the total number of audio files to be played
 		int numberOfAudios = currentSlide.audioList.size();
 				
-		// Display all audio
+		// Load all audio
 		for(int audio = 0; audio < numberOfAudios; audio++) {
 			// Create a audio player
 			AudioPlayer audioPlayer = new AudioPlayer(mediaPlayerFactory);
 			audioPlayerList.add(audioPlayer);
 			
-			AudioEntry currentAudio = new AudioEntry();
-			
-			currentAudio = currentSlide.audioList.get(audio);
+			AudioEntry currentAudio = currentSlide.audioList.get(audio);
 			
 			audioPlayerList.get(audio).playAudio(presentation.getPath() + "/" + currentAudio.getAudioSourceFile());
 			audioPlayerList.get(audio).loopAudio(currentAudio.getAudioLoop());
