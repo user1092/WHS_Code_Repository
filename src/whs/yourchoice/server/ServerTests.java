@@ -109,7 +109,14 @@ public class ServerTests {
 	public void serverShouldReceiveDataFromAnOpenSocket() {
 				
 		final Object itemToSend = "hello";
-				
+		
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+		
 		/* Thread for server to listen to client
 		 * check the server receives the string hello
 		 */
@@ -124,7 +131,7 @@ public class ServerTests {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				System.out.println("BLUGHHH");
+				System.out.println("itemReceived: " + itemReceived);
 			}
 		};
 		listenThread.start();

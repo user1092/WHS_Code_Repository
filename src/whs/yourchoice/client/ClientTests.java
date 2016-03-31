@@ -64,9 +64,11 @@ public class ClientTests {
 	 */
 	@After
 	public void closeSockets() {
-		client.closeSocket();
+		//client.closeSocket();
 		
 		server.closeSocket();
+		
+		client.closeSocket();
 	}
 		
 	

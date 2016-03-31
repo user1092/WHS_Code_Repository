@@ -7,6 +7,8 @@
 package whs.yourchoice.server;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 /**
@@ -19,7 +21,8 @@ public class ConnectedClient {
 	
 	private int iD = -1; 
 	private Socket clientSocket = new Socket();
-	
+	private ObjectOutputStream outputToClient = null;
+	private ObjectInputStream inputFromClient = null;
 
 	/**
 	 * Method to determine if the client's socket is connected
@@ -73,7 +76,40 @@ public class ConnectedClient {
 	 * @throws IOException		Throws if the socket is already closed.
 	 */
 	protected void closeClientSocket() throws IOException {
+		inputFromClient.close();
+		outputToClient.close();
 		clientSocket.close();
+	}
+
+	/**
+	 * @return the outputToClient
+	 */
+	protected ObjectOutputStream getOutputToClient() {
+		return outputToClient;
+	}
+
+	/**
+	 * 
+	 * @throws IOException
+	 */
+	protected void createOutputToClient() throws IOException {
+		outputToClient = new ObjectOutputStream(clientSocket.getOutputStream());
+		outputToClient.flush();
+	}
+
+	/**
+	 * @return the inputFromClient
+	 */
+	protected ObjectInputStream getInputFromClient() {
+		return inputFromClient;
+	}
+
+	/**
+	 * 
+	 * @throws IOException
+	 */
+	protected void createInputFromClient() throws IOException {
+		inputFromClient = new ObjectInputStream(clientSocket.getInputStream());
 	}
 
 }

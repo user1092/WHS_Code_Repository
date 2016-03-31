@@ -61,7 +61,8 @@ public class Server {
 													currentClientNumber++) {
 				// Check if the client entry exists
 				if(null != clients[currentClientNumber]) {
-					// Check if the socket is connected 
+					System.out.println("Socket of client is open?: " + clients[currentClientNumber].socketIsConnected());
+					// Check if the socket is connected
 					if(clients[currentClientNumber].socketIsConnected()){
 						System.out.println("Closing socket of client: " + currentClientNumber);
 						clients[currentClientNumber].closeClientSocket();
@@ -112,6 +113,17 @@ public class Server {
 							
 							currentClient = acceptClientConnection(currentClient);
 							currentClient.setID(currentClientNumber);
+//							try {
+//								System.out.println("(SERVER) Creating ouput stream");
+//								currentClient.createOutputToClient();
+//								System.out.println("(SERVER) Created ouput stream");
+//								System.out.println("(SERVER) Creating input stream");
+//								currentClient.createInputFromClient();
+//								System.out.println("(SERVER) Created input stream");
+//							} catch (IOException e) {
+//								// TODO Auto-generated catch block
+//								e.printStackTrace();
+//							}
 							manageClient(currentClient, currentClientNumber);
 							
 							if(currentClientNumber < connectedClientsMaxNumber - 1){
@@ -126,8 +138,26 @@ public class Server {
 						}
 						// Attempt to accept client
 						currentClient = acceptClientConnection(currentClient);
-						currentClient.setID(currentClientNumber);	
+						currentClient.setID(currentClientNumber);
+//						try {
+//							System.out.println("(SERVER) Creating ouput stream");
+//							currentClient.createOutputToClient();
+//							System.out.println("(SERVER) Created ouput stream");
+//							System.out.println("(SERVER) Creating input stream");
+//							currentClient.createInputFromClient();
+//							System.out.println("(SERVER) Created input stream");
+//						} catch (IOException e) {
+//							// TODO Auto-generated catch block
+//							e.printStackTrace();
+//						}
 						manageClient(currentClient, currentClientNumber);
+						
+//						try {
+//							currentClient.closeClientSocket();
+//						} catch (IOException e) {
+//							// TODO Auto-generated catch block
+//							e.printStackTrace();
+//						}
 					}
 				}
 			}
@@ -161,6 +191,17 @@ public class Server {
 	 */
 	private void manageClient(ConnectedClient currentClient, int clientNumber) {
 		try {
+			try {
+				System.out.println("(SERVER) Creating ouput stream");
+				currentClient.createOutputToClient();
+				System.out.println("(SERVER) Created ouput stream");
+				System.out.println("(SERVER) Creating input stream");
+				currentClient.createInputFromClient();
+				System.out.println("(SERVER) Created input stream");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			/*
 			 *  If entry in clients array doesn't exist create it 
 			 *  and accept then listen to client
@@ -203,23 +244,31 @@ public class Server {
 	 * @param clientID	- This is the ID of the client the data should be sent to.
 	 */
 	protected void sendData(Object itemToSend, int clientID) {
-		ObjectOutputStream outputToClient = null;
+//		ObjectOutputStream outputToClient = null;
+//		
+//		// Create an object stream to send to client
+//		try {
+//			outputToClient = new ObjectOutputStream(clients[clientID].getClientSocket().getOutputStream());
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		
+//		// Write the object to the client
+//		try {
+//			outputToClient.writeObject(itemToSend);
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		
-		// Create an object stream to send to client
 		try {
-			outputToClient = new ObjectOutputStream(clients[clientID].getClientSocket().getOutputStream());
+			clients[clientID].getOutputToClient().writeObject(itemToSend);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		// Write the object to the client
-		try {
-			outputToClient.writeObject(itemToSend);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 	/**
@@ -232,13 +281,14 @@ public class Server {
 	 * @throws ClassNotFoundException 
 	 */
 	protected Object receiveData(int clientID) throws IOException, ClassNotFoundException {
-		ObjectInputStream inputFromClient = null;
-				
-		// Create an input stream from the connected client
-		inputFromClient = new ObjectInputStream(clients[clientID].getClientSocket().getInputStream());
-		
-		// Return the object received from the client
-		return inputFromClient.readObject();
+//		ObjectInputStream inputFromClient = null;
+//				
+//		// Create an input stream from the connected client
+//		inputFromClient = new ObjectInputStream(clients[clientID].getClientSocket().getInputStream());
+//		
+//		// Return the object received from the client
+//		return inputFromClient.readObject();
+		return clients[clientID].getInputFromClient().readObject();
 	}
 	
 	/**
@@ -247,19 +297,33 @@ public class Server {
 	 * @param client - This is the client to be informed
 	 */
 	private void informThatServerFull(ConnectedClient client) {
-		ObjectOutputStream outputToClient = null;
+//		ObjectOutputStream outputToClient = null;
+//		
+//		// Create an object stream to send to client
+//		try {
+//			outputToClient = new ObjectOutputStream(client.getClientSocket().getOutputStream());
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		
+//		// Write the object to the client
+//		try {
+//			outputToClient.writeObject(-1);
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		
-		// Create an object stream to send to client
 		try {
-			outputToClient = new ObjectOutputStream(client.getClientSocket().getOutputStream());
+			client.getOutputToClient().writeObject(-1);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		// Write the object to the client
 		try {
-			outputToClient.writeObject(-1);
+			client.closeClientSocket();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -274,9 +338,20 @@ public class Server {
 	private void listenToClient(final ConnectedClient client) {
 		Thread[] listenToClientThread;
 		listenToClientThread = new Thread[connectedClientsMaxNumber];
+		
+//		try {
+//			System.out.println("(SERVER) Creating input stream");
+//			client.createInputFromClient();
+//			System.out.println("(SERVER) Created input stream");
+//		} catch (IOException e2) {
+//			// TODO Auto-generated catch block
+//			e2.printStackTrace();
+//		}
+		
 		listenToClientThread[client.getID()] = new Thread("Listen to connected clients") {
 			public void run() {
 				while (!serverSocket.isClosed() && client.socketIsConnected()) {
+					
 					Object object;
 					try {
 						// Wait for the client to send some data
