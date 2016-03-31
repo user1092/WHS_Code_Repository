@@ -21,15 +21,17 @@ import javafx.scene.media.MediaView;
 /**
  * Class for the client's back end handling playing video files 
  * 
- * @author		user1092, guest501, cd828
- * @version		v0.3 28/03/2016
+ * Ensure that releasePlayer is called upon exit of a window.
+ * 
+ * @author		ch1092, sqk501, cd828
+ * @version		v0.4 31/03/2016
  */
 public class VideoPlayer{
 	
 	private double guiHeight = 600;
 	private double guiWidth = 600;
 	
-	private static final int DEFAULT_START_VOLUME = 50;
+	private static final int DEFAULT_START_VOLUME = 100;
 	private static final int DEFAULT_VOLUMESLIDER_WIDTH = 100;
 	private static final int DEFAULT_HALFWAY_VOLUME = 50; 
 	private static final int DEFAULT_VOLUMESLIDER_SCALE_DISPLAYED = 5; 
@@ -54,11 +56,18 @@ public class VideoPlayer{
 	private Image unmutedImage;
 	private ImageView unmutedView;
 	private ToggleButton muteButton;
-
-	
+	private double maxVolume = DEFAULT_START_VOLUME;
+		
 	/**
 	 * Method to create the video player window, this contains the controls to operate the video player and the video viewer.
-	 * @return baseBox - This is returning a pane in which the video displays
+	 * 
+	 * @param videoFile		-	The path of the file to be played
+	 * @param locationY		-	The location along the Y-axis for the video to appear, scaled from 0-1
+	 * @param locationX		-	The location along the X-axis for the video to appear, scaled from 0-1
+	 * @param videoWidth	-	The width of the video to appear, scaled from 0-1
+	 * @param videoHeight	-	The height of the video to appear, scaled from 0-1
+	 * @param duffCanvas	-	The size of the area which the video will be placed
+	 * @return				-	Returns a pane with the video and controls embedded
 	 */
 	public Pane videoPlayerWindow(String videoFile, float locationY, float locationX, float videoWidth, float videoHeight, Canvas duffCanvas) {
 		
@@ -88,9 +97,13 @@ public class VideoPlayer{
 	
 	/**
 	 * Method to create the video player and displays it
-	 * @return mediaViewer - This displays the video
+	 * 
+	 * @param videoFile		-	The path of the file to be played
+	 * @param videoWidth	-	The width of the video to appear, scaled from 0-1
+	 * @param videoHeight	-	The height of the video to appear, scaled from 0-1
+	 * @return				-	Returns a mediaView with the video
 	 */
-	protected MediaView setUpVideo(String videoFile, float videoWidth, float videoHeight) {
+	private MediaView setUpVideo(String videoFile, float videoWidth, float videoHeight) {
 		//media resource
 		Media mediaToPlay = new Media(videoFile);
 			
@@ -110,6 +123,7 @@ public class VideoPlayer{
 	
 	/**
 	 * Method to create the control bar for the video player.
+	 * 
 	 * @return controlBar - This is the control bar controlling the video player
 	 */
 	private HBox createControlBar() {
@@ -192,8 +206,8 @@ public class VideoPlayer{
 		volumeSlider.valueProperty().addListener(new InvalidationListener() {
 		    public void invalidated(Observable ov) {
 		       if (volumeSlider.isValueChanging()) {
+		    	   maxVolume = volumeSlider.getValue();
 		           player.setVolume(volumeSlider.getValue() / 100.0);
-		           System.out.println("Volume " + player.getVolume());
 		       }		     
 		    }
 		});
@@ -267,6 +281,7 @@ public class VideoPlayer{
 	/**
 	 * Converts a float representing a percentage of each axis into a
 	 * float pixel amount.
+	 * 
 	 * @param axis	A string representation of an axis
 	 * @param percentage	A float representation of percentage.
 	 * @return pixel	An float pixel position.
@@ -286,4 +301,80 @@ public class VideoPlayer{
 		}
 		return pixel;
 	}
+
+
+	/**
+	 * Method to mute the audio of the video
+	 * 
+	 * @param mute	-	true to mute, false to unmute
+	 */
+	public void muteAudio(boolean mute) {
+		
+		if (mute) {
+			muteButton.setGraphic(muteView);
+			player.setMute(true);
+			muteButton.setSelected(true);
+		}
+		else {
+			muteButton.setGraphic(unmutedView);
+			player.setMute(false);
+			muteButton.setSelected(false);
+		}
+		
+	}
+
+
+	/**
+	 * Method to set the volume for the video
+	 * 
+	 * @param volume	-	the desired volume of the video, must be from 0 - 100
+	 */
+	public void setVolume(int volume) {
+		if(volume <= maxVolume) {
+			player.setVolume(volume / 100.0);
+		}
+		
+	}
+
+
+	/**
+	 * Method to play the video that is loaded 
+	 */
+	public void playVideo() {
+		playButton.setGraphic(pauseView);
+		player.play();
+		playButton.setSelected(true);
+	}
+
+
+	/**
+	 * Method to pause the loaded video
+	 */
+	public void pauseVideo() {
+		playButton.setGraphic(playView);
+		player.pause();
+		playButton.setSelected(false);
+	}
+
+
+	/**
+	 * Method to stop the loaded video
+	 */
+	public void stopVideo() {
+		playButton.setGraphic(playView);
+		player.stop();
+		playButton.setSelected(false);
+	}
+
+
+	/**
+	 * Method to release the video player.
+	 * 
+	 * This must be called upon closing of the window
+	 */
+	public void releasePlayer() {
+		player.dispose();
+	}
+	
+	
 }

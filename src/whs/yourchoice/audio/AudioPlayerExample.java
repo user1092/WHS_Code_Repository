@@ -1,5 +1,7 @@
 package whs.yourchoice.audio;
 
+import java.io.File;
+
 import uk.co.caprica.vlcj.binding.LibVlc;
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;
 import uk.co.caprica.vlcj.runtime.RuntimeUtil;
@@ -43,9 +45,9 @@ public class AudioPlayerExample extends Application {
 	 */
 	
 	// Location of where VLC is installed
-	private final String VLC_LIBRARY_LOCATION = "M:/vlc-2.1.0-win64";
+	private final String VLC_LIBRARY_LOCATION = new File("").getAbsolutePath() + "/vlc-2.1.0-win64";
 	// Set VLC video output to a dummy, waveout used as bug with DX
-	private final String[] VLC_ARGS = {"--vout", "dummy", "--aout", "waveout", "-vvv"};
+	private final String[] VLC_ARGS = {"--vout", "dummy", "--aout", "waveout"};//, "-vvv"};
 	
 	private MediaPlayerFactory mediaPlayerFactory;
 	
@@ -124,7 +126,7 @@ public class AudioPlayerExample extends Application {
 		playButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
-				audioPlayer.playAudio();
+				audioPlayer.playAudio();			
 			}
 		});
 		
