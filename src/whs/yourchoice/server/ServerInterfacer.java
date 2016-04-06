@@ -1,8 +1,3 @@
-/**
- * ServerInterfacer.java		v0.4 23/02/2016
- * 
- * 
- */
 package whs.yourchoice.server;
 
 import java.io.IOException;
@@ -20,6 +15,7 @@ public class ServerInterfacer {
 
 	Server server;
 	
+	
 	/**
 	 * Constructor
 	 * 
@@ -29,12 +25,14 @@ public class ServerInterfacer {
 		server = new Server();
 	}
 	
+	
 	/**
 	 * Method to open socket to allow communications with a client.
 	 */
 	public void openSocket() {
 		server.openSocket();
 	}
+	
 	
 	/**
 	 * Method to close socket to stop communications with a client.
@@ -43,6 +41,7 @@ public class ServerInterfacer {
 		server.closeSocket();
 	}
 	
+	
 	/**
 	 * Method to listen for new clients and accept their connection 
 	 * then store their details in a connectedClients array.
@@ -50,6 +49,7 @@ public class ServerInterfacer {
 	public void checkAndAcceptClientConnections() {
 		server.checkAndAcceptClientConnections();
 	}
+	
 	
 	/**
 	 * Method to send data to a client.
@@ -61,6 +61,7 @@ public class ServerInterfacer {
 	public void sendData(Object itemToSend, int clientSocketNumber) {
 		server.sendData(itemToSend, clientSocketNumber);
 	}
+	
 	
 	/**
 	 * Method to receive data from a client.
@@ -74,5 +75,6 @@ public class ServerInterfacer {
 	public Object receiveData(int clientSocketNumber) throws ClassNotFoundException, IOException {
 		return server.receiveData(clientSocketNumber);
 	}
+	
 	
 }

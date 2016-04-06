@@ -1,8 +1,3 @@
-/**
- * Client.java		v0.7 28/02/2016
- * 
- * 
- */
 package whs.yourchoice.client;
 
 import java.io.IOException;
@@ -14,30 +9,32 @@ import java.net.Socket;
  * Class for the client's back end handling communications to the server 
  * 
  * @author		user1092, guest501
- * @version		v0.7 28/02/2016
+ * @version		v0.8 06/04/2016
  */
 public class Client {
 	
 	// Variables storing information about the servers socket
-	Socket serverSocket;
-	String host = "127.0.0.1";
-	int port = 1138;
+	protected Socket serverSocket;
+	private ObjectOutputStream outputToServer = null;
+	private ObjectInputStream inputFromServer = null;
 	
 	// Variable assigned by the server to identify the client
-	int iD = -1;
+	private int iD = -1;
 	
 	
 	/**
 	 * Method to open socket, in order to connect to the server. 
+	 * 
 	 * @param host - The socket's host number
 	 * @param port - The socket's port number
 	 */
 	protected void openSocket(String host, int port) {
-	
 		// Connect to the server	
 		try {			
 			serverSocket = new Socket(host, port);
 			System.out.println("Connected to Server, host: " + host + ",port: " + port);
+			createOutputStream();
+			createInputStream();
 			receiveID();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -46,12 +43,14 @@ public class Client {
 		}
 	}
 
+	
 	/**
 	 * Method to close socket, in order to disconnect from the server. 
 	 */
 	protected void closeSocket() {
-		
 		try {
+			outputToServer.close();
+			inputFromServer.close();
 			serverSocket.close();
 			System.out.println("Socket successfully closed \n");
 		} catch (IOException e) {
@@ -61,6 +60,16 @@ public class Client {
 		
 	}
 
+	
+	private void createOutputStream() throws IOException {
+		// Create an object stream to send to server
+		System.out.println("(CLIENT) Creating output stream");
+		outputToServer = new ObjectOutputStream(serverSocket.getOutputStream());
+		System.out.println("(CLIENT) Created output stream");
+		outputToServer.flush();
+	}
+	
+	
 	/**
 	 * Method to send an object to the server. 
 	 * A connection must be made prior to using this method. 
@@ -69,17 +78,22 @@ public class Client {
 	 * @throws IOException	-	Throws an exception if not connected to the server.
 	 */
 	protected void sendData(Object itemToSend) throws IOException {
-		
-		ObjectOutputStream outputToServer = null;
-
-		// Create an object stream to send to server
-		outputToServer = new ObjectOutputStream(serverSocket.getOutputStream());
-		
 		// Write the object to the server
 		outputToServer.writeObject(itemToSend);
-		
 	}
 
+	
+	/**
+	 * @throws IOException
+	 */
+	private void createInputStream() throws IOException {
+		System.out.println("(CLIENT) Creating input stream");
+		// Create an input stream from the connected server		
+		inputFromServer = new ObjectInputStream(serverSocket.getInputStream());
+		System.out.println("(CLIENT) Created input stream");
+	}
+	
+	
 	/**
 	 * Method to receive data from the server.
 	 * A connection must be made prior to using this method.
@@ -88,12 +102,6 @@ public class Client {
 	 * @throws IOException	-	Throws an exception if not connected to the server.
 	 */
 	protected Object receiveData() throws IOException {
-		
-		ObjectInputStream inputFromServer = null;
-				
-		// Create an input stream from the connected server		
-		inputFromServer = new ObjectInputStream(serverSocket.getInputStream());
-		
 		// Return the object received from the server
 		try {
 			return inputFromServer.readObject();
@@ -107,6 +115,7 @@ public class Client {
 			return null;
 		}
 	}
+	
 	
 	/**
 	 * Method to receive an ID should be called once the connection to the server has been made.
@@ -127,6 +136,7 @@ public class Client {
 		}
 	}
 
+	
 	/**
 	 * Method to retrieve the ID that has been assigned by the server.
 	 * 
@@ -135,4 +145,6 @@ public class Client {
 	protected int getID() {
 		return iD;
 	}
+	
+	
 }

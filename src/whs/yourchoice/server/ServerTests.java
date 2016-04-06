@@ -1,9 +1,3 @@
-/**
- * Server.java		v0.6 23/02/2016
- * 
- * 
- */
-
 package whs.yourchoice.server;
 
 import static org.junit.Assert.*;
@@ -22,7 +16,7 @@ import whs.yourchoice.client.ClientInterfacer;
  * Class for testing the server's back end handling communications to the clients. 
  * 
  * @author		user1092, guest501
- * @version		v0.6 23/02/2016
+ * @version		v0.7 06/04/2016
  */
 public class ServerTests {
 
@@ -41,6 +35,7 @@ public class ServerTests {
 	Object itemReceived = null;
 	Object recievedObject = null;
 	
+	
 	/**
 	 * Method run before every test to create a server, open its socket, and listen for a client.
 	 * Then a client is setup and its socket is opened. 
@@ -55,6 +50,7 @@ public class ServerTests {
 		client.openSocket(host, port);
 	}
 	
+	
 	/**
 	 * Method run after every test to close the client and server socket.
 	 */
@@ -65,6 +61,7 @@ public class ServerTests {
 		client.closeSocket();
 	}
 
+	
 	/**
 	 * Test that a server can send data on an open socket.
 	 */
@@ -102,6 +99,7 @@ public class ServerTests {
 		}				
 	}
 	
+	
 	/**
 	 * Test that a server can receive data from an open socket.
 	 */
@@ -109,22 +107,29 @@ public class ServerTests {
 	public void serverShouldReceiveDataFromAnOpenSocket() {
 				
 		final Object itemToSend = "hello";
-				
+		
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+		
 		/* Thread for server to listen to client
 		 * check the server receives the string hello
 		 */
 		Thread listenThread = new Thread("Listen") {
 			public void run() {
 				try {
-					itemReceived = server.receiveData(0);
-				} catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					// Can no longer do as server listens to client as soon as it connects
+					//itemReceived = server.receiveData(client.getID());
+					// Now Server will pass back the object as soon as it receives it
+					itemReceived = client.receiveData();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				System.out.println("BLUGHHH");
+				System.out.println("itemReceived: " + itemReceived);
 			}
 		};
 		listenThread.start();
@@ -143,6 +148,7 @@ public class ServerTests {
 		assertEquals(itemToSend, itemReceived);
 	}
 	
+	
 	/**
 	 * Test that a server can connect to multiple clients.
 	 */
@@ -150,7 +156,7 @@ public class ServerTests {
 	public void serverShouldConnectToMultipleClients() {
 		Object itemToSend = "STRING" ;
 		
-		ClientInterfacer client2 = new ClientInterfacer();
+		final ClientInterfacer client2 = new ClientInterfacer();
 		client2.openSocket(host, port);
 
 		server.checkAndAcceptClientConnections(); 
@@ -161,10 +167,10 @@ public class ServerTests {
 		Thread listenThread = new Thread("Listen") {
 			public void run() {
 				try {
-					itemReceived = server.receiveData(0);
-				} catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					// Can no longer do as server listens to client as soon as it connects
+					//itemReceived = server.receiveData(client.getID());
+					// Now Server will pass back the object as soon as it receives it
+					itemReceived = client.receiveData();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -192,10 +198,10 @@ public class ServerTests {
 		Thread listenThread2 = new Thread("Listen") {
 			public void run() {
 				try {
-					itemReceived = server.receiveData(1);
-				} catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					// Can no longer do as server listens to client as soon as it connects
+					//itemReceived = server.receiveData(client.getID());
+					// Now Server will pass back the object as soon as it receives it
+					itemReceived = client2.receiveData();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

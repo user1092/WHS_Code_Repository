@@ -1,21 +1,13 @@
-/**
- * Server.java		v0.7 28/02/2016
- * 
- * 
- */
-
 package whs.yourchoice.server;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 
 /**
  * Class for the server's back end handling communications to the clients. 
  * 
  * @author		user1092, guest501
- * @version		v07 28/02/2016
+ * @version		v08 06/04/2016
  */
 public class Server {
 	
@@ -26,6 +18,7 @@ public class Server {
 	private int currentClientNumber = 0;
 	private final int connectedClientsMaxNumber = 2;
 		
+	
 	/**
 	 * Constructor to create a new array of connected clients.
 	 */
@@ -50,6 +43,7 @@ public class Server {
 		}
 	}
 
+	
 	/**
 	 * Method to close socket to stop communications with a client.
 	 */
@@ -61,7 +55,8 @@ public class Server {
 													currentClientNumber++) {
 				// Check if the client entry exists
 				if(null != clients[currentClientNumber]) {
-					// Check if the socket is connected 
+					System.out.println("Socket of client is open?: " + clients[currentClientNumber].socketIsConnected());
+					// Check if the socket is connected
 					if(clients[currentClientNumber].socketIsConnected()){
 						System.out.println("Closing socket of client: " + currentClientNumber);
 						clients[currentClientNumber].closeClientSocket();
@@ -75,6 +70,7 @@ public class Server {
 			e.printStackTrace();
 		}
 	}
+	
 	
 	/**
 	 * Method to listen for new clients and accept their connection 
@@ -126,7 +122,7 @@ public class Server {
 						}
 						// Attempt to accept client
 						currentClient = acceptClientConnection(currentClient);
-						currentClient.setID(currentClientNumber);	
+						currentClient.setID(currentClientNumber);
 						manageClient(currentClient, currentClientNumber);
 					}
 				}
@@ -134,6 +130,7 @@ public class Server {
 		};	
 		listenThread.start();
 	}
+	
 	
 	/**
 	 * Method to accept a clients connection.
@@ -152,6 +149,7 @@ public class Server {
 		return currentClient;		
 	}
 	
+	
 	/**
 	 * Method to accept or refuse clients depending on if there is space
 	 * if accepted the client is then listened to for data requests.
@@ -161,6 +159,13 @@ public class Server {
 	 */
 	private void manageClient(ConnectedClient currentClient, int clientNumber) {
 		try {
+			try {
+				currentClient.createOutputToClient();
+				currentClient.createInputFromClient();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			/*
 			 *  If entry in clients array doesn't exist create it 
 			 *  and accept then listen to client
@@ -195,6 +200,7 @@ public class Server {
 		}
 	}
 
+	
 	/**
 	 * Method to send data to a client.
 	 * A connection must be made prior to using this method.
@@ -203,24 +209,15 @@ public class Server {
 	 * @param clientID	- This is the ID of the client the data should be sent to.
 	 */
 	protected void sendData(Object itemToSend, int clientID) {
-		ObjectOutputStream outputToClient = null;
-		
-		// Create an object stream to send to client
 		try {
-			outputToClient = new ObjectOutputStream(clients[clientID].getClientSocket().getOutputStream());
+			clients[clientID].getOutputToClient().writeObject(itemToSend);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		// Write the object to the client
-		try {
-			outputToClient.writeObject(itemToSend);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
+	
 
 	/**
 	 * Method to receive data from a client.
@@ -232,14 +229,9 @@ public class Server {
 	 * @throws ClassNotFoundException 
 	 */
 	protected Object receiveData(int clientID) throws IOException, ClassNotFoundException {
-		ObjectInputStream inputFromClient = null;
-				
-		// Create an input stream from the connected client
-		inputFromClient = new ObjectInputStream(clients[clientID].getClientSocket().getInputStream());
-		
-		// Return the object received from the client
-		return inputFromClient.readObject();
+		return clients[clientID].getInputFromClient().readObject();
 	}
+	
 	
 	/**
 	 * Method to inform client that server is full.
@@ -247,24 +239,21 @@ public class Server {
 	 * @param client - This is the client to be informed
 	 */
 	private void informThatServerFull(ConnectedClient client) {
-		ObjectOutputStream outputToClient = null;
-		
-		// Create an object stream to send to client
 		try {
-			outputToClient = new ObjectOutputStream(client.getClientSocket().getOutputStream());
+			client.getOutputToClient().writeObject(-1);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		// Write the object to the client
 		try {
-			outputToClient.writeObject(-1);
+			client.closeClientSocket();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
+	
 	
 	/**
 	 * Method to listen to client for data requests
@@ -274,13 +263,16 @@ public class Server {
 	private void listenToClient(final ConnectedClient client) {
 		Thread[] listenToClientThread;
 		listenToClientThread = new Thread[connectedClientsMaxNumber];
+		
 		listenToClientThread[client.getID()] = new Thread("Listen to connected clients") {
 			public void run() {
 				while (!serverSocket.isClosed() && client.socketIsConnected()) {
+					
 					Object object;
 					try {
 						// Wait for the client to send some data
 						object = receiveData(client.getID());
+						sendData(object, client.getID());
 					} catch (ClassNotFoundException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
@@ -300,4 +292,5 @@ public class Server {
 		listenToClientThread[client.getID()].start();
 	}
 
+	
 }
