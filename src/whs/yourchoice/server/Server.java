@@ -1,21 +1,13 @@
-/**
- * Server.java		v0.7 28/02/2016
- * 
- * 
- */
-
 package whs.yourchoice.server;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 
 /**
  * Class for the server's back end handling communications to the clients. 
  * 
  * @author		user1092, guest501
- * @version		v07 28/02/2016
+ * @version		v08 06/04/2016
  */
 public class Server {
 	
@@ -26,6 +18,7 @@ public class Server {
 	private int currentClientNumber = 0;
 	private final int connectedClientsMaxNumber = 2;
 		
+	
 	/**
 	 * Constructor to create a new array of connected clients.
 	 */
@@ -50,6 +43,7 @@ public class Server {
 		}
 	}
 
+	
 	/**
 	 * Method to close socket to stop communications with a client.
 	 */
@@ -76,6 +70,7 @@ public class Server {
 			e.printStackTrace();
 		}
 	}
+	
 	
 	/**
 	 * Method to listen for new clients and accept their connection 
@@ -113,17 +108,6 @@ public class Server {
 							
 							currentClient = acceptClientConnection(currentClient);
 							currentClient.setID(currentClientNumber);
-//							try {
-//								System.out.println("(SERVER) Creating ouput stream");
-//								currentClient.createOutputToClient();
-//								System.out.println("(SERVER) Created ouput stream");
-//								System.out.println("(SERVER) Creating input stream");
-//								currentClient.createInputFromClient();
-//								System.out.println("(SERVER) Created input stream");
-//							} catch (IOException e) {
-//								// TODO Auto-generated catch block
-//								e.printStackTrace();
-//							}
 							manageClient(currentClient, currentClientNumber);
 							
 							if(currentClientNumber < connectedClientsMaxNumber - 1){
@@ -139,31 +123,14 @@ public class Server {
 						// Attempt to accept client
 						currentClient = acceptClientConnection(currentClient);
 						currentClient.setID(currentClientNumber);
-//						try {
-//							System.out.println("(SERVER) Creating ouput stream");
-//							currentClient.createOutputToClient();
-//							System.out.println("(SERVER) Created ouput stream");
-//							System.out.println("(SERVER) Creating input stream");
-//							currentClient.createInputFromClient();
-//							System.out.println("(SERVER) Created input stream");
-//						} catch (IOException e) {
-//							// TODO Auto-generated catch block
-//							e.printStackTrace();
-//						}
 						manageClient(currentClient, currentClientNumber);
-						
-//						try {
-//							currentClient.closeClientSocket();
-//						} catch (IOException e) {
-//							// TODO Auto-generated catch block
-//							e.printStackTrace();
-//						}
 					}
 				}
 			}
 		};	
 		listenThread.start();
 	}
+	
 	
 	/**
 	 * Method to accept a clients connection.
@@ -182,6 +149,7 @@ public class Server {
 		return currentClient;		
 	}
 	
+	
 	/**
 	 * Method to accept or refuse clients depending on if there is space
 	 * if accepted the client is then listened to for data requests.
@@ -192,12 +160,8 @@ public class Server {
 	private void manageClient(ConnectedClient currentClient, int clientNumber) {
 		try {
 			try {
-				System.out.println("(SERVER) Creating ouput stream");
 				currentClient.createOutputToClient();
-				System.out.println("(SERVER) Created ouput stream");
-				System.out.println("(SERVER) Creating input stream");
 				currentClient.createInputFromClient();
-				System.out.println("(SERVER) Created input stream");
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -236,6 +200,7 @@ public class Server {
 		}
 	}
 
+	
 	/**
 	 * Method to send data to a client.
 	 * A connection must be made prior to using this method.
@@ -244,24 +209,6 @@ public class Server {
 	 * @param clientID	- This is the ID of the client the data should be sent to.
 	 */
 	protected void sendData(Object itemToSend, int clientID) {
-//		ObjectOutputStream outputToClient = null;
-//		
-//		// Create an object stream to send to client
-//		try {
-//			outputToClient = new ObjectOutputStream(clients[clientID].getClientSocket().getOutputStream());
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		
-//		// Write the object to the client
-//		try {
-//			outputToClient.writeObject(itemToSend);
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-		
 		try {
 			clients[clientID].getOutputToClient().writeObject(itemToSend);
 		} catch (IOException e) {
@@ -270,6 +217,7 @@ public class Server {
 		}
 		
 	}
+	
 
 	/**
 	 * Method to receive data from a client.
@@ -281,15 +229,9 @@ public class Server {
 	 * @throws ClassNotFoundException 
 	 */
 	protected Object receiveData(int clientID) throws IOException, ClassNotFoundException {
-//		ObjectInputStream inputFromClient = null;
-//				
-//		// Create an input stream from the connected client
-//		inputFromClient = new ObjectInputStream(clients[clientID].getClientSocket().getInputStream());
-//		
-//		// Return the object received from the client
-//		return inputFromClient.readObject();
 		return clients[clientID].getInputFromClient().readObject();
 	}
+	
 	
 	/**
 	 * Method to inform client that server is full.
@@ -297,24 +239,6 @@ public class Server {
 	 * @param client - This is the client to be informed
 	 */
 	private void informThatServerFull(ConnectedClient client) {
-//		ObjectOutputStream outputToClient = null;
-//		
-//		// Create an object stream to send to client
-//		try {
-//			outputToClient = new ObjectOutputStream(client.getClientSocket().getOutputStream());
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		
-//		// Write the object to the client
-//		try {
-//			outputToClient.writeObject(-1);
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-		
 		try {
 			client.getOutputToClient().writeObject(-1);
 		} catch (IOException e) {
@@ -330,6 +254,7 @@ public class Server {
 		}
 	}
 	
+	
 	/**
 	 * Method to listen to client for data requests
 	 * 
@@ -339,15 +264,6 @@ public class Server {
 		Thread[] listenToClientThread;
 		listenToClientThread = new Thread[connectedClientsMaxNumber];
 		
-//		try {
-//			System.out.println("(SERVER) Creating input stream");
-//			client.createInputFromClient();
-//			System.out.println("(SERVER) Created input stream");
-//		} catch (IOException e2) {
-//			// TODO Auto-generated catch block
-//			e2.printStackTrace();
-//		}
-		
 		listenToClientThread[client.getID()] = new Thread("Listen to connected clients") {
 			public void run() {
 				while (!serverSocket.isClosed() && client.socketIsConnected()) {
@@ -356,6 +272,7 @@ public class Server {
 					try {
 						// Wait for the client to send some data
 						object = receiveData(client.getID());
+						sendData(object, client.getID());
 					} catch (ClassNotFoundException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
@@ -375,4 +292,5 @@ public class Server {
 		listenToClientThread[client.getID()].start();
 	}
 
+	
 }

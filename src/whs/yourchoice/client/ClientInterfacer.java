@@ -1,8 +1,3 @@
-/**
- * ClientInterfacer.java		v0.5 28/02/2016
- * 
- * 
- */
 package whs.yourchoice.client;
 
 import java.io.IOException;
@@ -42,7 +37,7 @@ public class ClientInterfacer {
 	public void closeSocket() {
 		client.closeSocket();
 	}
-	
+		
 	/**
 	 * Method to send an object to the server. 
 	 * A connection must be made prior to using this method. 
@@ -53,7 +48,7 @@ public class ClientInterfacer {
 	public void sendData(Object itemToSend) throws IOException {
 		client.sendData(itemToSend);
 	}
-	
+		
 	/**
 	 * Method to receive data from the server.
 	 * A connection must be made prior to using this method.

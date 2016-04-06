@@ -1,9 +1,3 @@
-/**
- * ClientTests.java		v0.6 23/02/2016
- * 
- * 
- */
-
 package whs.yourchoice.client;
 
 import static org.junit.Assert.*;
@@ -12,6 +6,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import whs.yourchoice.server.ServerInterfacer;
@@ -22,7 +17,7 @@ import whs.yourchoice.server.ServerInterfacer;
  * NOT FOR RELEASE!
  * 
  * @author		user1092, guest501
- * @version		v0.6 23/02/2016
+ * @version		v0.7 06/04/2016
  */
 public class ClientTests {
 
@@ -43,6 +38,7 @@ public class ClientTests {
 	ObjectInputStream inputStream = null;
 	Object itemReceived = null;
 	
+	
 	/**
 	 * Before every test, a server should be instantiated and sockets opened then
 	 * wait for a clients connection.
@@ -57,6 +53,7 @@ public class ClientTests {
 		client = new Client();
 		client.openSocket(host, port);
 	}
+	
 	
 	/**
 	 * After every test, the client's sockets should close
@@ -75,7 +72,7 @@ public class ClientTests {
 	/**
 	 * Test that a client can send data on an open socket.
 	 */
-	@Test 
+	@Test
 	public void clientShouldSendDataOnAnOpenSocket() {
 		Object itemToSend = "HEYYY";
 		
@@ -83,10 +80,10 @@ public class ClientTests {
 		Thread listenThread = new Thread("Listen") {
 			public void run() {
 				try {
-					itemReceived = server.receiveData(client.getID());
-				} catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					// Can no longer do as server listens to client as soon as it connects
+					//itemReceived = server.receiveData(client.getID());
+					// Now Server will pass back the object as soon as it receives it
+					itemReceived = client.receiveData();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -109,6 +106,7 @@ public class ClientTests {
 		assertEquals(itemToSend, itemReceived);
 	}
 
+	
 	/**
 	 * Test that a client can receive data from an open socket.
 	 */
@@ -141,13 +139,16 @@ public class ClientTests {
 		
 	}
 	
+	//TODO
 	/**
 	 * 
 	 */
-//	@Test
-//	public void clientShouldReceieveModuleList() {
-//		fail("Not Implemented");
-//	}
+	@Ignore("To be implemented")
+	@Test
+	public void clientShouldReceieveModuleList() {
+		fail("Not Implemented");
+	}
+	
 	
 	/**
 	 * Test that the client gets assigned the ID 0 as it should be the only client connected.
@@ -158,4 +159,5 @@ public class ClientTests {
 		assertEquals(0, client.getID());
 	}
 
+	
 }
