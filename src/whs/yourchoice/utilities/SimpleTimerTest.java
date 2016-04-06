@@ -13,20 +13,20 @@ import org.junit.Test;
  */
 public class SimpleTimerTest {
 	
-	SimpleTimer timer;
+	private SimpleTimer timer;
 	
-	Boolean timerDone;
+	private Boolean timerDone;
 	
-	Integer runTime = 12000;
-	Integer interactTime = 6000;
-	Integer upperLimit;
-	Integer lowerLimit;
+	private Integer runTime = 12000;
+	private Integer interactTime = 3000;
+	private Integer upperLimit;
+	private Integer lowerLimit;
 	
-	Long timeTaken;
+	private Long timeTaken;
 	
 	
-	Double tenPercentOfRunTime;
-	Double tenPercentOfCancelTime;
+	private Double tenPercentOfRunTime;
+	private Double tenPercentOfInteractTime;
 	
 	
 	/**
@@ -83,11 +83,11 @@ public class SimpleTimerTest {
 		
 		timeTaken = ((endTime - startTime) / 1000000);
 		
-		tenPercentOfCancelTime = (interactTime * 0.1);
+		tenPercentOfInteractTime = (interactTime * 0.1);
 		
-		upperLimit = interactTime + Integer.valueOf(tenPercentOfCancelTime.intValue());
+		upperLimit = interactTime + Integer.valueOf(tenPercentOfInteractTime.intValue());
 		
-		lowerLimit = interactTime - Integer.valueOf(tenPercentOfCancelTime.intValue());
+		lowerLimit = interactTime - Integer.valueOf(tenPercentOfInteractTime.intValue());
 		
 		assertTrue(Integer.valueOf(timeTaken.intValue()) >= lowerLimit);
 		assertTrue(Integer.valueOf(timeTaken.intValue()) <= upperLimit);
@@ -109,13 +109,19 @@ public class SimpleTimerTest {
 		Thread pauseThread = new Thread("Pause") {
 			public void run() {
 				SimpleTimer pauseTimer = new SimpleTimer();
+				
 				pauseTimer.startTimer(interactTime);
-				try {
-					timer.pauseTimer();
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				timer.pauseTimer();
+				pauseTimer.startTimer(interactTime);
+				timer.resumeTimer();
+				
+				pauseTimer.startTimer(interactTime);
+				timer.pauseTimer();
+				pauseTimer.startTimer(interactTime);
+				timer.resumeTimer();
+				
+				pauseTimer.startTimer(interactTime);
+				timer.pauseTimer();
 				pauseTimer.startTimer(interactTime);
 				timer.resumeTimer();
 			}
@@ -128,14 +134,14 @@ public class SimpleTimerTest {
 		
 		timeTaken = ((endTime - startTime) / 1000000);
 		
-		tenPercentOfCancelTime = (interactTime * 0.1);
+		tenPercentOfInteractTime = (interactTime * 0.1);
 		
-		upperLimit = interactTime + runTime 
-						+ Integer.valueOf(tenPercentOfCancelTime.intValue());
+		upperLimit = interactTime + interactTime + interactTime + runTime 
+						+ Integer.valueOf(tenPercentOfInteractTime.intValue());
 		
-		lowerLimit = interactTime + runTime 
-						- Integer.valueOf(tenPercentOfCancelTime.intValue());
-		
+		lowerLimit = interactTime + interactTime + interactTime + runTime 
+						- Integer.valueOf(tenPercentOfInteractTime.intValue());
+				
 		assertTrue(Integer.valueOf(timeTaken.intValue()) >= lowerLimit);
 		assertTrue(Integer.valueOf(timeTaken.intValue()) <= upperLimit);
 		assertEquals(true, timerDone);

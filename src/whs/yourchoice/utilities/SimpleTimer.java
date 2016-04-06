@@ -12,8 +12,13 @@ import java.util.TimerTask;
 public class SimpleTimer{
 	
 	private Timer timer;
+	
 	private Boolean timerDone = false;
 	private Boolean cancelled = false;
+	
+	private Integer timeRemaining;
+	private Long startTime;
+	private Long pausedTime;
 	
 	
 	/**
@@ -23,10 +28,27 @@ public class SimpleTimer{
 	 * @return			true if the timer succeeded, false if the timer was cancelled	
 	 */
 	public Boolean startTimer(Integer time) {
-		timer(time);
-		while(!timerDone && !cancelled);
-		return timerDone;
+		timerDone = false;
+		cancelled = false;
 		
+		timeRemaining = time;
+		startTime = System.nanoTime();
+
+		timer(time);
+		
+		// TODO WHY DOES THIS HAVE TO BE USED
+		while(!timerDone && !cancelled) {
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		// AND NOT THIS?????
+		//while(!timerDone && !cancelled);
+		
+		return timerDone;
 	}
 	
 	
@@ -36,7 +58,7 @@ public class SimpleTimer{
 	 * @param time	-	The amount of time the timer should run before timerDone is set true
 	 */
 	private void timer(Integer time) {
-		timer = new Timer(true);
+		timer = new Timer();
 		timer.schedule(new TimerTask() {
 			@Override
 			public void run() {
@@ -52,20 +74,28 @@ public class SimpleTimer{
 	public void stopTimer() {
 		cancelled = true;
 		timer.cancel();
+		timer.purge();
 	}
 
 
-	public void pauseTimer() throws InterruptedException {
-		System.out.println("tell to pause");
-		timer.wait();
-		System.out.println("paused");
+	/**
+	 * Method to pause the running timer
+	 */
+	public void pauseTimer() { 
+		pausedTime = System.nanoTime();
+		timer.cancel();
+		timer.purge();
+		Long timeTaken = ((pausedTime - startTime) / 1000000);
+		timeRemaining = timeRemaining - Integer.valueOf(timeTaken.intValue());
 	}
 
 
+	/**
+	 * Method to resume a paused timer
+	 */
 	public void resumeTimer() {
-		System.out.println("tell to unpause");
-		timer.notifyAll();
-		System.out.println("unpaused");
+		startTime = System.nanoTime();
+		timer(timeRemaining);
 	}
 	
 	
