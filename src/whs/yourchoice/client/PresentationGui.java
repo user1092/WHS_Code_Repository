@@ -28,6 +28,7 @@ import whs.yourchoice.presentation.ShapeEntry;
 import whs.yourchoice.presentation.SlideEntry;
 import whs.yourchoice.presentation.TextEntry;
 import whs.yourchoice.presentation.VideoEntry;
+import whs.yourchoice.utilities.SlideTimingControl;
 import whs.yourchoice.video.VideoPlayer;
 
 import javafx.application.Application;
@@ -144,6 +145,8 @@ public class PresentationGui extends Application {
 	
 	// object for formatting the text fields to only accept integers
 	private StringConverter<Integer> integerFormatter;
+	
+	private List<SlideTimingControl> nodeList = new ArrayList<SlideTimingControl>();
 	
 
 	/**
@@ -276,6 +279,7 @@ public class PresentationGui extends Application {
         	public void handle(WindowEvent we) {
         		releaseMediaPlayers();
         		mediaPlayerFactory.release();
+        		// TODO close timers
         	}
         });
 	}
@@ -723,6 +727,13 @@ public class PresentationGui extends Application {
 		displayVideos(currentSlide, duffCanvas);
 		
 		displayAudios(currentSlide);
+		
+		int numberOfNodes = nodeList.size();
+		
+		// Display all Nodes at correct time
+		for(int node = 0; node < numberOfNodes; node++) {
+			nodeList.get(node).start();
+		}
 	}
 
 
@@ -756,6 +767,8 @@ public class PresentationGui extends Application {
 			
 			System.out.println("text entry: " + text + "\n");
 			System.out.println(currentText.getTextContent() + "\n");
+			SlideTimingControl tempTextTimingControl = new SlideTimingControl(tempPane, currentText.getTextStartTime(), currentText.getTextDuration());
+			nodeList.add(tempTextTimingControl);
 		}
 	}
 
