@@ -45,9 +45,9 @@ public class PresentationParserTests
 		assertEquals("DDFFDD", presentation.getDefaultBackgroundColour());
 		assertEquals("Arial", presentation.getDefaultFont());
 		assertEquals(12, presentation.getDefaultFontSize());
-		assertEquals("987654", presentation.getDefaultFontColour());
-		assertEquals("777777", presentation.getDefaultLineColour());
-		assertEquals("888888", presentation.getDefaultFillColour());
+		assertEquals("000000", presentation.getDefaultFontColour());
+		assertEquals("FF0000", presentation.getDefaultLineColour());
+		assertEquals("225533", presentation.getDefaultFillColour());
 	}
 	
 	/**
@@ -82,8 +82,8 @@ public class PresentationParserTests
 		assertEquals(1, currentText.getTextYStart(), 0.0f);
 		assertEquals("Impact", currentText.getTextFont());
 		assertEquals(30, currentText.getTextFontSize());
-		assertEquals("123457", currentText.getTextFontColour());		
-		assertEquals("I am so happy, the <b>Bold</b> text is finaly working. And so is the <i>Italic one</i>.", currentText.getTextContent());
+		assertEquals("000000", currentText.getTextFontColour());		
+		assertEquals("<i><b>A</b></i> <b><i>B</i></b> <b>C</b>", currentText.getTextContent());
 		assertEquals(true, currentText.getTextInteractable());
 		assertEquals(43, currentText.getTextTargetSlide());
 		
@@ -96,8 +96,8 @@ public class PresentationParserTests
 		assertEquals("circle", currentShape.getShapeType());
 		assertEquals(0.4f, currentShape.getShapeWidth(), 0.0f);
 		assertEquals(0.3f, currentShape.getShapeHeight(), 0.0f);
-		assertEquals("777777", currentShape.getShapeLineColour());
-		assertEquals("555454", currentShape.getShapeFillColour());
+		assertEquals("FF0000", currentShape.getShapeLineColour());
+		assertEquals("225533", currentShape.getShapeFillColour());
 		assertEquals(false, currentShape.getShapeInteractable());
 		assertEquals(-10, currentShape.getShapeTargetSlide());
 		assertEquals(0.6f, currentShape.getShapeShadeX1(), 0.0f);
@@ -115,7 +115,7 @@ public class PresentationParserTests
 		assertEquals(0.55f, currentText.getTextYStart(), 0.0f);
 		assertEquals("Arial", currentText.getTextFont());
 		assertEquals(12, currentText.getTextFontSize());
-		assertEquals("987654", currentText.getTextFontColour());		
+		assertEquals("000000", currentText.getTextFontColour());		
 		assertEquals("Click <i>here</i> to show the module choices", currentText.getTextContent());
 		assertEquals(false, currentText.getTextInteractable());
 		assertEquals(-10, currentText.getTextTargetSlide());
@@ -148,8 +148,8 @@ public class PresentationParserTests
 		assertEquals(0.3f, currentText.getTextXStart(), 0.0f);
 		assertEquals(0.4f, currentText.getTextYStart(), 0.0f);
 		assertEquals("Arial", currentText.getTextFont());
-		assertEquals(28, currentText.getTextFontSize());
-		assertEquals("987654", currentText.getTextFontColour());		
+		assertEquals(12, currentText.getTextFontSize());
+		assertEquals("000000", currentText.getTextFontColour());		
 		assertEquals("This Andy Marvin module was rated 5 stars!", currentText.getTextContent());
 
 		currentImage = currentSlide.imageList.get(0);
@@ -168,7 +168,7 @@ public class PresentationParserTests
 		assertEquals("starShape.csv", currentPolygon.getPolygonSourceFile());
 		assertEquals(-1, currentPolygon.getPolygonDuration());
 		assertEquals("FF5500", currentPolygon.getPolygonLineColour());
-		assertEquals("010101", currentPolygon.getPolygonFillColour());
+		assertEquals("007766", currentPolygon.getPolygonFillColour());
 		assertEquals(0.6f, currentPolygon.getPolygonShadeX1(), 0.0f);
 		assertEquals(0.9f, currentPolygon.getPolygonShadeY1(), 0.0f);
 		assertEquals("00FF00", currentPolygon.getPolygonShadeColour1());
@@ -195,7 +195,7 @@ public class PresentationParserTests
 		assertEquals("iceShape.csv", currentPolygon.getPolygonSourceFile());
 		assertEquals(2, currentPolygon.getPolygonDuration());
 		assertEquals("F5F6F7", currentPolygon.getPolygonLineColour());
-		assertEquals("888888", currentPolygon.getPolygonFillColour());
+		assertEquals("696969", currentPolygon.getPolygonFillColour());
 		assertEquals(-10, currentPolygon.getPolygonShadeX1(), 0.0f);
 		assertEquals(-10, currentPolygon.getPolygonShadeY1(), 0.0f);
 		assertEquals(null, currentPolygon.getPolygonShadeColour1());

@@ -44,11 +44,11 @@ public class PresentationParser
 	* Main method. Starts the ParsePresentation method and gives it the path to the XML file location.
 	*/
 	//TODO WHY IS THIS HERE??
-//	public static void main(String[] args)
-//	{
-//		PresentationParser newMain = new PresentationParser();
-//		newMain.parsePresention("src/test_file.xml", null);
-//	}
+	public static void main(String[] args)
+	{
+		PresentationParser newMain = new PresentationParser();
+		newMain.parsePresention("src/test_file.xml", null);
+	}
 	
 	/**
 	* parsePresention method. Sets up the necessary parsing elements. It detects the root node of the XML file (Presentation in our case),
@@ -427,24 +427,48 @@ public class PresentationParser
 	            {
 	            	String normalText = temporaryChildElement.getTextContent();
 	            	completeTextWithTags = completeTextWithTags.concat(normalText);
-	            } 
+	            }   
 	            	
 	            // Bold Text
 	            if (temporaryChildElement != null && "b".equals(temporaryChildElement.getNodeName())) 
 	            {
-	            	String boldText = temporaryChildElement.getTextContent();
-	            	completeTextWithTags = completeTextWithTags.concat("<b>");
-	            	completeTextWithTags = completeTextWithTags.concat(boldText);
-	            	completeTextWithTags = completeTextWithTags.concat("</b>");
+		            NodeList checkForBoldAndItalic = temporaryChildElement.getChildNodes();
+		            
+		            if ("i".equals(checkForBoldAndItalic.item(0).getNodeName()))
+		            {
+		            	String boldText = temporaryChildElement.getTextContent();
+		            	completeTextWithTags = completeTextWithTags.concat("<b><i>");
+		            	completeTextWithTags = completeTextWithTags.concat(boldText);
+		            	completeTextWithTags = completeTextWithTags.concat("</i></b>");
+		            }
+		            else
+		            {
+		            	String boldText = temporaryChildElement.getTextContent();
+		            	completeTextWithTags = completeTextWithTags.concat("<b>");
+		            	completeTextWithTags = completeTextWithTags.concat(boldText);
+		            	completeTextWithTags = completeTextWithTags.concat("</b>");           	
+		            }
 	            }
 	            
 	            // Italic Text
 	            if (temporaryChildElement != null && "i".equals(temporaryChildElement.getNodeName())) 
 	            {
-	            	String italicText = temporaryChildElement.getTextContent();
-	            	completeTextWithTags = completeTextWithTags.concat("<i>");
-	            	completeTextWithTags = completeTextWithTags.concat(italicText);
-	            	completeTextWithTags = completeTextWithTags.concat("</i>");
+		            NodeList checkForBoldAndItalic = temporaryChildElement.getChildNodes();
+		            
+		            if ("b".equals(checkForBoldAndItalic.item(0).getNodeName()))
+		            {
+		            	String italicText = temporaryChildElement.getTextContent();
+		            	completeTextWithTags = completeTextWithTags.concat("<i><b>");
+		            	completeTextWithTags = completeTextWithTags.concat(italicText);
+		            	completeTextWithTags = completeTextWithTags.concat("</b></i>");
+		            }
+		            else
+		            {
+		            	String italicText = temporaryChildElement.getTextContent();
+		            	completeTextWithTags = completeTextWithTags.concat("<i>");
+		            	completeTextWithTags = completeTextWithTags.concat(italicText);
+		            	completeTextWithTags = completeTextWithTags.concat("</i>");          	
+		            }
 	            }
 	        }		
 		}
