@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<registeredModules>
+    <module id="ELE000034">
+        <course>Electronics</course>
+        <stream>Electronics and Computer Engineering</stream>
+        <year>2016</year>
+        <title>Checking Title</title>
+        <filename>ele000034.zip</filename>
+    </module>
+</registeredModules>
