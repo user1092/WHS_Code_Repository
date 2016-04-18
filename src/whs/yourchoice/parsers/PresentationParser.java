@@ -29,8 +29,8 @@ import whs.yourchoice.presentation.VideoEntry;
 /**
 * This class is responsible for parsing a given XML file and populating a PresentationEntry class with its contents
 *
-* @author Antonio Figueiredo and Sabrina Quinn & CH1092
-* @version v1.1 28/03/16
+* @author ajff500, sqk501 and ch1092
+* @version v0.1 18/04/16
 */
 
 public class PresentationParser 

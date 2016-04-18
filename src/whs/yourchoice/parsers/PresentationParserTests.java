@@ -26,6 +26,13 @@ import whs.yourchoice.presentation.SlideEntry;
 import whs.yourchoice.presentation.TextEntry;
 import whs.yourchoice.presentation.VideoEntry;
 
+/**
+* This class is responsible for testing if an example XML file can be parsed correctly
+*
+* @author ajff500, sqk501 and ch1092
+* @version v0.1 18/04/16
+*/
+
 public class PresentationParserTests 
 {
 	/**

@@ -12,19 +12,19 @@ package whs.yourchoice.presentation;
 * This class is responsible for storing an image object contained in the XML file.
 * A different instance of this class is created for each image object in the XML file.
 *
-* @author Antonio Figueiredo and Sabrina Quinn
-* @version v1.0 10/03/16
+* @author ajff500 and sqk501
+* @version v0.1 18/04/16
 */
 
 public class ImageEntry 
 {
-	public int imageStartTime = -10;
-	public String imageSourceFile = null;
-	public int imageDuration = -10;
-	public float imageXStart = -10;
-	public float imageYStart = -10;
-	public float imageWidth = -10;
-	public float imageHeight = -10;
+	private int imageStartTime = -10;
+	private String imageSourceFile = null;
+	private int imageDuration = -10;
+	private float imageXStart = -10;
+	private float imageYStart = -10;
+	private float imageWidth = -10;
+	private float imageHeight = -10;
 	
 	private boolean interactable = false;
 	private int targetSlide = -10;

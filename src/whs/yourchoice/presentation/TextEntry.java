@@ -12,8 +12,8 @@ package whs.yourchoice.presentation;
 * This class is responsible for storing an text object contained in the XML file.
 * A different instance of this class is created for each text object in the XML file.
 *
-* @author Antonio Figueiredo and Sabrina Quinn
-* @version v1.0 10/03/16
+* @author ajff500 and sqk501
+* @version v0.1 18/04/16
 */
 
 public class TextEntry 

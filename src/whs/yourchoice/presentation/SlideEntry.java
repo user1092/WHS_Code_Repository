@@ -15,8 +15,8 @@ import java.util.List;
 * It also stores lists of all instances of all other types of media contained in the XML file:
 * 	(audio, image, polygon, shape, text and video).
 *
-* @author Antonio Figueiredo and Sabrina Quinn
-* @version v1.0 10/03/16
+* @author ajff500 and sqk501
+* @version v0.1 18/04/16
 */
 
 public class SlideEntry 
@@ -25,12 +25,12 @@ public class SlideEntry
 	private int slideDuration = -10;
 	private int slideNext = -10;
 	
-	public List<TextEntry> textList = new ArrayList<TextEntry>();
-	public List<ShapeEntry> shapeList = new ArrayList<ShapeEntry>();
-	public List<PolygonEntry> polygonList = new ArrayList<PolygonEntry>();
-	public List<ImageEntry> imageList = new ArrayList<ImageEntry>();
-	public List<VideoEntry> videoList = new ArrayList<VideoEntry>();
-	public List<AudioEntry> audioList = new ArrayList<AudioEntry>();
+	private List<TextEntry> textList = new ArrayList<TextEntry>();
+	private List<ShapeEntry> shapeList = new ArrayList<ShapeEntry>();
+	private List<PolygonEntry> polygonList = new ArrayList<PolygonEntry>();
+	private List<ImageEntry> imageList = new ArrayList<ImageEntry>();
+	private List<VideoEntry> videoList = new ArrayList<VideoEntry>();
+	private List<AudioEntry> audioList = new ArrayList<AudioEntry>();
 	
 
 	/**
