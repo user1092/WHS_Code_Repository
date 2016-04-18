@@ -38,17 +38,7 @@ public class PresentationParser
 	/** Object of PresentationEntry type. It holds all the parsed XML data.*/
 	
 	PresentationEntry presentation = new PresentationEntry();
-	
-	
-	/**
-	* Main method. Starts the ParsePresentation method and gives it the path to the XML file location.
-	*/
-	//TODO WHY IS THIS HERE??
-	public static void main(String[] args)
-	{
-		PresentationParser newMain = new PresentationParser();
-		newMain.parsePresention("src/test_file.xml", null);
-	}
+
 	
 	/**
 	* parsePresention method. Sets up the necessary parsing elements. It detects the root node of the XML file (Presentation in our case),
@@ -137,6 +127,13 @@ public class PresentationParser
 				if (temporaryNode.getParentNode().getNodeName() == "documentInfo")
 				{
 					presentation.setPresentationVersion(temporaryNodeTextContent);					
+				}			
+			break;
+			
+			case "Comment" :
+				if (temporaryNode.getParentNode().getNodeName() == "documentInfo")
+				{
+					presentation.setPresentationComment(temporaryNodeTextContent);					
 				}			
 			break;
 			

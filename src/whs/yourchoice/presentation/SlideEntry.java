@@ -32,7 +32,66 @@ public class SlideEntry
 	private List<VideoEntry> videoList = new ArrayList<VideoEntry>();
 	private List<AudioEntry> audioList = new ArrayList<AudioEntry>();
 	
-
+	/**
+	* getTextEntry method. Gets the specific element of the TextList.
+	* @param i The index of the text
+	* @return textList.get(i) Returns the element text of the text array.
+	*/
+	public TextEntry getTextListEntry(int i)
+	{
+		return textList.get(i);
+	}
+	
+	/**
+	* getShapeEntry method. Gets the specific element of the ShapeList.
+	* @param i The index of the shape
+	* @return shapeList.get(i) Returns the element shape of the shape array.
+	*/
+	public ShapeEntry getShapeListEntry(int i)
+	{
+		return shapeList.get(i);
+	}
+	
+	/**
+	* getPolygonEntry method. Gets the specific element of the PolygonList.
+	* @param i The index of the polygon
+	* @return polygonList.get(i) Returns the element polygon of the polygon array.
+	*/
+	public PolygonEntry getPolygonListEntry(int i)
+	{
+		return polygonList.get(i);
+	}
+	
+	/**
+	* getImageEntry method. Gets the specific element of the ImageList.
+	* @param i The index of the image
+	* @return imageList.get(i) Returns the element image of the image array.
+	*/
+	public ImageEntry getImageListEntry(int i)
+	{
+		return imageList.get(i);
+	}
+	
+	/**
+	* getVideoEntry method. Gets the specific element of the VideoList.
+	* @param i The index of the video
+	* @return videoList.get(i) Returns the element video of the video array.
+	*/
+	public VideoEntry getVideoListEntry(int i)
+	{
+		return videoList.get(i);
+	}
+	
+	/**
+	* getAudioEntry method. Gets the specific element of the AudioList.
+	* @param i The index of the audio
+	* @return audioList.get(i) Returns the element audio of the audio array.
+	*/
+	public AudioEntry getAudioListEntry(int i)
+	{
+		return audioList.get(i);
+	}
+	
 	/**
 	* setSlideID method. Sets the ID of the slide.
 	* @param contents The ID of the slide.

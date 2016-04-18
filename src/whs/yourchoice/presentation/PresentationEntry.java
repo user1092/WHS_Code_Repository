@@ -23,6 +23,7 @@ public class PresentationEntry
 	private String titleName = null;
 	private String authorName = null;
 	private String versionNumber = null;
+	private String comment = null;
 	
 	private String defaultBackgroundColour = null;
 	private String defaultFont = null;
@@ -35,6 +36,15 @@ public class PresentationEntry
 	
 	private List<SlideEntry> slideList = new ArrayList<SlideEntry>();
 	
+	/**
+	* getSlideEntry method. Gets the specific element of the SlideList.
+	* @param i The index of the slide
+	* @return slideList.get(i) Returns the element slide of the slide array.
+	*/
+	public SlideEntry getSlideListEntry(int i)
+	{
+		return slideList.get(i);
+	}
 	
 	/**
 	* setPresentationTitle method. Sets the title of the presentation.
@@ -88,6 +98,24 @@ public class PresentationEntry
 	public String getPresentationVersion() 
 	{
 		return versionNumber;
+	}
+	
+	/**
+	* setPresentationComment method. Sets the comment of the presentation.
+	* @param contents The comment of the presentation.
+	*/
+	public void setPresentationComment(String contents) 
+	{
+		comment = contents;
+	}
+	
+	/**
+	* getPresentationComment method. Gets the comment of the presentation.
+	* @return comment Returns the comment of the presentation.
+	*/
+	public String getPresentationComment() 
+	{
+		return comment;
 	}
 
 	/**
@@ -238,6 +266,5 @@ public class PresentationEntry
 	 */
 	public String getPath() {
 		return presentationPath;
-	}
-		
+	}	
 }
