@@ -42,12 +42,12 @@ public class PresentationParserTests
 		assertEquals("Woolly Hat Software", presentation.getPresentationAuthor());
 		assertEquals("v1.0", presentation.getPresentationVersion());
 		
-		//assertEquals("DDFFDD", presentation.getDefaultBackgroundColour());
-		//assertEquals("Arial", presentation.getDefaultFont());
-		//assertEquals(12, presentation.getDefaultFontSize());
-		//assertEquals("987654", presentation.getDefaultFontColour());
-		//assertEquals("777777", presentation.getDefaultLineColour());
-		//assertEquals("888888", presentation.getDefaultFillColour());
+		assertEquals("DDFFDD", presentation.getDefaultBackgroundColour());
+		assertEquals("Arial", presentation.getDefaultFont());
+		assertEquals(12, presentation.getDefaultFontSize());
+		assertEquals("987654", presentation.getDefaultFontColour());
+		assertEquals("777777", presentation.getDefaultLineColour());
+		assertEquals("888888", presentation.getDefaultFillColour());
 	}
 	
 	/**

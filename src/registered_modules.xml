@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<registeredModules>
+    <module>
+        <code>ELE000034</code>
+        <course>Electronics</course>
+        <stream>Electronics and Computer Engineering</stream>
+        <year>2016</year>
+        <title>Checking Title</title>
+        <filename>ele000034.zip</filename>
+    </module>
+    <module>
+        <code>CHM000068</code>
+        <course>Chemistry</course>
+        <stream>Chemisrty</stream>
+        <year>2016</year>
+        <title>Organic Chemistry</title>
+        <filename>chm000068.zip</filename>
+    </module>
+</registeredModules>
