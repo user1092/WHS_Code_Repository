@@ -37,6 +37,7 @@ public class VideoPlayer{
 	private static final int DEFAULT_VOLUMESLIDER_SCALE_DISPLAYED = 5; 
 	private static final int DEFAULT_VOLUMESLIDER_INCREMENTING_SCALE = 10;
 	public MediaPlayer player;
+	private boolean wasPlaying = false;
 	
 	// objects which are present on the control bar
 	private Slider volumeSlider;
@@ -157,6 +158,7 @@ public class VideoPlayer{
 			@Override
 			public void handle(ActionEvent e) {
 				player.stop();
+				wasPlaying = false;
 				playButton.setSelected(false);
 				playButton.setGraphic(playView);
 			}
@@ -268,6 +270,7 @@ public class VideoPlayer{
 				if (playButton.isSelected() == true) {
 					playButton.setGraphic(pauseView);
 					player.play();
+					wasPlaying = true;
 				}
 				else {
 					playButton.setGraphic(playView);
@@ -343,6 +346,7 @@ public class VideoPlayer{
 	public void playVideo() {
 		playButton.setGraphic(pauseView);
 		player.play();
+		wasPlaying = true;
 		playButton.setSelected(true);
 	}
 
@@ -363,9 +367,18 @@ public class VideoPlayer{
 	public void stopVideo() {
 		playButton.setGraphic(playView);
 		player.stop();
+		wasPlaying = false;
 		playButton.setSelected(false);
 	}
 
+	/**
+	 * Method to see if media play was playing
+	 * 
+	 * @return
+	 */
+	public boolean wasPlaying() {
+		return wasPlaying;
+	}
 
 	/**
 	 * Method to release the video player.

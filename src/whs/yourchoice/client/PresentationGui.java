@@ -2,6 +2,8 @@ package whs.yourchoice.client;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -27,8 +29,9 @@ import whs.yourchoice.presentation.PresentationEntry;
 import whs.yourchoice.presentation.ShapeEntry;
 import whs.yourchoice.presentation.SlideEntry;
 import whs.yourchoice.presentation.TextEntry;
+import whs.yourchoice.presentation.TimingEntry;
 import whs.yourchoice.presentation.VideoEntry;
-import whs.yourchoice.utilities.SlideTimingControl;
+import whs.yourchoice.utilities.SimpleTimer;
 import whs.yourchoice.video.VideoPlayer;
 
 import javafx.application.Application;
@@ -143,10 +146,20 @@ public class PresentationGui extends Application {
 	
 	private List<VideoPlayer> videoPlayerList = new ArrayList<VideoPlayer>();
 	
-	// object for formatting the text fields to only accept integers
+	// Object for formatting the text fields to only accept integers
 	private StringConverter<Integer> integerFormatter;
 	
-	private List<SlideTimingControl> nodeList = new ArrayList<SlideTimingControl>();
+	// Variables for timing
+	private List<TimingEntry> timingList = new ArrayList<TimingEntry>();
+	private int numberOfNodes;
+	private SlideTimingControl objectTimingControl;
+	private boolean timersDone = false;
+	private int currentNode;
+//	private boolean playNow = true;
+//	private boolean presentationIsPlaying = true;
+	private String presentationState = "Playing";
+	private Thread timingThread;
+	private int pausedSlideId = 0;
 	
 
 	/**
@@ -204,7 +217,7 @@ public class PresentationGui extends Application {
         // Display slide 0 as default
         displaySlide(0);
         
-        setupFullscreen(slideStage, scene);
+        //setupFullscreen(slideStage, scene);
 	}
 
 
@@ -279,7 +292,14 @@ public class PresentationGui extends Application {
         	public void handle(WindowEvent we) {
         		releaseMediaPlayers();
         		mediaPlayerFactory.release();
-        		// TODO close timers
+        		//TODO REMOVE PRINTOUT
+        		System.out.println("timer is running?: " + objectTimingControl.isRunning());
+        		currentNode = numberOfNodes;
+        		// Stop the object timer if it is running.
+        		if (objectTimingControl.isRunning()) {
+					objectTimingControl.stop();
+				}
+        		
         	}
         });
 	}
@@ -330,10 +350,10 @@ public class PresentationGui extends Application {
 
             	 scaleWidthRatio = newValue.doubleValue() / stageInitialWidth;
 
-                  presentationLayout.getTransforms().clear();
-                  Scale scale = new Scale(scaleWidthRatio, scaleHeightRatio, 0, 0);
-                  presentationLayout.getTransforms().add(scale);
-                  controlBar.setPrefHeight(CONTROL_BAR_HEIGHT);
+                 presentationLayout.getTransforms().clear();
+                 Scale scale = new Scale(scaleWidthRatio, scaleHeightRatio, 0, 0);
+                 presentationLayout.getTransforms().add(scale);
+                 controlBar.setPrefHeight(CONTROL_BAR_HEIGHT);
 
              }
         });
@@ -379,7 +399,7 @@ public class PresentationGui extends Application {
 		
 		createMuteButton();
 		
-		createPlayButton();
+		createPlayPauseButton();
 		
 		createStopButton();
 		
@@ -447,7 +467,15 @@ public class PresentationGui extends Application {
 			public void handle(ActionEvent e) {
 				if (slideNumber < (presentation.getTotalSlideNumber() - 1)) {
 					releaseMediaPlayers();
-					presentationLayout.getChildren().clear();
+					//TODO REMOVE PRINTOUT
+					System.out.println(objectTimingControl.isRunning());
+					if (objectTimingControl.isRunning()){
+						objectTimingControl.stop();
+					}
+					if (currentNode < numberOfNodes) {
+						currentNode = numberOfNodes;
+					}
+					presentationLayout.getChildren().clear();									
 					slideNumber++;
 					displaySlide(slideNumber);
 					slideNumberTextField.setText("" + slideNumber);
@@ -475,6 +503,14 @@ public class PresentationGui extends Application {
 			public void handle(ActionEvent e) {
 				if (slideNumber > 0) {
 					releaseMediaPlayers();
+					//TODO REMOVE PRINTOUT
+					System.out.println(objectTimingControl.isRunning());
+					if(objectTimingControl.isRunning()){
+						objectTimingControl.stop();
+					}
+					if (currentNode < numberOfNodes) {
+						currentNode = numberOfNodes;
+					}
 					presentationLayout.getChildren().clear();
 					slideNumber--;
 					displaySlide(slideNumber);
@@ -588,7 +624,7 @@ public class PresentationGui extends Application {
 	/**
 	 * Method for creating the play button on the control bar
 	 */
-	private void createPlayButton() {
+	private void createPlayPauseButton() {
 		// Image for the play button
 		playImage = new Image(getClass().getResourceAsStream("resources/play.png"));
 		playView = new ImageView(playImage);
@@ -610,24 +646,55 @@ public class PresentationGui extends Application {
 					playButton.setGraphic(pauseView);
 					// Set all audio players to play 
 					for(int audio = 0; audio < audioPlayerList.size(); audio++) {
-            			audioPlayerList.get(audio).playAudio();
-            			// Fixes bug with vlc
-            			while(-1 == audioPlayerList.get(audio).getAudioVolume());
-            			if(muteButton.isSelected()) {
-            				audioPlayerList.get(audio).muteAudio(true);
-            			}
-            			else {
-            				audioPlayerList.get(audio).setAudioVolume(masterVolume.intValue());
-            			}
+						if (audioPlayerList.get(audio).wasPlaying()) {
+							audioPlayerList.get(audio).playAudio();
+	            			// Fixes bug with vlc
+	            			while(-1 == audioPlayerList.get(audio).getAudioVolume());
+	            			if(muteButton.isSelected()) {
+	            				audioPlayerList.get(audio).muteAudio(true);
+	            			}
+	            			else {
+	            				audioPlayerList.get(audio).setAudioVolume(masterVolume.intValue());
+	            			}
+						}
+            			
             		}
 					// Set all video players to play 
 					for(int video = 0; video < videoPlayerList.size(); video++) {
-						System.out.println(videoPlayerList.get(video).toString());
-	        			videoPlayerList.get(video).playVideo();
+						if (videoPlayerList.get(video).wasPlaying()) {
+							// TODO REMOVE PRINTOUT
+							System.out.println(videoPlayerList.get(video).toString());
+							videoPlayerList.get(video).playVideo();
+						}
+	        			
 	        		}
+					
+					if (presentationState.equals("Paused")) {
+						presentationState = "Playing";
+						// Check if displayed slide has changed
+						if (pausedSlideId != slideNumber) {
+							currentNode = 0;
+							timingThread.start();
+						}
+						else {
+							if ((!timersDone) && (currentNode < numberOfNodes)) {
+								objectTimingControl.resume();
+							}
+						}
+						
+					}
+					
+					if (presentationState.equals("Stopped")) {
+						presentationState = "Playing";
+						currentNode = 0;
+						timingThread.start();
+					}
+					
 				}
 				else {
 					playButton.setGraphic(playView);
+					// TODO REMOVE PRINTOUT
+					System.out.println("Pausing Slide show");
 					// Set all audio players to pause 
 					for(int audio = 0; audio < audioPlayerList.size(); audio++) {
             			audioPlayerList.get(audio).pauseAudio();
@@ -636,6 +703,15 @@ public class PresentationGui extends Application {
 					for(int video = 0; video < videoPlayerList.size(); video++) {
 	        			videoPlayerList.get(video).pauseVideo();
 	        		}
+					
+					System.out.println("Pausing timersDone?: " + timersDone);
+					System.out.println("Pausing isRunning?: " + objectTimingControl.isRunning());
+					if ((false == timersDone) && (objectTimingControl.isRunning())) {
+						System.out.println("Attempt to pause Slide show");
+						objectTimingControl.pause();
+					}
+					presentationState = "Paused";
+					pausedSlideId = slideNumber;
 				}
 			}
 		});
@@ -667,6 +743,15 @@ public class PresentationGui extends Application {
 				for(int video = 0; video < videoPlayerList.size(); video++) {
         			videoPlayerList.get(video).stopVideo();
         		}
+				// TODO REMOVE PRINTOUT
+				System.out.println("timer is running?: " + objectTimingControl.isRunning());
+				
+				currentNode = numberOfNodes;
+				// Stop all timers
+				if (objectTimingControl.isRunning()) {
+					objectTimingControl.stop();
+				}
+				presentationState = "Stopped";
 				
 				// Set playButton back to wait to play
 				playButton.setSelected(false);
@@ -710,6 +795,9 @@ public class PresentationGui extends Application {
 	 * @param slideId - The slide number in the presentation to be displayed
 	 */
 	private void displaySlide(int slideId) {
+		
+		timingList.clear();
+		
 		// An empty canvas to represent the size of the slide area
 		Canvas duffCanvas = new Canvas(PRESENTATION_WIDTH,  PRESENTATION_HEIGHT);
 		
@@ -728,12 +816,125 @@ public class PresentationGui extends Application {
 		
 		displayAudios(currentSlide);
 		
-		int numberOfNodes = nodeList.size();
+		numberOfNodes = timingList.size();
 		
-		// Display all Nodes at correct time
+		//TODO REMOVE PRINTOUTS
+//		for(int node = 0; node < numberOfNodes; node++) {
+//			System.out.println("Node: " + node);
+//			System.out.println("Time in presentation: " + timingList.get(node).getTimeInPresentation());
+//			System.out.println("visible?: " + timingList.get(node).getVisible());
+//		}
+//		
+//		System.out.println("");
+		
+		Collections.sort(timingList, new TimeInPresentationComparator());
+		
+//		for(int node = 0; node < numberOfNodes; node++) {
+//			System.out.println("Node: " + node);
+//			System.out.println("Time in presentation: " + timingList.get(node).getTimeInPresentation());
+//			System.out.println("visible?: " + timingList.get(node).getVisible());
+//		}
+//		
+//		System.out.println("");
+//		
+		System.out.println("number of nodes: " + numberOfNodes);
+//		
+//		System.out.println("");
+		
+		// Populate timeSinceLastNode
 		for(int node = 0; node < numberOfNodes; node++) {
-			nodeList.get(node).start();
+			System.out.println("organising node: " + node);
+			if((node > 0) && (timingList.get(node).getTimeInPresentation() > 0)) {
+				timingList.get(node).setTimeSinceLastNode(
+								timingList.get(node).getTimeInPresentation() -
+								timingList.get(node - 1).getTimeInPresentation());
+				System.out.println("time set: " + (timingList.get(node).getTimeInPresentation() -
+						timingList.get(node - 1).getTimeInPresentation()));
+				
+				System.out.println("Node: " + node);
+				System.out.println("Time in presentation: " + timingList.get(node).getTimeInPresentation());
+				System.out.println("visible?: " + timingList.get(node).getVisible());
+			} 
+			else {
+				if (0 >= timingList.get(node).getTimeInPresentation()) {
+					timingList.get(node).setTimeSinceLastNode(0);
+					System.out.println("time set: 0");
+				}
+				else {
+					timingList.get(node).setTimeSinceLastNode(
+									timingList.get(node).getTimeInPresentation());
+					System.out.println("time set: " + timingList.get(node).getTimeInPresentation());
+				}
+			}
+			
 		}
+		
+		System.out.println("");
+		System.out.println("");
+		System.out.println("");
+		
+		//TODO FIX ME!!!
+		// Thread to run both timers in, to not stall main program
+//		Thread timingThread = new Thread("Timing") {
+		timingThread = new Thread("Timing") {
+			public void run() {
+//				while(presentationIsPlaying){
+//					if (playNow) {
+						timersDone = false;
+						// Display all Nodes at correct time
+						for(currentNode = 0; currentNode < numberOfNodes; currentNode++) {
+							
+							System.out.println("");
+							System.out.println("node at start of loop: " + currentNode);
+							System.out.println("");
+							
+							System.out.println("Node: " + currentNode);
+							
+							if("Node" == timingList.get(currentNode).getObjectType()) {
+								objectTimingControl = new SlideTimingControl(
+												timingList.get(currentNode).getNode(),
+												timingList.get(currentNode).getTimeSinceLastNode(),
+												timingList.get(currentNode).getVisible());
+							}
+							else {
+								objectTimingControl = new SlideTimingControl(
+										timingList.get(currentNode).getAudioPlayer(),
+										timingList.get(currentNode).getTimeSinceLastNode(),
+										timingList.get(currentNode).getVisible());
+							}
+							
+							objectTimingControl.start();
+							
+							System.out.println("BRRRRR");
+							
+//							for(int node1 = 0; node1 < numberOfNodes; node1++) {
+//								System.out.println("Node: " + node1);
+//								System.out.println("Time in presentation: " + timingList.get(node1).getTimeInPresentation());
+//								System.out.println("visible?: " + timingList.get(node1).getVisible());
+//							}
+							
+							System.out.println("");
+							System.out.println("node at end of loop: " + currentNode);
+							System.out.println("");
+							if (numberOfNodes == currentNode) {
+								timersDone = true;
+							}
+						}
+						System.out.println("");
+						System.out.println("Display (for) loop finished");
+						System.out.println("");
+					}
+//				}
+				
+//			}
+		};
+		
+		System.out.println("Timing Thread: playNow?: " + presentationState);
+		if (presentationState.equals("Playing")) {
+			timingThread.start();
+			System.out.println("Timing Thread Started");
+		}
+		
 	}
 
 
@@ -767,8 +968,13 @@ public class PresentationGui extends Application {
 			
 			System.out.println("text entry: " + text + "\n");
 			System.out.println(currentText.getTextContent() + "\n");
-			SlideTimingControl tempTextTimingControl = new SlideTimingControl(tempPane, currentText.getTextStartTime(), currentText.getTextDuration());
-			nodeList.add(tempTextTimingControl);
+			
+			tempPane.setVisible(false);
+			
+			TimingEntry tempTextTimingEntryAppear = new TimingEntry(tempPane, currentText.getTextStartTime(), currentText.getTextDuration(), true);
+			TimingEntry tempTextTimingEntryDisappear = new TimingEntry(tempPane, currentText.getTextStartTime(), currentText.getTextDuration(), false);
+			timingList.add(tempTextTimingEntryAppear);
+			timingList.add(tempTextTimingEntryDisappear);
 		}
 	}
 
@@ -784,6 +990,7 @@ public class PresentationGui extends Application {
 		
 		// Display all images
 		for(int image = 0; image < numberOfImages; image++) {
+			Canvas tempCanvas = new Canvas();
 			ImageHandler imageHandler = new ImageHandler();
 			Images tempImage = new Images();
 			
@@ -797,9 +1004,17 @@ public class PresentationGui extends Application {
 													currentImage.getImageHeight(),
 													currentImage.getImageWidth());
 			
-			presentationLayout.getChildren().add(imageHandler.drawCanvas(tempImage, PRESENTATION_WIDTH, PRESENTATION_HEIGHT));
+			tempCanvas = imageHandler.drawCanvas(tempImage, PRESENTATION_WIDTH, PRESENTATION_HEIGHT);
+			presentationLayout.getChildren().add(tempCanvas);
 			
 			System.out.println("image entry: " + image + "\n");
+			
+			tempCanvas.setVisible(false);
+			
+			TimingEntry tempImageTimingEntryAppear = new TimingEntry(tempCanvas, currentImage.getImageStartTime(), currentImage.getImageDuration(), true);
+			TimingEntry tempImageTimingEntryDisappear = new TimingEntry(tempCanvas, currentImage.getImageStartTime(), currentImage.getImageDuration(), false);
+			timingList.add(tempImageTimingEntryAppear);
+			timingList.add(tempImageTimingEntryDisappear);
 		}
 	}
 
@@ -830,9 +1045,18 @@ public class PresentationGui extends Application {
 			// Scale the shape to the resolution of the presentation area
 			tempShape.setRes(PRESENTATION_WIDTH, PRESENTATION_HEIGHT);
 			
-			presentationLayout.getChildren().add(tempShape.drawShape());
+			Pane tempPane = tempShape.drawShape();
+			
+			presentationLayout.getChildren().add(tempPane);
 			
 			System.out.println("shape entry: " + shape + "\n");
+			
+			tempPane.setVisible(false);
+			
+			TimingEntry tempShapeTimingEntryAppear = new TimingEntry(tempPane, currentShape.getShapeStartTime(), currentShape.getShapeDuration(), true);
+			TimingEntry tempShapeTimingEntryDisappear = new TimingEntry(tempPane, currentShape.getShapeStartTime(), currentShape.getShapeDuration(), false);
+			timingList.add(tempShapeTimingEntryAppear);
+			timingList.add(tempShapeTimingEntryDisappear);
 		}
 	}
 
@@ -878,9 +1102,18 @@ public class PresentationGui extends Application {
 			
 			tempPolygon.setRes(PRESENTATION_WIDTH, PRESENTATION_HEIGHT);
 			
-			presentationLayout.getChildren().add(tempPolygon.drawPolygon());
+			Pane tempPane = tempPolygon.drawPolygon();
+			
+			presentationLayout.getChildren().add(tempPane);
 			
 			System.out.println("polygon entry: " + polygon + "\n");
+
+			tempPane.setVisible(false);
+			
+			TimingEntry tempPolygonTimingEntryAppear = new TimingEntry(tempPane, currentPolygon.getPolygonStartTime(), currentPolygon.getPolygonDuration(), true);
+			TimingEntry tempPolygonTimingEntryDisappear = new TimingEntry(tempPane, currentPolygon.getPolygonStartTime(), currentPolygon.getPolygonDuration(), false);
+			timingList.add(tempPolygonTimingEntryAppear);
+			timingList.add(tempPolygonTimingEntryDisappear);
 		}
 	}
 
@@ -917,6 +1150,13 @@ public class PresentationGui extends Application {
 			presentationLayout.getChildren().add(tempPane);
 			
 			System.out.println("video entry: " + video + "\n");
+			
+			tempPane.setVisible(false);
+			
+			TimingEntry tempVideoTimingEntryAppear = new TimingEntry(tempPane, currentVideo.getVideoStartTime(), currentVideo.getVideoDuration(), true);
+			TimingEntry tempVideoTimingEntryDisappear = new TimingEntry(tempPane, currentVideo.getVideoStartTime(), currentVideo.getVideoDuration(), false);
+			timingList.add(tempVideoTimingEntryAppear);
+			timingList.add(tempVideoTimingEntryDisappear);
 		}
 	}
 
@@ -938,10 +1178,15 @@ public class PresentationGui extends Application {
 			
 			AudioEntry currentAudio = currentSlide.audioList.get(audio);
 			
-			audioPlayerList.get(audio).playAudio(presentation.getPath() + "/" + currentAudio.getAudioSourceFile());
+			audioPlayerList.get(audio).loadLocalAudio(presentation.getPath() + "/" + currentAudio.getAudioSourceFile());
 			audioPlayerList.get(audio).loopAudio(currentAudio.getAudioLoop());
 			
 			System.out.println("audio entry: " + audio + "\n");
+			
+			TimingEntry tempAudioTimingEntryAppear = new TimingEntry(audioPlayerList.get(audio), currentAudio.getAudioStartTime(), currentAudio.getAudioDuration(), true);
+			TimingEntry tempAudioTimingEntryDisappear = new TimingEntry(audioPlayerList.get(audio), currentAudio.getAudioStartTime(), currentAudio.getAudioDuration(), false);
+			timingList.add(tempAudioTimingEntryAppear);
+			timingList.add(tempAudioTimingEntryDisappear);
 		}
 	}
 }

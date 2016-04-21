@@ -320,18 +320,22 @@ public class ClientGui extends Application{
 					
 					System.out.println(xmlFile.getParent());
 					presentation = parser.parsePresention(xmlFile.getAbsolutePath(), xmlFile.getParent());
-					
-					Platform.runLater(new Runnable() {
-				 	       public void run() {             
-				 	           try {
-				 	        	   new PresentationGui(presentation).start(new Stage());
-				 	           } 
-				 	           catch (Exception e) {
-				 	        	   // TODO Auto-generated catch block
-				 	        	   e.printStackTrace();
-				 	           }
-				 	       }
-				 	    });
+					Thread presentationThread = new Thread("PresentationGui") {
+				 	     public void run() {
+				 	    	 Platform.runLater(new Runnable() {
+				 	    		 public void run() {             
+				 	    			try {				 	        	  
+				 	     				new PresentationGui(presentation).start(new Stage());
+				 	     			}
+				 	    			catch (Exception e) {
+				 	     				// TODO Auto-generated catch block
+				 	     				e.printStackTrace();
+				 	     			}
+				 	    		 }
+				 	    	 });
+				 	     }
+					};		
+					presentationThread.start();
 				}
 				else {
 					actionStatus.setText("File selection cancelled.");
