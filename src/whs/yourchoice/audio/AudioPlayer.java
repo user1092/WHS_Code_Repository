@@ -156,7 +156,9 @@ public class AudioPlayer {
 	 * Method to clean up and release all players
 	 */
 	public void releasePlayer() {
-		mediaPlayer.stop();
+		if (wasPlaying) {
+			mediaPlayer.stop();
+		}
 		mediaPlayer.release();
 	}
 	

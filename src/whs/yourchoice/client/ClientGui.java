@@ -320,8 +320,8 @@ public class ClientGui extends Application{
 					
 					System.out.println(xmlFile.getParent());
 					presentation = parser.parsePresention(xmlFile.getAbsolutePath(), xmlFile.getParent());
-					Thread presentationThread = new Thread("PresentationGui") {
-				 	     public void run() {
+//					Thread presentationThread = new Thread("PresentationGui") {
+//				 	     public void run() {
 				 	    	 Platform.runLater(new Runnable() {
 				 	    		 public void run() {             
 				 	    			try {				 	        	  
@@ -333,9 +333,9 @@ public class ClientGui extends Application{
 				 	     			}
 				 	    		 }
 				 	    	 });
-				 	     }
-					};		
-					presentationThread.start();
+//				 	     }
+//					};		
+//					presentationThread.start();
 				}
 				else {
 					actionStatus.setText("File selection cancelled.");

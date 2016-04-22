@@ -12,6 +12,7 @@ public class SlideTimingControl {
 	private boolean visible;
 	private SimpleTimer displayTimer;
 	private Boolean displayTimerDone = null;
+	private Boolean wasRunning = false;
 	
 	
 	public SlideTimingControl(Node tempNode, int time, boolean visible) {
@@ -36,7 +37,9 @@ public class SlideTimingControl {
 				System.out.println("time for timer: " + time);
 				if (time > 0) {
 					System.out.println("starting timer");
+					wasRunning = true;
 					displayTimerDone = displayTimer.startTimer(time);
+					wasRunning = false;
 					System.out.println("timer line finished");
 				}
 				else {
@@ -79,7 +82,7 @@ public class SlideTimingControl {
 	}
 	
 	public void stop() {
-		System.out.println("stoping timer");
+		System.out.println("stopping timer");
 		displayTimer.stopTimer();
 	}
 	
@@ -98,6 +101,13 @@ public class SlideTimingControl {
 	 */
 	public Boolean isRunning() {
 		return displayTimer.isRunning();
+	}
+	
+	/**
+	 * @return the timerWasRunning
+	 */
+	public Boolean wasRunning() {
+		return wasRunning;
 	}
 
 }
