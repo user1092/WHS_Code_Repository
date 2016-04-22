@@ -19,10 +19,7 @@ public class RegisteredModules {
 	 * @param module Module to be added to list
 	 */
 	public void addModule(RegisteredModuleEntry module) {
-		RegisteredModuleEntry addModule = new RegisteredModuleEntry();
-		addModule = module;
-		System.out.println("Adding: " + addModule.getCode());
-		moduleList.add(addModule);
+		moduleList.add(module);
 	}
 	
 	/**

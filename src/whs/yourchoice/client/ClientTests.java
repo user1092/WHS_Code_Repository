@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import whs.yourchoice.presentation.RegisteredModuleEntry;
 import whs.yourchoice.server.ServerInterfacer;
 
 /**
@@ -139,16 +140,6 @@ public class ClientTests {
 		
 	}
 	
-	//TODO
-	/**
-	 * 
-	 */
-	@Ignore("To be implemented")
-	@Test
-	public void clientShouldReceieveModuleList() {
-		fail("Not Implemented");
-	}
-	
 	
 	/**
 	 * Test that the client gets assigned the ID 0 as it should be the only client connected.
@@ -159,5 +150,43 @@ public class ClientTests {
 		assertEquals(0, client.getID());
 	}
 
+	/**
+	 * Test to assure that the client receives a list of modules from the server and
+	 * parses them correctly
+	 */
+	@Test
+	public void clientShouldReceieveModuleList() {
+		//searching for individual module
+		RegisteredModuleEntry module = client.moduleList.searchModuleCode("ELE000034");
+				
+		assertEquals("ELE000034", module.getCode());
+		System.out.println(module.getCode());
+		assertEquals("Electronics", module.getCourse());
+		System.out.println(module.getCourse());
+		assertEquals("Electronics and Computer Engineering", module.getStream());
+		System.out.println(module.getStream());
+		assertEquals(2016, module.getYear());
+		System.out.println(module.getYear());
+		assertEquals("Checking Title", module.getTitle());
+		System.out.println(module.getTitle());
+		assertEquals("ele000034.zip", module.getFileName());
+		System.out.println(module.getFileName());
+				
+		// searching for a different module
+		module = client.moduleList.searchModuleCode("PHL000A68");
+				
+		assertEquals("PHL000A68", module.getCode());
+		System.out.println(module.getCode());
+		assertEquals("Philosophy", module.getCourse());
+		System.out.println(module.getCourse());
+		assertEquals("Philosophy", module.getStream());
+		System.out.println(module.getStream());
+		assertEquals(2015, module.getYear());
+		System.out.println(module.getYear());
+		assertEquals("Bhuddist Philosophy", module.getTitle());
+		System.out.println(module.getTitle());
+		assertEquals("bud_phil.zip", module.getFileName());
+		System.out.println(module.getFileName());
+	}
 	
 }

@@ -19,10 +19,12 @@ public class RegisteredModulesParserTests
 	@Test
 	public void ExtractPresentationInfo()
 	{		
-		Path path = Paths.get("/Users/williamsharrard/Documents/SWEng_workspace/SWE/src/registered_modules.xml");
+		Path path = Paths.get("/Users/williamsharrard/Documents/SWEng_workspace/work/src/registered_modules.xml");
 		String filePath = path.toString();
 		RegisteredModulesParser parser = new RegisteredModulesParser();		
 		RegisteredModules modules = parser.parseModules(filePath);
+		
+		//searching for individual module
 		RegisteredModuleEntry module = modules.searchModuleCode("ELE000034");
 		
 		assertEquals("ELE000034", module.getCode());
@@ -38,6 +40,7 @@ public class RegisteredModulesParserTests
 		assertEquals("ele000034.zip", module.getFileName());
 		System.out.println(module.getFileName());
 		
+		// searching for a different module
 		module = modules.searchModuleCode("PHL000A68");
 		
 		assertEquals("PHL000A68", module.getCode());

@@ -1,9 +1,15 @@
 package whs.yourchoice.client;
 
+import java.io.BufferedOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+
+import whs.yourchoice.parsers.RegisteredModulesParser;
+import whs.yourchoice.presentation.RegisteredModules;
 
 /**
  * Class for the client's back end handling communications to the server 
@@ -21,6 +27,11 @@ public class Client {
 	// Variable assigned by the server to identify the client
 	private int iD = -1;
 	
+	// Variables for registered modules
+	protected RegisteredModules moduleList;
+	private String modulePath = "src/registered_modules2.xml";
+	
+	
 	
 	/**
 	 * Method to open socket, in order to connect to the server. 
@@ -36,6 +47,8 @@ public class Client {
 			createOutputStream();
 			createInputStream();
 			receiveID();
+			getModules();
+			parseModules();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			//e.printStackTrace();
@@ -144,6 +157,25 @@ public class Client {
 	 */
 	protected int getID() {
 		return iD;
+	}
+	
+	/**
+	 * Method to get module list and save as file
+	 * @throws IOException
+	 */
+	private void getModules() throws IOException {
+		byte[] mybytearray = new byte[1024];
+		InputStream is = serverSocket.getInputStream();
+		FileOutputStream fos = new FileOutputStream(modulePath);
+		BufferedOutputStream bos = new BufferedOutputStream(fos);
+		int bytesRead = is.read(mybytearray, 0, mybytearray.length);
+	    bos.write(mybytearray, 0, bytesRead);
+	    bos.close();
+	}
+	
+	private void parseModules() {
+		RegisteredModulesParser parser = new RegisteredModulesParser();
+		moduleList = parser.parseModules(modulePath);
 	}
 	
 	

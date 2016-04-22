@@ -3,6 +3,7 @@ package whs.yourchoice.server;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.net.Socket;
 
 /**
@@ -102,7 +103,15 @@ public class ConnectedClient {
 		outputToClient.flush();
 		System.out.println("(SERVER) Created ouput stream for client: " + iD);
 	}
-
+	
+	/**
+	 * Method to return outputstream for file sending
+	 * @return getOutputStream
+	 * @throws IOException
+	 */
+	protected OutputStream getOutputStream() throws IOException {
+		return clientSocket.getOutputStream();
+	}
 	
 	/**
 	 * Method to get the input stream
