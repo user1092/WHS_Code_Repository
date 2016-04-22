@@ -35,7 +35,7 @@ import java.util.Scanner;
 public class ViewFeedbackGui extends Application {
 	
 	// Path names will need changing and adapting for integration
-	private String starsFilePath = "file:D:\\SWEng\\JavaProject2\\YourChoice\\Stars\\";
+	private String starsFilePath = "file:D:\\SWEng\\JavaProject2\\YourChoice\\src\\whs\\yourchoice\\client\\resources\\Stars\\";
 	private String textFilePath = "D:\\SWEng\\JavaProject2\\YourChoice\\CommentsTest.txt";
 	
 	// Table and list of type Comment to fill the table with
