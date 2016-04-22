@@ -12,8 +12,6 @@ import java.util.List;
  *
  */
 public class RegisteredModules {
-	// debating - protected or private?
-	//private ArrayList<RegisteredModuleEntry> moduleList = new ArrayList<RegisteredModuleEntry>();
 	private List<RegisteredModuleEntry> moduleList = new LinkedList<RegisteredModuleEntry>();
 	
 	/**
@@ -38,7 +36,6 @@ public class RegisteredModules {
 		//currently can't handle modules with same code
 		//probably will just return the first one with same code
 		for (int i=0; i<moduleList.size(); i++) {
-			System.out.println(moduleList.get(i).getCode());
 			if(moduleList.get(i).getCode().equals(code)) {
 				returnModule = moduleList.get(i);
 				break;

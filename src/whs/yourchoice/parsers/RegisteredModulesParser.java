@@ -45,8 +45,6 @@ public class RegisteredModulesParser {
 			Document doc = dBuilder.parse(file);
 			
 			doc.getDocumentElement().normalize();
-
-			System.out.println("Root element : " + doc.getDocumentElement().getNodeName());
 			
 			continueParsingForChildren(doc.getChildNodes());
 		} 
@@ -80,6 +78,7 @@ public class RegisteredModulesParser {
 				}
 			}
 			
+			//adds module to list
 			if ((currentNodeElement.getNodeName() == "module") && (module != null)) {
 				addModule = module;
 				addToModuleList(addModule);
@@ -150,10 +149,8 @@ public class RegisteredModulesParser {
 	}
 	
 	private void addToModuleList(RegisteredModuleEntry addModule) {
-		//RegisteredModuleEntry addModule = new RegisteredModuleEntry();
-		//addModule = module;
 		moduleList.addModule(addModule);
-		module = null;
+		module = new RegisteredModuleEntry();
 	}
 
 }

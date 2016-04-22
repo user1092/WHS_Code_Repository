@@ -8,22 +8,6 @@ public class RegisteredModuleEntry {
 	protected String title;
 	protected String fileName;
 	
-	/*
-	public RegisteredModuleEntry(String code,
-								String course,
-								String stream,
-								int year,
-								String title,
-								String fileName) {
-		
-		this.code = code;
-		this.course = course;
-		this.stream = stream;
-		this.year = year;
-		this.title = title;
-		this.fileName = fileName;
-	}*/
-	
 	public void setCode(String code) {
 		this.code = code;
 	}
