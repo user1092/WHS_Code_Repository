@@ -16,4 +16,12 @@
         <title>Organic Chemistry</title>
         <filename>chm000068.zip</filename>
     </module>
+    <module>
+        <code>PHL000A68</code>
+        <course>Philosophy</course>
+        <stream>Philosophy</stream>
+        <year>2015</year>
+        <title>Bhuddist Philosophy</title>
+        <filename>bud_phil.zip</filename>
+    </module>
 </registeredModules>
