@@ -192,6 +192,7 @@ public class PresentationParserTests
 		assertEquals(3, currentSlide.getSlideID());
 		assertEquals(8, currentSlide.getSlideDuration());
 		assertEquals(-1, currentSlide.getSlideNext());
+		assertEquals("DDFFDD", currentSlide.getSlideBackgroundColour());
 		
 		currentAudio = currentSlide.getAudioListEntry(0);
 		

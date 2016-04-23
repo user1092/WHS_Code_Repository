@@ -234,7 +234,7 @@ public class PresentationParser
 					{
 						case "backgroundColour" :
 							
-							currentSlide.setSlideBackgroundColour(temporaryChildNodeElement.getTextContent());
+							currentSlide.setSlideBackgroundColour(temporaryChildNodeElement.getTextContent());			
 							
 						break;
 						
@@ -334,7 +334,12 @@ public class PresentationParser
 							}
 								
 						break;
-					}	
+					}
+					
+					if (currentSlide.getSlideBackgroundColour() == null)
+					{
+						currentSlide.setSlideBackgroundColour(presentation.getDefaultBackgroundColour());
+					}
 				}
 			break;
 			
