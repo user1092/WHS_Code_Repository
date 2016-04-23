@@ -81,6 +81,7 @@ public class PresentationParserTests
 		assertEquals(0, currentSlide.getSlideID());
 		assertEquals(5, currentSlide.getSlideDuration());
 		assertEquals(2, currentSlide.getSlideNext());
+		assertEquals("AAAAAA", currentSlide.getSlideBackgroundColour());
 		
 		currentText = currentSlide.getTextListEntry(0);
 		
@@ -133,6 +134,7 @@ public class PresentationParserTests
 		assertEquals(1, currentSlide.getSlideID());
 		assertEquals(-10, currentSlide.getSlideDuration());
 		assertEquals(-10, currentSlide.getSlideNext());
+		assertEquals("BBBBBB", currentSlide.getSlideBackgroundColour());
 		
 		currentVideo = currentSlide.getVideoListEntry(0);
 		
@@ -148,6 +150,7 @@ public class PresentationParserTests
 		assertEquals(2, currentSlide.getSlideID());
 		assertEquals(-10, currentSlide.getSlideDuration());
 		assertEquals(-10, currentSlide.getSlideNext());
+		assertEquals("CCCCCC", currentSlide.getSlideBackgroundColour());
 		
 		currentText = currentSlide.getTextListEntry(0);
 		

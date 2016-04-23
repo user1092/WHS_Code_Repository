@@ -25,12 +25,33 @@ public class SlideEntry
 	private int slideDuration = -10;
 	private int slideNext = -10;
 	
+	private String slideBackgroundColour = null;
+	
 	private List<TextEntry> textList = new ArrayList<TextEntry>();
 	private List<ShapeEntry> shapeList = new ArrayList<ShapeEntry>();
 	private List<PolygonEntry> polygonList = new ArrayList<PolygonEntry>();
 	private List<ImageEntry> imageList = new ArrayList<ImageEntry>();
 	private List<VideoEntry> videoList = new ArrayList<VideoEntry>();
 	private List<AudioEntry> audioList = new ArrayList<AudioEntry>();
+	
+	
+	/**
+	* setSlideBackgroundColour method. Sets the background colour of the slide.
+	* @param contents The background colour of the slide.
+	*/
+	public void setSlideBackgroundColour(String contents) 
+	{
+		slideBackgroundColour = contents;	
+	}
+
+	/**
+	* getSlideBackgroundColour method. Gets the background colour of the slide.
+	* @return slideBackgroundColour Returns the background colour of the slide.
+	*/
+	public String getSlideBackgroundColour() 
+	{	
+		return slideBackgroundColour;
+	}
 	
 	/**
 	* getTextEntry method. Gets the specific element of the TextList.

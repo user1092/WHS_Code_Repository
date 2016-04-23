@@ -232,6 +232,12 @@ public class PresentationParser
 					// Check which node type the child belongs to, and parse it.
 					switch(temporaryChildNodeElementName)
 					{
+						case "backgroundColour" :
+							
+							currentSlide.setSlideBackgroundColour(temporaryChildNodeElement.getTextContent());
+							
+						break;
+						
 						case "text" :
 							
 							ParseText(currentSlide, temporaryChildNodeElement, false, "-10");
