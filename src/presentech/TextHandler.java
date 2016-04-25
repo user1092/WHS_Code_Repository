@@ -140,57 +140,57 @@ public class TextHandler {
 		
 		 
 		//Start time and Duration animation
-		if (duration == -1) {
-			Timeline tl = new Timeline(
-					  new KeyFrame(
-			                  Duration.millis(0),
-			                  new KeyValue(
-			                          textFlow.opacityProperty(), 
-			                          0, 
-			                          Interpolator.DISCRETE
-			                  )
-			          ),
-			          new KeyFrame(
-			                  Duration.millis(startTime),
-			                  new KeyValue(
-			                          textFlow.opacityProperty(), 
-			                          
-			                          1, 
-			                          Interpolator.DISCRETE
-			                  )
-			          )
-			 );
-			tl.play();
-		} else {
-			Timeline tl = new Timeline(
-					  new KeyFrame(
-			                  Duration.millis(0),
-			                  new KeyValue(
-			                          textFlow.opacityProperty(), 
-			                          0, 
-			                          Interpolator.DISCRETE
-			                  )
-			          ),
-			          new KeyFrame(
-			                  Duration.millis(startTime),
-			                  new KeyValue(
-			                          textFlow.opacityProperty(), 
-			                          
-			                          1, 
-			                          Interpolator.DISCRETE
-			                  )
-			          ),
-			          new KeyFrame(
-			                  Duration.millis(duration),
-			                  new KeyValue(
-			                          textFlow.opacityProperty(), 
-			                          0, 
-			                          Interpolator.DISCRETE
-			                  )
-			                  )
-			          );
-			tl.play();			
-		}	
+//		if (duration == -1) {
+//			Timeline tl = new Timeline(
+//					  new KeyFrame(
+//			                  Duration.millis(0),
+//			                  new KeyValue(
+//			                          textFlow.opacityProperty(), 
+//			                          0, 
+//			                          Interpolator.DISCRETE
+//			                  )
+//			          ),
+//			          new KeyFrame(
+//			                  Duration.millis(startTime),
+//			                  new KeyValue(
+//			                          textFlow.opacityProperty(), 
+//			                          
+//			                          1, 
+//			                          Interpolator.DISCRETE
+//			                  )
+//			          )
+//			 );
+//			tl.play();
+//		} else {
+//			Timeline tl = new Timeline(
+//					  new KeyFrame(
+//			                  Duration.millis(0),
+//			                  new KeyValue(
+//			                          textFlow.opacityProperty(), 
+//			                          0, 
+//			                          Interpolator.DISCRETE
+//			                  )
+//			          ),
+//			          new KeyFrame(
+//			                  Duration.millis(startTime),
+//			                  new KeyValue(
+//			                          textFlow.opacityProperty(), 
+//			                          
+//			                          1, 
+//			                          Interpolator.DISCRETE
+//			                  )
+//			          ),
+//			          new KeyFrame(
+//			                  Duration.millis(duration),
+//			                  new KeyValue(
+//			                          textFlow.opacityProperty(), 
+//			                          0, 
+//			                          Interpolator.DISCRETE
+//			                  )
+//			                  )
+//			          );
+//			tl.play();			
+//		}	
 		
 		return textFlow;
 	}
