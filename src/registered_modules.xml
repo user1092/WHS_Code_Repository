@@ -4,15 +4,15 @@
         <code>ELE000034</code>
         <course>Electronics</course>
         <stream>Electronics and Computer Engineering</stream>
-        <year>2016</year>
-        <title>Checking Title</title>
+        <year>3</year>
+        <title>Software Engineering</title>
         <filename>ele000034.zip</filename>
     </module>
     <module>
         <code>CHM000068</code>
         <course>Chemistry</course>
         <stream>Chemisrty</stream>
-        <year>2016</year>
+        <year>1</year>
         <title>Organic Chemistry</title>
         <filename>chm000068.zip</filename>
     </module>
@@ -20,7 +20,7 @@
         <code>PHL000A68</code>
         <course>Philosophy</course>
         <stream>Philosophy</stream>
-        <year>2015</year>
+        <year>2</year>
         <title>Bhuddist Philosophy</title>
         <filename>bud_phil.zip</filename>
     </module>

@@ -1,5 +1,10 @@
 package whs.yourchoice.parsers;
-
+/**
+* Registered Modules Parser
+* Latest Update: 27/04/16
+*
+* Copyright and Licensing Information if applicable
+*/
 import java.io.File;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -13,18 +18,11 @@ import whs.yourchoice.presentation.RegisteredModuleEntry;
 import whs.yourchoice.presentation.RegisteredModules;
 
 /**
-* Registered Modules Parser
-* Latest Update: 18/04/16
-*
-* Copyright and Licensing Information if applicable
-*/
-
-/**
  * A class to parse a registered_modules.xml file
  * 
- * @author Will Sharrard & Sabrina Quinn
+ * @author ws659 skq501
  * 
- * @version 0.1 18/04/16
+ * @version v0.2 27/04/16
  */
 public class RegisteredModulesParser {
 	private RegisteredModuleEntry module = new RegisteredModuleEntry();
@@ -148,6 +146,10 @@ public class RegisteredModulesParser {
 		}
 	}
 	
+	/**
+	 * Adds a module to a RegisteredModules object
+	 * @param addModule
+	 */
 	private void addToModuleList(RegisteredModuleEntry addModule) {
 		moduleList.addModule(addModule);
 		module = new RegisteredModuleEntry();

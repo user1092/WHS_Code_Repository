@@ -1,5 +1,9 @@
 package whs.yourchoice.parsers;
-
+/**
+* Registered Modules Parser Tests
+*
+* Copyright and Licensing Information if applicable
+*/
 import static org.junit.Assert.assertEquals;
 
 import java.nio.file.Path;
@@ -9,7 +13,14 @@ import org.junit.Test;
 
 import whs.yourchoice.presentation.RegisteredModuleEntry;
 import whs.yourchoice.presentation.RegisteredModules;
-
+/**
+ * This class tests that a xml module list is parsed
+ * and a stored in a RegisterModules object
+ * 
+ * @author ws659 skq501
+ * @version v0.2 27/04/16
+ *
+ */
 
 public class RegisteredModulesParserTests 
 {
@@ -40,7 +51,7 @@ public class RegisteredModulesParserTests
 		assertEquals("ele000034.zip", module.getFileName());
 		System.out.println(module.getFileName());
 		
-		// searching for a different module
+		// searching for a philosophy module
 		module = modules.searchModuleCode("PHL000A68");
 		
 		assertEquals("PHL000A68", module.getCode());

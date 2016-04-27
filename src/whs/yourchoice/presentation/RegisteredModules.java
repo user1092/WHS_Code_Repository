@@ -1,4 +1,9 @@
 package whs.yourchoice.presentation;
+/**
+ * Registered Modules Object
+ * 
+ * Copyright and Licensing Information if applicable
+ */
 
 import java.util.LinkedList;
 import java.util.List;
@@ -6,7 +11,7 @@ import java.util.List;
 /**
  * Class that stores, searches and removes modules in a list
  * 
- * @author Will Sharrard & Sabrina Quinn
+ * @author ws659 skq501
  * 
  * @version 0.1 20/04/16
  *
@@ -30,8 +35,8 @@ public class RegisteredModules {
 	public RegisteredModuleEntry searchModuleCode(String code) {
 		RegisteredModuleEntry returnModule = null;
 		
-		//currently can't handle modules with same code
-		//probably will just return the first one with same code
+		//search each module individually until module found
+		//if no module is found returns a null object
 		for (int i=0; i<moduleList.size(); i++) {
 			if(moduleList.get(i).getCode().equals(code)) {
 				returnModule = moduleList.get(i);
