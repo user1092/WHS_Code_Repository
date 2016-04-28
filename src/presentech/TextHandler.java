@@ -138,7 +138,10 @@ public class TextHandler {
 		 */
 		textFlow.setTextAlignment(TextAlignment.JUSTIFY);
 		
-		 
+		 /*
+		  * Removed as not implementing these timings 
+		  */
+		
 		//Start time and Duration animation
 //		if (duration == -1) {
 //			Timeline tl = new Timeline(

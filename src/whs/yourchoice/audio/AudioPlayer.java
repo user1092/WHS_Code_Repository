@@ -9,8 +9,8 @@ import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 /**
  * Class for the client's back end handling playing audio files 
  * 
- * @author		user1092, guest501
- * @version		v0.2 04/03/2016
+ * @author		ch1092, skq501
+ * @version		v0.3 28/04/2016
  */
 public class AudioPlayer {
 	

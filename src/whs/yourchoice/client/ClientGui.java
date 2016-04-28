@@ -37,7 +37,7 @@ import javafx.util.StringConverter;
 /**
 * Class for creation of the Client GUI and adding functionality
 *
-* @author user828 & user1092
+* @author cd828 & ch1092
 * @version v0.3 28/03/16
 */
 public class ClientGui extends Application{
@@ -320,22 +320,17 @@ public class ClientGui extends Application{
 					
 					System.out.println(xmlFile.getParent());
 					presentation = parser.parsePresention(xmlFile.getAbsolutePath(), xmlFile.getParent());
-//					Thread presentationThread = new Thread("PresentationGui") {
-//				 	     public void run() {
-				 	    	 Platform.runLater(new Runnable() {
-				 	    		 public void run() {             
-				 	    			try {				 	        	  
-				 	     				new PresentationGui(presentation).start(new Stage());
-				 	     			}
-				 	    			catch (Exception e) {
-				 	     				// TODO Auto-generated catch block
-				 	     				e.printStackTrace();
-				 	     			}
-				 	    		 }
-				 	    	 });
-//				 	     }
-//					};		
-//					presentationThread.start();
+					Platform.runLater(new Runnable() {
+		 	    		 public void run() {             
+		 	    			try {				 	        	  
+		 	     				new PresentationGui(presentation).start(new Stage());
+		 	     			}
+		 	    			catch (Exception e) {
+		 	     				// TODO Auto-generated catch block
+		 	     				e.printStackTrace();
+		 	     			}
+		 	    		 }
+		 	    	 });
 				}
 				else {
 					actionStatus.setText("File selection cancelled.");

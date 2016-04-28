@@ -68,8 +68,8 @@ import javafx.util.StringConverter;
 /**
 * Class for creation of the presentation window and adding functionality
 *
-* @author user828 & user1092
-* @version v0.8 31/03/16
+* @author cd828 & cd1092
+* @version v0.9 28/04/16
 */
 public class PresentationGui extends Application {
 	
@@ -157,17 +157,16 @@ public class PresentationGui extends Application {
 	private boolean mouseClicked = false;	
 	private String presentationState = "Playing";	
 	private List<TimingEntry> objectTimingList = new ArrayList<TimingEntry>();
-	private SlideTimingControl objectTimingControl;
+	private ObjectTimingControl objectTimingControl;
 	private boolean objectTimersDone = false;
 	private int currentAutomaticNodeNumber = 0;
 	private int currentManualNodeNumber = 0;
-	private int storedCurrentNodeNumber;
+	private int storedCurrentNodeNumber = 0;
 	private int numberOfNodes;
 	private Thread objectAutomaticThread;
 	private Thread objectManualThread;		
 	private SimpleTimer slideTimer;
 	private int storedCurrentSlideNumber = 0;
-	private int numberOfSlides = 0;
 	private Thread slideAutomaticThread;
 	private Thread slideManualThread;
 
@@ -193,7 +192,6 @@ public class PresentationGui extends Application {
 		
 		// Create a media player factory
 		mediaPlayerFactory = new MediaPlayerFactory(VLC_ARGS);
-			
 	}
 	
 	
@@ -207,6 +205,9 @@ public class PresentationGui extends Application {
 	}
 	
 	
+	/* (non-Javadoc)
+	 * @see javafx.application.Application#start(javafx.stage.Stage)
+	 */
 	@Override
 	public void start(Stage slideStage) throws Exception {
 		
@@ -220,14 +221,23 @@ public class PresentationGui extends Application {
 		
 		// Scale the presentation for any window size
 		scalePresentation(scene);
+		
+		// Mouse Handler for manual mode
+		subPresentationLayout.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override public void handle(MouseEvent e) {
+				if ((!automaticMode) && (presentationState.equals("Playing"))) {
+					mouseClicked = true;
+				}
+			}
+		});
         
 		// listen to the stage if it closes
         closeListener(slideStage);
 		
         // Display slide 0 as default
         loadSlide(0);
-        //TODO UNCOMMENT BEFORE PUSH      
-        //setupFullscreen(slideStage, scene);
+     
+        setupFullscreen(slideStage, scene);
 	}
 
 
@@ -320,12 +330,11 @@ public class PresentationGui extends Application {
 	 * Method to exit timing threads by forcing for loop to exit
 	 */
 	private void exitTimingThreads() {
+		System.out.println("Exiting Timing Threads");
 		if (currentManualNodeNumber < numberOfNodes) {
-			System.out.println("attempt to exit timing threads");
 			currentManualNodeNumber = numberOfNodes;
 		}
 		if (currentAutomaticNodeNumber < numberOfNodes) {
-			System.out.println("attempt to exit timing threads");
 			currentAutomaticNodeNumber = numberOfNodes;
 		}
 	}
@@ -336,12 +345,17 @@ public class PresentationGui extends Application {
 	private void stopAllTimers() {
 		System.out.println("Stopping Timers");
 		// Check if running before stopping
-		if (objectTimingControl.isRunning()){
-			objectTimingControl.stop();
+		if (null != objectTimingControl) {
+			if (objectTimingControl.isRunning()){
+				objectTimingControl.stop();
+			}
 		}
-		if (slideTimer.isRunning()) {
-			slideTimer.stopTimer();
+		if (null != slideTimer) {
+			if (slideTimer.isRunning()) {
+				slideTimer.stopTimer();
+			}
 		}
+		
 	}
 	
 			
@@ -632,8 +646,6 @@ public class PresentationGui extends Application {
             		// Set to exit for loop in objectManualThread
             		exitTimingThreads();
 					
-//					currentNodeNumber = storedCurrentNodeNumber;
-					
 					// Start the timingThread if the presentation is playing
 					if (presentationState.equals("Playing")) {
 						startAutomaticMode();
@@ -650,24 +662,11 @@ public class PresentationGui extends Application {
             		
             		// Set to exit for loop in objectTimingThread
             		exitTimingThreads();
-            		try {
-						Thread.sleep(100);
-					} catch (InterruptedException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
 					
-					// Stop any running timers if in automatic mode
-					if (automaticMode) {
-						stopAllTimers();
-					}
+					// Stop any running timers
+					stopAllTimers();
 					
-					//currentNodeNumber = storedCurrentNodeNumber;
-            		
-            		// Start the manualThread if the presentation is playing
-            		if (presentationState.equals("Playing")) {
-            			startManualMode();
-					}
+            		startManualMode();
             		
             		automaticMode = false;
             		            		
@@ -746,28 +745,9 @@ public class PresentationGui extends Application {
 			public void handle(ActionEvent e) {
 				if (playButton.isSelected()) {
 					playButton.setGraphic(pauseView);
-					// Set all audio players to play 
-					for(int audio = 0; audio < audioPlayerList.size(); audio++) {
-						if (audioPlayerList.get(audio).wasPlaying()) {
-							audioPlayerList.get(audio).playAudio();
-	            			// Fixes bug with vlc
-	            			while(-1 == audioPlayerList.get(audio).getAudioVolume());
-	            			if(muteButton.isSelected()) {
-	            				audioPlayerList.get(audio).muteAudio(true);
-	            			}
-	            			else {
-	            				audioPlayerList.get(audio).setAudioVolume(masterVolume.intValue());
-	            			}
-						}
-            		}
-					// Set all video players to play 
-					for(int video = 0; video < videoPlayerList.size(); video++) {
-						if (videoPlayerList.get(video).wasPlaying()) {
-							videoPlayerList.get(video).playVideo();
-						}
-	        		}
 					
 					if (presentationState.equals("Paused")) {
+						playPausedMedia();						
 						presentationState = "Playing";
 						// Check if displayed slide has changed
 						if (automaticMode) {
@@ -775,9 +755,14 @@ public class PresentationGui extends Application {
 								startAutomaticMode();
 							}
 							else {
-								if ((!objectTimersDone) && (objectTimingControl.wasRunning())) {
-									objectTimingControl.resume();
-									slideTimer.resumeTimer();
+								if ((null != objectTimingControl) && (!objectTimersDone) && slideAutomaticThread.isAlive() && objectAutomaticThread.isAlive()) {
+									if (objectTimingControl.wasRunning()) {
+										objectTimingControl.resume();
+										slideTimer.resumeTimer();
+									}
+								}
+								else {
+									startAutomaticMode();
 								}
 							}
 						}
@@ -819,6 +804,32 @@ public class PresentationGui extends Application {
 		});
 	}
 	
+	/**
+	 * Method to continue playing any paused media
+	 */
+	private void playPausedMedia() {
+		// Set all audio players to play 
+		for(int audio = 0; audio < audioPlayerList.size(); audio++) {
+			if (audioPlayerList.get(audio).wasPlaying()) {
+				audioPlayerList.get(audio).playAudio();
+				// Fixes "feature" with vlc where audio is not observed if not playing
+				while(-1 == audioPlayerList.get(audio).getAudioVolume());
+				if(muteButton.isSelected()) {
+					audioPlayerList.get(audio).muteAudio(true);
+				}
+				else {
+					audioPlayerList.get(audio).setAudioVolume(masterVolume.intValue());
+				}
+			}
+		}
+		// Set all video players to play 
+		for(int video = 0; video < videoPlayerList.size(); video++) {
+			if (videoPlayerList.get(video).wasPlaying()) {
+				videoPlayerList.get(video).playVideo();
+			}
+		}
+	}
+	
 	
 	/**
 	 * Method for creating the stop button on the control bar
@@ -836,12 +847,10 @@ public class PresentationGui extends Application {
 		stopButton.setMinSize(40, 30);
 		stopButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
-			public void handle(ActionEvent e) {
-				
+			public void handle(ActionEvent e) {				
 				exitTimingThreads();
-				
+				// Stop any running timers if in automatic mode
 				if (automaticMode) {
-					// Stop all timers
 					stopAllTimers();
 				}
 				
@@ -850,6 +859,8 @@ public class PresentationGui extends Application {
 				presentationState = "Stopped";
 				
 				releaseMediaPlayers();
+				
+				presentationLayout.getChildren().clear();
 				
 				// Set playButton back to wait to play
 				playButton.setSelected(false);
@@ -888,104 +899,14 @@ public class PresentationGui extends Application {
 	
 	
 	/**
-	 * Method for automatically changing slide within the current presentation
-	 * 
-	 * @param slideNumber - The slide to be timed
-	 */
-	private void automaticSlideMode(final int slideNumber) {
-		
-		numberOfSlides = presentation.slideList.size();
-		System.out.println("automatic, Number of slides: " + numberOfSlides);
-		
-		// Task to cycle through slides automatically
-		Task<Void> automaticSlideTask = new Task<Void>() {
-			@Override protected Void call() throws Exception {
-				boolean slideTimerDone = false;
-				
-				slideTimer = new SimpleTimer();
-				slideTimerDone = slideTimer.startTimer(presentation.slideList.get(slideNumber).getSlideDuration());
-				
-				System.out.println("slideTimerDone: " + slideTimerDone);
-				
-				// If the timer finished click the next slide button
-				if (slideTimerDone) {
-					Platform.runLater(new Runnable() {
-						@Override public void run() {
-							nextSlideButton.fire();
-						}
-					});
-				}
-				return null;
-			}
-		};
-		
-		// Add task to a thread
-		slideAutomaticThread = new Thread(automaticSlideTask);
-		slideAutomaticThread.setDaemon(true);
-//		slideAutomaticThread.start();
-	}
-
-
-	/**
-	 * 
-	 */
-	private void manualSlideMode() {
-		//TODO FIX!!
-		Task<Void> manualSlideTask = new Task<Void>() {
-			@Override protected Void call() throws Exception {
-				storedCurrentSlideNumber = currentSlideNumber;
-				
-				System.out.println("manual slide, currentNodeNumber" + currentManualNodeNumber);
-				System.out.println("manual slide, numberOfNodes" + numberOfNodes);
-				
-				while ((currentManualNodeNumber < numberOfNodes) || 
-						((!mouseClicked) && (!automaticMode) && 
-								(currentSlideNumber == storedCurrentSlideNumber)))	{
-					Thread.sleep(20);
-				}
-								
-				mouseClicked = false;
-				
-//				System.out.println("currentSlideNumber" + currentSlideNumber);
-//				System.out.println("storedCurrentSlideNumber" + storedCurrentSlideNumber);
-				
-				// If still in automatic mode and on the same slide click the next slide button
-				if ((!automaticMode) && (currentSlideNumber == storedCurrentSlideNumber)) {
-					Platform.runLater(new Runnable() {
-						@Override public void run() {
-							System.out.println("");
-							System.out.println("");
-							System.out.println("FIRE!");
-							System.out.println("");
-							System.out.println("");
-							nextSlideButton.fire();
-						}
-					});
-				}
-				System.out.println("");
-				System.out.println("");
-				System.out.println("Exit manual slide");
-				System.out.println("");
-				System.out.println("");
-				return null;
-			}
-		};
-		
-		// Add task to a thread
-		slideManualThread = new Thread(manualSlideTask);
-		slideManualThread.setDaemon(true);
-		slideManualThread.start();
-	}
-
-
-	/**
-	 * Method for displaying all objects on a slide within the current presentation
+	 * Method for loading all objects on current slide within the current presentation
 	 * 
 	 * @param slideId - The slide number in the presentation to be displayed
 	 */
 	private void loadSlide(int slideId) {
 		
 		objectTimingList.clear();
+		storedCurrentNodeNumber = 0;
 		
 		// An empty canvas to represent the size of the slide area
 		Canvas duffCanvas = new Canvas(PRESENTATION_WIDTH,  PRESENTATION_HEIGHT);
@@ -993,35 +914,20 @@ public class PresentationGui extends Application {
 		// Retrieve the slide information that was requested
 		SlideEntry currentSlide = presentation.slideList.get(slideId);
 		
-		displayTexts(currentSlide, duffCanvas);
-				
-		displayImages(currentSlide);
-		
-		displayShapes(currentSlide);
-		
-		displayPolygons(currentSlide);
-		
-		displayVideos(currentSlide, duffCanvas);
-		
+		displayTexts(currentSlide, duffCanvas);				
+		displayImages(currentSlide);		
+		displayShapes(currentSlide);		
+		displayPolygons(currentSlide);		
+		displayVideos(currentSlide, duffCanvas);		
 		displayAudios(currentSlide);
 		
 		numberOfNodes = objectTimingList.size();
 		
-		sortNodes();
+		// Sort List by TimeInPresentation
+		Collections.sort(objectTimingList, new TimeInPresentationComparator());
 		
-		
-		
-		// Mouse Handler for manual mode
-		subPresentationLayout.setOnMouseClicked(new EventHandler<MouseEvent>() {
-			@Override public void handle(MouseEvent e) {
-				mouseClicked = true;
-			}
-		});
+		populateTimeSinceLastNode();
 				
-		System.out.println("Timing Thread: presentation state: " + presentationState);
-		
-		automaticSlideMode(currentSlideNumber);
-		
 		if (presentationState.equals("Playing")) {
 			if (automaticMode) {
 				startAutomaticMode();
@@ -1035,43 +941,70 @@ public class PresentationGui extends Application {
 
 
 	/**
-	 * 
+	 * Method to start all tasks for manual mode
 	 */
 	private void startManualMode() {
-		//TODO WAS IT PAUSED??
-		System.out.println("start manual, currentNodeNumber" + currentManualNodeNumber);
-		System.out.println("start manual, storedCurrentNodeNumber" + storedCurrentNodeNumber);
-//		currentManualNodeNumber = storedCurrentNodeNumber;
 		manualSlideMode();
 		manualObjectMode();
 	}
 
 
 	/**
-	 * 
+	 * Method to start all tasks for automatic mode
 	 */
 	private void startAutomaticMode() {
-		//TODO WAS IT PAUSED??
-		currentAutomaticNodeNumber = storedCurrentNodeNumber;
+//		currentAutomaticNodeNumber = storedCurrentNodeNumber;
 		automaticObjectMode();
-		slideAutomaticThread.start();
-//		objectAutomaticThread.start();
+		automaticSlideMode(currentSlideNumber);
 	}
 
 
 	/**
-	 * 
+	 * Method to run task for changing slide in manual mode
+	 */
+	private void manualSlideMode() {
+		Task<Void> manualSlideTask = new Task<Void>() {
+			@Override protected Void call() throws Exception {
+				storedCurrentSlideNumber = currentSlideNumber;
+				
+				while ((currentManualNodeNumber < numberOfNodes) || 
+						((!mouseClicked) && (!automaticMode) && 
+								(currentSlideNumber == storedCurrentSlideNumber)))	{
+					Thread.sleep(20);
+				}
+								
+				mouseClicked = false;
+				
+				// If in manual mode and on the same slide click the next slide button
+				if ((!automaticMode) && (currentSlideNumber == storedCurrentSlideNumber)) {
+					Platform.runLater(new Runnable() {
+						@Override public void run() {
+							nextSlideButton.fire();
+						}
+					});
+				}
+				return null;
+			}
+		};
+		
+		// Add task to a thread
+		slideManualThread = new Thread(manualSlideTask);
+		slideManualThread.setDaemon(true);
+		slideManualThread.start();
+	}
+
+
+	/**
+	 * Method to run task for displaying objects in manual mode
 	 */
 	private void manualObjectMode() {
-		//TODO FIX ME!!!
 		// Task to run both timers in, to not stall main program
 		Task<Void> manualObjectTask = new Task<Void>() {
 			@Override protected Void call() throws Exception {
 				
 				// Display all Nodes at correct time
 				for(currentManualNodeNumber = storedCurrentNodeNumber; currentManualNodeNumber < numberOfNodes; currentManualNodeNumber++) {
-										
-					System.out.println("Manual, current Node: " + currentManualNodeNumber);
+					
 					mouseClicked = false;
 					// Get whether the object should appear
 					boolean visible = objectTimingList.get(currentManualNodeNumber).getVisible();
@@ -1097,23 +1030,21 @@ public class PresentationGui extends Application {
 						 *  If time should elapse between the last object appearing 
 						 *  and the current object, display the current object straight away.
 						 */
-						if (objectTimingList.get(currentManualNodeNumber).getTimeSinceLastNode() > 0) {
-							while((!mouseClicked) && (currentManualNodeNumber < numberOfNodes) && (!automaticMode)) {
-								try {
-									Thread.sleep(50);
-								} catch (InterruptedException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
+						while((!mouseClicked) && (currentManualNodeNumber < numberOfNodes) && (!automaticMode)) {
+							try {
+								Thread.sleep(20);
+							} catch (InterruptedException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
 							}
-						}
-						
-						if ((currentManualNodeNumber >= numberOfNodes) || (automaticMode)) {
-							break;
 						}
 						
 						mouseClicked = false;
 						
+						if ((currentManualNodeNumber >= numberOfNodes) || (automaticMode)) {
+							break;
+						}
+												
 						// Check if the object is on a node, if null it must be audio
 						if (!(null == tempNode)) {
 							objectTimingList.get(currentManualNodeNumber).getNode().setVisible(visible);
@@ -1128,7 +1059,7 @@ public class PresentationGui extends Application {
 						}
 					}
 				}
-				System.out.println("Exited manual 'for' loop");
+				System.out.println("Exited manual object loop");
 				return null;
 			}
 		};
@@ -1139,33 +1070,58 @@ public class PresentationGui extends Application {
 
 
 	/**
+	 * Method for automatically changing slide within the current presentation
 	 * 
+	 * @param slideNumber - The slide to be timed
+	 */
+	private void automaticSlideMode(final int slideNumber) {
+		
+		// Task to time the slide and change once complete
+		Task<Void> automaticSlideTask = new Task<Void>() {
+			@Override protected Void call() throws Exception {
+				boolean slideTimerDone = false;
+				
+				slideTimer = new SimpleTimer();
+				slideTimerDone = slideTimer.startTimer(presentation.slideList.get(slideNumber).getSlideDuration());
+				
+				// If the timer finished click the next slide button
+				if (slideTimerDone) {
+					Platform.runLater(new Runnable() {
+						@Override public void run() {
+							nextSlideButton.fire();
+						}
+					});
+				}
+				return null;
+			}
+		};
+		
+		// Add task to a thread
+		slideAutomaticThread = new Thread(automaticSlideTask);
+		slideAutomaticThread.setDaemon(true);
+		slideAutomaticThread.start();
+	}
+
+
+	/**
+	 * Method to run task for displaying objects in automatic mode
 	 */
 	private void automaticObjectMode() {
-		//TODO FIX ME!!!
 		// Task to run both timers in, to not stall main program
 		Task<Void> automaticObjectTask = new Task<Void>() {
 			@Override protected Void call() throws Exception {
-				System.out.println("Entered Automatic loop");
-				System.out.println("Automatic, CurrentNode: " + currentAutomaticNodeNumber);
 				objectTimersDone = false;
 				// Display all Nodes at correct time
 				for(currentAutomaticNodeNumber = storedCurrentNodeNumber; currentAutomaticNodeNumber < numberOfNodes; currentAutomaticNodeNumber++) {
-				
-//					System.out.println("");
-//					System.out.println("node at start of loop: " + currentNode);
-//					System.out.println("");
-//					
-//					System.out.println("Node: " + currentNode);
-					
+									
 					if("Node" == objectTimingList.get(currentAutomaticNodeNumber).getObjectType()) {
-						objectTimingControl = new SlideTimingControl(
+						objectTimingControl = new ObjectTimingControl(
 										objectTimingList.get(currentAutomaticNodeNumber).getNode(),
 										objectTimingList.get(currentAutomaticNodeNumber).getTimeSinceLastNode(),
 										objectTimingList.get(currentAutomaticNodeNumber).getVisible());
 					}
 					else {
-						objectTimingControl = new SlideTimingControl(
+						objectTimingControl = new ObjectTimingControl(
 								objectTimingList.get(currentAutomaticNodeNumber).getAudioPlayer(),
 								objectTimingList.get(currentAutomaticNodeNumber).getTimeSinceLastNode(),
 								objectTimingList.get(currentAutomaticNodeNumber).getVisible());
@@ -1173,19 +1129,12 @@ public class PresentationGui extends Application {
 					
 					objectTimingControl.start();
 					
-					System.out.println("");
-					System.out.println("automaticobject, currentNodeNumber: " + currentAutomaticNodeNumber);
-					System.out.println("automaticobject, numberOfNodes: " + numberOfNodes);
-					System.out.println("");
-					
 					if (numberOfNodes == currentAutomaticNodeNumber) {
 						objectTimersDone = true;
 						break;
 					}
 				}
-				System.out.println("");
-				System.out.println("Display (for) loop finished");
-				System.out.println("");
+				System.out.println("Exited automatic object loop");
 				return null;
 			}
 		};
@@ -1198,11 +1147,10 @@ public class PresentationGui extends Application {
 
 
 	/**
-	 * 
+	 * Method to calculate and populate the timeSinceLastNode field in timing list
 	 */
-	private void sortNodes() {
-		Collections.sort(objectTimingList, new TimeInPresentationComparator());
-				
+	private void populateTimeSinceLastNode() {
+		
 		// Populate timeSinceLastNode
 		for(int node = 0; node < numberOfNodes; node++) {
 			if((node > 0) && (objectTimingList.get(node).getTimeInPresentation() > 0)) {
@@ -1256,6 +1204,7 @@ public class PresentationGui extends Application {
 			
 			tempPane.setVisible(false);
 			
+			// Add pane to objectTimingList 
 			TimingEntry tempTextTimingEntryAppear = new TimingEntry(tempPane, currentText.getTextStartTime(), currentText.getTextDuration(), true);
 			TimingEntry tempTextTimingEntryDisappear = new TimingEntry(tempPane, currentText.getTextStartTime(), currentText.getTextDuration(), false);
 			objectTimingList.add(tempTextTimingEntryAppear);
@@ -1296,6 +1245,7 @@ public class PresentationGui extends Application {
 			
 			tempCanvas.setVisible(false);
 			
+			// Add canvas to objectTimingList 
 			TimingEntry tempImageTimingEntryAppear = new TimingEntry(tempCanvas, currentImage.getImageStartTime(), currentImage.getImageDuration(), true);
 			TimingEntry tempImageTimingEntryDisappear = new TimingEntry(tempCanvas, currentImage.getImageStartTime(), currentImage.getImageDuration(), false);
 			objectTimingList.add(tempImageTimingEntryAppear);
@@ -1338,6 +1288,7 @@ public class PresentationGui extends Application {
 			
 			tempPane.setVisible(false);
 			
+			// Add pane to objectTimingList 
 			TimingEntry tempShapeTimingEntryAppear = new TimingEntry(tempPane, currentShape.getShapeStartTime(), currentShape.getShapeDuration(), true);
 			TimingEntry tempShapeTimingEntryDisappear = new TimingEntry(tempPane, currentShape.getShapeStartTime(), currentShape.getShapeDuration(), false);
 			objectTimingList.add(tempShapeTimingEntryAppear);
@@ -1354,10 +1305,6 @@ public class PresentationGui extends Application {
 	private void displayPolygons(SlideEntry currentSlide) {
 		// Get the total number of polygons to be displayed
 		int numberOfPolygons = currentSlide.polygonList.size();
-		
-		//TODO Currently broken uses this as default
-		//float[] polygonX = {0.1f, 0.2f, 0.3f};
-		//float[] polygonY = {0.2f, 0.4f, 0.2f};
 		
 		// Display all polygons
 		for(int polygon = 0; polygon < numberOfPolygons; polygon++) {
@@ -1377,13 +1324,6 @@ public class PresentationGui extends Application {
 			catch (FileNotFoundException e) {
 				System.out.println(e);
 			}
-			//TODO Consider if both techniques are required			
-//			PolygonGraphic tempPolygon = new PolygonGraphic(currentPolygon.getPolygonStartTime(),
-//														currentPolygon.getPolygonDuration(),
-//														polygonX, polygonY,
-//														currentPolygon.getPolygonFillColour(),
-//														currentPolygon.getPolygonLineColour(),
-//														currentPolygon.getPolygonSourceFile());
 			
 			tempPolygon.setRes(PRESENTATION_WIDTH, PRESENTATION_HEIGHT);
 			
@@ -1395,6 +1335,7 @@ public class PresentationGui extends Application {
 
 			tempPane.setVisible(false);
 			
+			// Add pane to objectTimingList 
 			TimingEntry tempPolygonTimingEntryAppear = new TimingEntry(tempPane, currentPolygon.getPolygonStartTime(), currentPolygon.getPolygonDuration(), true);
 			TimingEntry tempPolygonTimingEntryDisappear = new TimingEntry(tempPane, currentPolygon.getPolygonStartTime(), currentPolygon.getPolygonDuration(), false);
 			objectTimingList.add(tempPolygonTimingEntryAppear);
@@ -1438,6 +1379,7 @@ public class PresentationGui extends Application {
 			
 			tempPane.setVisible(false);
 			
+			// Add pane to objectTimingList 
 			TimingEntry tempVideoTimingEntryAppear = new TimingEntry(tempPane, currentVideo.getVideoStartTime(), currentVideo.getVideoDuration(), true);
 			TimingEntry tempVideoTimingEntryDisappear = new TimingEntry(tempPane, currentVideo.getVideoStartTime(), currentVideo.getVideoDuration(), false);
 			objectTimingList.add(tempVideoTimingEntryAppear);
@@ -1468,6 +1410,7 @@ public class PresentationGui extends Application {
 			
 			System.out.println("audio entry: " + audio + "\n");
 			
+			// Add audioPlayer to objectTimingList 
 			TimingEntry tempAudioTimingEntryAppear = new TimingEntry(audioPlayerList.get(audio), currentAudio.getAudioStartTime(), currentAudio.getAudioDuration(), true);
 			TimingEntry tempAudioTimingEntryDisappear = new TimingEntry(audioPlayerList.get(audio), currentAudio.getAudioStartTime(), currentAudio.getAudioDuration(), false);
 			objectTimingList.add(tempAudioTimingEntryAppear);

@@ -24,7 +24,7 @@ import javafx.scene.media.MediaView;
  * Ensure that releasePlayer is called upon exit of a window.
  * 
  * @author		ch1092, sqk501, cd828
- * @version		v0.4 31/03/2016
+ * @version		v0.5 28/04/2016
  */
 public class VideoPlayer{
 	
