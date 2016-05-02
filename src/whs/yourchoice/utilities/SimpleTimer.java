@@ -7,7 +7,7 @@ import java.util.TimerTask;
 * Class for creating a simple timer that returns true when complete or false when cancelled.
 * 
 * @author cd828 & ch1092
-* @version v0.1 06/04/16
+* @version v0.2 28/04/16
 */
 public class SimpleTimer{
 	
@@ -15,6 +15,7 @@ public class SimpleTimer{
 	
 	private Boolean timerDone = false;
 	private Boolean cancelled = false;
+	private Boolean timerIsRunning = false;
 	
 	private Integer timeRemaining;
 	private Long startTime;
@@ -29,24 +30,21 @@ public class SimpleTimer{
 	 */
 	public Boolean startTimer(Integer time) {
 		timerDone = false;
-		cancelled = false;
+		cancelled = false;		
 		
 		timeRemaining = time;
 		startTime = System.nanoTime();
 
 		timer(time);
 		
-		// TODO WHY DOES THIS HAVE TO BE USED
 		while(!timerDone && !cancelled) {
 			try {
-				Thread.sleep(10);
+				Thread.sleep(50);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		// AND NOT THIS?????
-		//while(!timerDone && !cancelled);
 		
 		return timerDone;
 	}
@@ -58,6 +56,7 @@ public class SimpleTimer{
 	 * @param time	-	The amount of time the timer should run before timerDone is set true
 	 */
 	private void timer(Integer time) {
+		timerIsRunning = true;
 		timer = new Timer();
 		timer.schedule(new TimerTask() {
 			@Override
@@ -73,6 +72,7 @@ public class SimpleTimer{
 	 */
 	public void stopTimer() {
 		cancelled = true;
+		timerIsRunning = false;
 		timer.cancel();
 		timer.purge();
 	}
@@ -81,15 +81,15 @@ public class SimpleTimer{
 	/**
 	 * Method to pause the running timer
 	 */
-	public void pauseTimer() { 
+	public void pauseTimer() {
 		pausedTime = System.nanoTime();
 		timer.cancel();
 		timer.purge();
+		timerIsRunning = false;
 		Long timeTaken = ((pausedTime - startTime) / 1000000);
 		timeRemaining = timeRemaining - Integer.valueOf(timeTaken.intValue());
 	}
-
-
+	
 	/**
 	 * Method to resume a paused timer
 	 */
@@ -98,5 +98,12 @@ public class SimpleTimer{
 		timer(timeRemaining);
 	}
 	
-	
+	/**
+	 * Method to see if the timer is running
+	 * 
+	 * @return the timerIsRunning
+	 */
+	public Boolean isRunning() {
+		return timerIsRunning;
+	}
 }

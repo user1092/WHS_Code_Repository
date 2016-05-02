@@ -1,0 +1,131 @@
+package whs.yourchoice.client;
+
+import whs.yourchoice.audio.AudioPlayer;
+import whs.yourchoice.utilities.SimpleTimer;
+import javafx.scene.Node;
+
+/**
+* Class for controlling objects on a slide.
+* 
+* Can set nodes to appear or disappear.
+* Can set audio to play or stop.
+* 
+* @author cd828 & ch1092
+* @version v0.1 28/04/16
+*/
+public class ObjectTimingControl {
+	
+	private Node tempNode;
+	private AudioPlayer tempAudioPlayer;
+	private int time;
+	private boolean visible;
+	private SimpleTimer displayTimer;
+	private Boolean displayTimerDone = null;
+	private Boolean wasRunning = false;
+	
+	
+	/**
+	 * Constructor used to setup for a node
+	 * 
+	 * @param tempNode
+	 * @param time
+	 * @param visible
+	 */
+	public ObjectTimingControl(Node tempNode, int time, boolean visible) {
+		this.tempNode = tempNode;
+		this.time = time;
+		this.visible = visible;
+		displayTimer = new SimpleTimer();
+	}
+	
+	/**
+	 * Constructor used to setup for an audioPlayer
+	 * 
+	 * @param tempAudioPlayer
+	 * @param time
+	 * @param visible
+	 */
+	public ObjectTimingControl(AudioPlayer tempAudioPlayer, int time, boolean visible) {
+		this.tempAudioPlayer = tempAudioPlayer;
+		this.time = time;
+		this.visible = visible;
+		displayTimerDone = null;
+		displayTimer = new SimpleTimer();
+	}
+	
+	public Boolean start() {
+		// Only run timer if time greater than zero
+		if (time > 0) {
+			wasRunning = true;
+			displayTimerDone = displayTimer.startTimer(time);
+			wasRunning = false;
+		}
+		else {
+			displayTimerDone = true;
+		}
+		
+		// Adjust visibility of node or play/stop audio
+		if ((true == displayTimerDone) && !(null == tempNode)) {
+			tempNode.setVisible(visible);
+		}
+		if ((true == displayTimerDone) && (null == tempNode)) {
+			if (visible) {
+				tempAudioPlayer.playAudio();
+			}
+			else {
+				tempAudioPlayer.stopAudio();
+			}
+		}
+		
+		// Wait until the timer is finished to return the value
+		while(null == displayTimerDone) {
+			try {
+				Thread.sleep(50);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return displayTimerDone;
+	}
+	
+	/**
+	 * Method to stop the timer
+	 */
+	public void stop() {
+		displayTimer.stopTimer();
+	}
+	
+	/**
+	 * Method to pause the timer
+	 */
+	public void pause() {
+		displayTimer.pauseTimer();
+	}
+	
+	/**
+	 * Method to resume the timer
+	 */
+	public void resume() {
+		displayTimer.resumeTimer();
+	}
+	
+	/**
+	 * Method to check if the timer is running
+	 * 
+	 * @return the timerIsRunning
+	 */
+	public Boolean isRunning() {
+		return displayTimer.isRunning();
+	}
+	
+	/**
+	 * Method to see if the timer was running but was paused
+	 * 
+	 * @return the timerWasRunning
+	 */
+	public Boolean wasRunning() {
+		return wasRunning;
+	}
+
+}

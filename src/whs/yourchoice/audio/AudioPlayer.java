@@ -9,12 +9,13 @@ import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 /**
  * Class for the client's back end handling playing audio files 
  * 
- * @author		user1092, guest501
- * @version		v0.2 04/03/2016
+ * @author		ch1092, skq501
+ * @version		v0.3 28/04/2016
  */
 public class AudioPlayer {
 	
 	private EmbeddedMediaPlayer mediaPlayer;
+	private boolean wasPlaying = false;
 	
 	/**
 	 * Constructor
@@ -44,6 +45,7 @@ public class AudioPlayer {
 	 */
 	public void playStreamedAudio(String host, int rtpPort) {
 		mediaPlayer.playMedia("rtp://@"+ host + ":" + rtpPort);
+		wasPlaying = true; 
 	}
 	
 	/**
@@ -54,6 +56,7 @@ public class AudioPlayer {
 			mediaPlayer.pause();
 		} else {
 			mediaPlayer.play();
+			wasPlaying = true;
 		}
 	}
 	
@@ -62,6 +65,7 @@ public class AudioPlayer {
 	 */
 	public void playAudio() {
 		mediaPlayer.play();
+		wasPlaying = true;
 	}
 	
 	/**
@@ -71,6 +75,7 @@ public class AudioPlayer {
 	 */
 	public void playAudio(String audioFile) {
 		mediaPlayer.playMedia(audioFile);
+		wasPlaying = true;
 	}
 		
 	/**
@@ -85,6 +90,7 @@ public class AudioPlayer {
 	 */
 	public void stopAudio() {
 		mediaPlayer.stop();
+		wasPlaying = false;
 	}
 	
 	/**
@@ -136,12 +142,23 @@ public class AudioPlayer {
 		}
 		
 	}
+	
+	/**
+	 * Method to see if media play was playing
+	 * 
+	 * @return
+	 */
+	public boolean wasPlaying() {
+		return wasPlaying;
+	}
 
 	/**
 	 * Method to clean up and release all players
 	 */
 	public void releasePlayer() {
-		mediaPlayer.stop();
+		if (wasPlaying) {
+			mediaPlayer.stop();
+		}
 		mediaPlayer.release();
 	}
 	
