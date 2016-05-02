@@ -12,28 +12,28 @@ package whs.yourchoice.presentation;
 * This class is responsible for storing a shape object contained in the XML file.
 * A different instance of this class is created for each shape object in the XML file.
 *
-* @author Antonio Figueiredo and Sabrina Quinn
-* @version v1.0 10/03/16
+* @author ajff500 and sqk501
+* @version v0.1 18/04/16
 */
 
 public class ShapeEntry 
 {
-	public int shapeStartTime = -10;
-	public int shapeDuration = -10;
-	public float shapeXStart = -10;
-	public float shapeYStart = -10;
-	public String shapeType = null;
-	public float shapeWidth = -10;
-	public float shapeHeight = -10;
-	public String shapeLineColour = null;
-	public String shapeFillColour = null;
+	private int shapeStartTime = -10;
+	private int shapeDuration = -10;
+	private float shapeXStart = -10;
+	private float shapeYStart = -10;
+	private String shapeType = null;
+	private float shapeWidth = -10;
+	private float shapeHeight = -10;
+	private String shapeLineColour = null;
+	private String shapeFillColour = null;
 	
-	public float shapeShadeX1 = -10;
-	public float shapeShadeY1 = -10;
-	public String shapeShadeColour1 = null;
-	public float shapeShadeX2 = -10;
-	public float shapeShadeY2 = -10;
-	public String shapeShadeColour2 = null;
+	private float shapeShadeX1 = -10;
+	private float shapeShadeY1 = -10;
+	private String shapeShadeColour1 = null;
+	private float shapeShadeX2 = -10;
+	private float shapeShadeY2 = -10;
+	private String shapeShadeColour2 = null;
 	
 	private boolean interactable = false;
 	private int targetSlide = -10;

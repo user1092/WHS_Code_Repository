@@ -12,18 +12,18 @@ package whs.yourchoice.presentation;
 * This class is responsible for storing an video object contained in the XML file.
 * A different instance of this class is created for each video object in the XML file.
 *
-* @author Antonio Figueiredo and Sabrina Quinn
-* @version v1.0 10/03/16
+* @author ajff500 and sqk501
+* @version v0.1 18/04/16
 */
 
 public class VideoEntry 
 {
-	public int videoStartTime = -10;
-	public int videoDuration = -10;
-	public float videoXStart = -10;
-	public float videoYStart = -10;
-	public String videoSourceFile = null;
-	public boolean videoLoop = false;
+	private int videoStartTime = -10;
+	private int videoDuration = -10;
+	private float videoXStart = -10;
+	private float videoYStart = -10;
+	private String videoSourceFile = null;
+	private boolean videoLoop = false;
 	
 	private boolean interactable = false;
 	private int targetSlide = -10;

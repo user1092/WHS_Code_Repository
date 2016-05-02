@@ -12,24 +12,24 @@ package whs.yourchoice.presentation;
 * This class is responsible for storing a polygon object contained in the XML file.
 * A different instance of this class is created for each polygon object in the XML file.
 *
-* @author Antonio Figueiredo and Sabrina Quinn
-* @version v1.0 10/03/16
+* @author ajff500 and sqk501
+* @version v0.1 18/04/16
 */
 
 public class PolygonEntry 
 {
-	public int polygonStartTime = -10;
-	public String polygonSourceFile = null;
-	public int polygonDuration = -10;
-	public String polygonLineColour = null;
-	public String polygonFillColour = null;
+	private int polygonStartTime = -10;
+	private String polygonSourceFile = null;
+	private int polygonDuration = -10;
+	private String polygonLineColour = null;
+	private String polygonFillColour = null;
 	
-	public float polygonShadeX1 = -10;
-	public float polygonShadeY1 = -10;
-	public String polygonShadeColour1 = null;
-	public float polygonShadeX2 = -10;
-	public float polygonShadeY2 = -10;
-	public String polygonShadeColour2 = null;
+	private float polygonShadeX1 = -10;
+	private float polygonShadeY1 = -10;
+	private String polygonShadeColour1 = null;
+	private float polygonShadeX2 = -10;
+	private float polygonShadeY2 = -10;
+	private String polygonShadeColour2 = null;
 	
 	private boolean interactable = false;
 	private int targetSlide = -10;

@@ -15,8 +15,8 @@ import java.util.List;
 * It also stores lists of all instances of all other types of media contained in the XML file:
 * 	(audio, image, polygon, shape, text and video).
 *
-* @author Antonio Figueiredo and Sabrina Quinn
-* @version v1.0 10/03/16
+* @author ajff500 and sqk501
+* @version v0.1 18/04/16
 */
 
 public class SlideEntry 
@@ -25,14 +25,94 @@ public class SlideEntry
 	private int slideDuration = -10;
 	private int slideNext = -10;
 	
-	public List<TextEntry> textList = new ArrayList<TextEntry>();
-	public List<ShapeEntry> shapeList = new ArrayList<ShapeEntry>();
-	public List<PolygonEntry> polygonList = new ArrayList<PolygonEntry>();
-	public List<ImageEntry> imageList = new ArrayList<ImageEntry>();
-	public List<VideoEntry> videoList = new ArrayList<VideoEntry>();
-	public List<AudioEntry> audioList = new ArrayList<AudioEntry>();
+	private String slideBackgroundColour = null;
 	
+	private List<TextEntry> textList = new ArrayList<TextEntry>();
+	private List<ShapeEntry> shapeList = new ArrayList<ShapeEntry>();
+	private List<PolygonEntry> polygonList = new ArrayList<PolygonEntry>();
+	private List<ImageEntry> imageList = new ArrayList<ImageEntry>();
+	private List<VideoEntry> videoList = new ArrayList<VideoEntry>();
+	private List<AudioEntry> audioList = new ArrayList<AudioEntry>();
+	
+	
+	/**
+	* setSlideBackgroundColour method. Sets the background colour of the slide.
+	* @param contents The background colour of the slide.
+	*/
+	public void setSlideBackgroundColour(String contents) 
+	{
+		slideBackgroundColour = contents;	
+	}
 
+	/**
+	* getSlideBackgroundColour method. Gets the background colour of the slide.
+	* @return slideBackgroundColour Returns the background colour of the slide.
+	*/
+	public String getSlideBackgroundColour() 
+	{	
+		return slideBackgroundColour;
+	}
+	
+	/**
+	* getTextEntry method. Gets the specific element of the TextList.
+	* @param i The index of the text
+	* @return textList.get(i) Returns the element text of the text array.
+	*/
+	public TextEntry getTextListEntry(int i)
+	{
+		return textList.get(i);
+	}
+	
+	/**
+	* getShapeEntry method. Gets the specific element of the ShapeList.
+	* @param i The index of the shape
+	* @return shapeList.get(i) Returns the element shape of the shape array.
+	*/
+	public ShapeEntry getShapeListEntry(int i)
+	{
+		return shapeList.get(i);
+	}
+	
+	/**
+	* getPolygonEntry method. Gets the specific element of the PolygonList.
+	* @param i The index of the polygon
+	* @return polygonList.get(i) Returns the element polygon of the polygon array.
+	*/
+	public PolygonEntry getPolygonListEntry(int i)
+	{
+		return polygonList.get(i);
+	}
+	
+	/**
+	* getImageEntry method. Gets the specific element of the ImageList.
+	* @param i The index of the image
+	* @return imageList.get(i) Returns the element image of the image array.
+	*/
+	public ImageEntry getImageListEntry(int i)
+	{
+		return imageList.get(i);
+	}
+	
+	/**
+	* getVideoEntry method. Gets the specific element of the VideoList.
+	* @param i The index of the video
+	* @return videoList.get(i) Returns the element video of the video array.
+	*/
+	public VideoEntry getVideoListEntry(int i)
+	{
+		return videoList.get(i);
+	}
+	
+	/**
+	* getAudioEntry method. Gets the specific element of the AudioList.
+	* @param i The index of the audio
+	* @return audioList.get(i) Returns the element audio of the audio array.
+	*/
+	public AudioEntry getAudioListEntry(int i)
+	{
+		return audioList.get(i);
+	}
+	
 	/**
 	* setSlideID method. Sets the ID of the slide.
 	* @param contents The ID of the slide.

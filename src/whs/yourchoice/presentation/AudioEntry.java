@@ -12,16 +12,16 @@ package whs.yourchoice.presentation;
 * This class is responsible for storing an audio object contained in the XML file.
 * A different instance of this class is created for each audio object in the XML file.
 *
-* @author Antonio Figueiredo and Sabrina Quinn
-* @version v1.0 10/03/16
+* @author ajff500 and sqk501
+* @version v0.1 18/04/16
 */
 
 public class AudioEntry 
 {
-	public int audioStartTime = -10;
-	public int audioDuration = -10;
-	public String audioSourceFile = null;
-	public boolean audioLoop = false;
+	private int audioStartTime = -10;
+	private int audioDuration = -10;
+	private String audioSourceFile = null;
+	private boolean audioLoop = false;
 
 	
 	/**

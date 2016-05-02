@@ -29,8 +29,8 @@ import whs.yourchoice.presentation.VideoEntry;
 /**
 * This class is responsible for parsing a given XML file and populating a PresentationEntry class with its contents
 *
-* @author Antonio Figueiredo and Sabrina Quinn & CH1092
-* @version v1.1 28/03/16
+* @author ajff500, sqk501 and ch1092
+* @version v0.1 18/04/16
 */
 
 public class PresentationParser 
@@ -38,17 +38,7 @@ public class PresentationParser
 	/** Object of PresentationEntry type. It holds all the parsed XML data.*/
 	
 	PresentationEntry presentation = new PresentationEntry();
-	
-	
-	/**
-	* Main method. Starts the ParsePresentation method and gives it the path to the XML file location.
-	*/
-	//TODO WHY IS THIS HERE??
-	public static void main(String[] args)
-	{
-		PresentationParser newMain = new PresentationParser();
-		newMain.parsePresention("src/test_file.xml", null);
-	}
+
 	
 	/**
 	* parsePresention method. Sets up the necessary parsing elements. It detects the root node of the XML file (Presentation in our case),
@@ -137,6 +127,13 @@ public class PresentationParser
 				if (temporaryNode.getParentNode().getNodeName() == "documentInfo")
 				{
 					presentation.setPresentationVersion(temporaryNodeTextContent);					
+				}			
+			break;
+			
+			case "Comment" :
+				if (temporaryNode.getParentNode().getNodeName() == "documentInfo")
+				{
+					presentation.setPresentationComment(temporaryNodeTextContent);					
 				}			
 			break;
 			
@@ -235,6 +232,12 @@ public class PresentationParser
 					// Check which node type the child belongs to, and parse it.
 					switch(temporaryChildNodeElementName)
 					{
+						case "backgroundColour" :
+							
+							currentSlide.setSlideBackgroundColour(temporaryChildNodeElement.getTextContent());			
+							
+						break;
+						
 						case "text" :
 							
 							ParseText(currentSlide, temporaryChildNodeElement, false, "-10");
@@ -331,7 +334,12 @@ public class PresentationParser
 							}
 								
 						break;
-					}	
+					}
+					
+					if (currentSlide.getSlideBackgroundColour() == null)
+					{
+						currentSlide.setSlideBackgroundColour(presentation.getDefaultBackgroundColour());
+					}
 				}
 			break;
 			

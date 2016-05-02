@@ -14,8 +14,8 @@ import java.util.List;
 * This class is responsible for storing the presentation object contained in the XML file.
 * It also stores a list of all instances of all slides contained in the XML file.
 *
-* @author Antonio Figueiredo and Sabrina Quinn & CH1092
-* @version v1.1 28/03/16
+* @author ajff500, sqk501 and ch1092
+* @version v0.1 18/04/16
 */
 
 public class PresentationEntry 
@@ -23,6 +23,7 @@ public class PresentationEntry
 	private String titleName = null;
 	private String authorName = null;
 	private String versionNumber = null;
+	private String comment = null;
 	
 	private String defaultBackgroundColour = null;
 	private String defaultFont = null;
@@ -33,8 +34,17 @@ public class PresentationEntry
 	
 	private String presentationPath;
 	
-	public List<SlideEntry> slideList = new ArrayList<SlideEntry>();
+	private List<SlideEntry> slideList = new ArrayList<SlideEntry>();
 	
+	/**
+	* getSlideEntry method. Gets the specific element of the SlideList.
+	* @param i The index of the slide
+	* @return slideList.get(i) Returns the element slide of the slide array.
+	*/
+	public SlideEntry getSlideListEntry(int i)
+	{
+		return slideList.get(i);
+	}
 	
 	/**
 	* setPresentationTitle method. Sets the title of the presentation.
@@ -88,6 +98,24 @@ public class PresentationEntry
 	public String getPresentationVersion() 
 	{
 		return versionNumber;
+	}
+	
+	/**
+	* setPresentationComment method. Sets the comment of the presentation.
+	* @param contents The comment of the presentation.
+	*/
+	public void setPresentationComment(String contents) 
+	{
+		comment = contents;
+	}
+	
+	/**
+	* getPresentationComment method. Gets the comment of the presentation.
+	* @return comment Returns the comment of the presentation.
+	*/
+	public String getPresentationComment() 
+	{
+		return comment;
 	}
 
 	/**
@@ -238,6 +266,5 @@ public class PresentationEntry
 	 */
 	public String getPath() {
 		return presentationPath;
-	}
-		
+	}	
 }
