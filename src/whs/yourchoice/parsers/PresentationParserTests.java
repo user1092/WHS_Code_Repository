@@ -76,14 +76,14 @@ public class PresentationParserTests
 		PolygonEntry currentPolygon;
 		AudioEntry currentAudio;
 		
-		currentSlide = presentation.getSlideListEntry(0);
+		currentSlide = presentation.getSlideList().get(0);
 		
 		assertEquals(0, currentSlide.getSlideID());
 		assertEquals(5, currentSlide.getSlideDuration());
 		assertEquals(2, currentSlide.getSlideNext());
 		assertEquals("AAAAAA", currentSlide.getSlideBackgroundColour());
 		
-		currentText = currentSlide.getTextListEntry(0);
+		currentText = currentSlide.getTextList().get(0);
 		
 		assertEquals(0, currentText.getTextStartTime());
 		assertEquals(-1, currentText.getTextDuration());
@@ -96,7 +96,7 @@ public class PresentationParserTests
 		assertEquals(true, currentText.getTextInteractable());
 		assertEquals(43, currentText.getTextTargetSlide());
 		
-		currentShape = currentSlide.getShapeListEntry(0);
+		currentShape = currentSlide.getShapeList().get(0);
 		
 		assertEquals(2, currentShape.getShapeStartTime());
 		assertEquals(-1, currentShape.getShapeDuration());
@@ -116,7 +116,7 @@ public class PresentationParserTests
 		assertEquals(0.65f, currentShape.getShapeShadeY2(), 0.0f);
 		assertEquals("FF0000", currentShape.getShapeShadeColour2());
 		
-		currentText = currentSlide.getTextListEntry(1);
+		currentText = currentSlide.getTextList().get(1);
 		
 		assertEquals(3, currentText.getTextStartTime());
 		assertEquals(1, currentText.getTextDuration());
@@ -129,14 +129,14 @@ public class PresentationParserTests
 		assertEquals(false, currentText.getTextInteractable());
 		assertEquals(-10, currentText.getTextTargetSlide());
 		
-		currentSlide = presentation.getSlideListEntry(1);
+		currentSlide = presentation.getSlideList().get(1);
 		
 		assertEquals(1, currentSlide.getSlideID());
 		assertEquals(-10, currentSlide.getSlideDuration());
 		assertEquals(-10, currentSlide.getSlideNext());
 		assertEquals("BBBBBB", currentSlide.getSlideBackgroundColour());
 		
-		currentVideo = currentSlide.getVideoListEntry(0);
+		currentVideo = currentSlide.getVideoList().get(0);
 		
 		assertEquals(0, currentVideo.getVideoStartTime());
 		assertEquals(-1, currentVideo.getVideoDuration());
@@ -145,14 +145,14 @@ public class PresentationParserTests
 		assertEquals("video\\Film.mp4", currentVideo.getVideoSourceFile());
 		assertEquals(true, currentVideo.getVideoLoop());
 		
-		currentSlide = presentation.getSlideListEntry(2);
+		currentSlide = presentation.getSlideList().get(2);
 		
 		assertEquals(2, currentSlide.getSlideID());
 		assertEquals(-10, currentSlide.getSlideDuration());
 		assertEquals(-10, currentSlide.getSlideNext());
 		assertEquals("CCCCCC", currentSlide.getSlideBackgroundColour());
 		
-		currentText = currentSlide.getTextListEntry(0);
+		currentText = currentSlide.getTextList().get(0);
 		
 		assertEquals(0, currentText.getTextStartTime());
 		assertEquals(-1, currentText.getTextDuration());
@@ -163,7 +163,7 @@ public class PresentationParserTests
 		assertEquals("000000", currentText.getTextFontColour());		
 		assertEquals("This Andy Marvin module was rated 5 stars!", currentText.getTextContent());
 
-		currentImage = currentSlide.getImageListEntry(0);
+		currentImage = currentSlide.getImageList().get(0);
 		
 		assertEquals(0, currentImage.getImageStartTime());
 		assertEquals("imgs\\companyLogo.jpg", currentImage.getImageSourceFile());
@@ -173,7 +173,7 @@ public class PresentationParserTests
 		assertEquals(0.6f, currentImage.getImageWidth(), 0.0f);
 		assertEquals(0.6f, currentImage.getImageHeight(), 0.0f);
 		
-		currentPolygon = currentSlide.getPolygonListEntry(0);
+		currentPolygon = currentSlide.getPolygonList().get(0);
 		
 		assertEquals(0, currentPolygon.getPolygonStartTime());
 		assertEquals("starShape.csv", currentPolygon.getPolygonSourceFile());
@@ -187,21 +187,21 @@ public class PresentationParserTests
 		assertEquals(0.65f, currentPolygon.getPolygonShadeY2(), 0.0f);
 		assertEquals("FF0000", currentPolygon.getPolygonShadeColour2());
 		
-		currentSlide = presentation.getSlideListEntry(3);
+		currentSlide = presentation.getSlideList().get(3);
 		
 		assertEquals(3, currentSlide.getSlideID());
 		assertEquals(8, currentSlide.getSlideDuration());
 		assertEquals(-1, currentSlide.getSlideNext());
 		assertEquals("DDFFDD", currentSlide.getSlideBackgroundColour());
 		
-		currentAudio = currentSlide.getAudioListEntry(0);
+		currentAudio = currentSlide.getAudioList().get(0);
 		
 		assertEquals(2, currentAudio.getAudioStartTime());
 		assertEquals(6, currentAudio.getAudioDuration());
 		assertEquals("ping.wav", currentAudio.getAudioSourceFile());
 		assertEquals(false, currentAudio.getAudioLoop());
 		
-		currentPolygon = currentSlide.getPolygonListEntry(0);
+		currentPolygon = currentSlide.getPolygonList().get(0);
 		
 		assertEquals(23, currentPolygon.getPolygonStartTime());
 		assertEquals("iceShape.csv", currentPolygon.getPolygonSourceFile());

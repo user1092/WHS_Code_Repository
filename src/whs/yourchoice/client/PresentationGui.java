@@ -912,7 +912,7 @@ public class PresentationGui extends Application {
 		Canvas duffCanvas = new Canvas(PRESENTATION_WIDTH,  PRESENTATION_HEIGHT);
 		
 		// Retrieve the slide information that was requested
-		SlideEntry currentSlide = presentation.slideList.get(slideId);
+		SlideEntry currentSlide = presentation.getSlideList().get(slideId);
 		
 		displayTexts(currentSlide, duffCanvas);				
 		displayImages(currentSlide);		
@@ -1082,7 +1082,7 @@ public class PresentationGui extends Application {
 				boolean slideTimerDone = false;
 				
 				slideTimer = new SimpleTimer();
-				slideTimerDone = slideTimer.startTimer(presentation.slideList.get(slideNumber).getSlideDuration());
+				slideTimerDone = slideTimer.startTimer(presentation.getSlideList().get(slideNumber).getSlideDuration());
 				
 				// If the timer finished click the next slide button
 				if (slideTimerDone) {
@@ -1179,7 +1179,7 @@ public class PresentationGui extends Application {
 	 */
 	private void displayTexts(SlideEntry currentSlide, Canvas duffCanvas) {
 		// Get the total number of images to be displayed
-		int numberOfTexts = currentSlide.textList.size();
+		int numberOfTexts = currentSlide.getTextList().size();
 		
 		// Set sourceFile to null as not used by Wooly Hat Software 
 		String sourceFile = null;
@@ -1189,7 +1189,7 @@ public class PresentationGui extends Application {
 			Pane tempPane = new Pane();
 			TextEntry currentText = new TextEntry();
 			
-			currentText = currentSlide.textList.get(text);
+			currentText = currentSlide.getTextList().get(text);
 			
 			tempPane.getChildren().add(TextHandler.createText(duffCanvas, sourceFile,
 					currentText.getTextContent(), currentText.getTextFont(),
@@ -1220,7 +1220,7 @@ public class PresentationGui extends Application {
 	 */
 	private void displayImages(SlideEntry currentSlide) {
 		// Get the total number of images to be displayed
-		int numberOfImages = currentSlide.imageList.size();
+		int numberOfImages = currentSlide.getImageList().size();
 		
 		// Display all images
 		for(int image = 0; image < numberOfImages; image++) {
@@ -1228,7 +1228,7 @@ public class PresentationGui extends Application {
 			ImageHandler imageHandler = new ImageHandler();
 			Images tempImage = new Images();
 			
-			ImageEntry currentImage = currentSlide.imageList.get(image);
+			ImageEntry currentImage = currentSlide.getImageList().get(image);
 			
 			tempImage = new Images("file:" + presentation.getPath() + "/" +  currentImage.getImageSourceFile(),
 													currentImage.getImageStartTime(),
@@ -1261,11 +1261,11 @@ public class PresentationGui extends Application {
 	 */
 	private void displayShapes(SlideEntry currentSlide) {
 		// Get the total number of shapes to be displayed
-		int numberOfShapes = currentSlide.shapeList.size();
+		int numberOfShapes = currentSlide.getShapeList().size();
 		
 		// Display all shapes
 		for(int shape = 0; shape < numberOfShapes; shape++) {
-			ShapeEntry currentShape = currentSlide.shapeList.get(shape);
+			ShapeEntry currentShape = currentSlide.getShapeList().get(shape);
 			
 			ShapeGraphic tempShape = new ShapeGraphic(currentShape.getShapeStartTime(),
 														currentShape.getShapeDuration(),
@@ -1304,11 +1304,11 @@ public class PresentationGui extends Application {
 	 */
 	private void displayPolygons(SlideEntry currentSlide) {
 		// Get the total number of polygons to be displayed
-		int numberOfPolygons = currentSlide.polygonList.size();
+		int numberOfPolygons = currentSlide.getPolygonList().size();
 		
 		// Display all polygons
 		for(int polygon = 0; polygon < numberOfPolygons; polygon++) {
-			PolygonEntry currentPolygon = currentSlide.polygonList.get(polygon);
+			PolygonEntry currentPolygon = currentSlide.getPolygonList().get(polygon);
 						
 			PolygonGraphic tempPolygon = new PolygonGraphic(currentPolygon.getPolygonStartTime(),
 															currentPolygon.getPolygonDuration(),
@@ -1352,11 +1352,11 @@ public class PresentationGui extends Application {
 	 */
 	private void displayVideos(SlideEntry currentSlide, Canvas duffCanvas) {
 		// Get the total number of videos to be displayed
-		int numberOfVideos = currentSlide.videoList.size();
+		int numberOfVideos = currentSlide.getVideoList().size();
 				
 		// Display all videos
 		for(int video = 0; video < numberOfVideos; video++) {
-			VideoEntry currentVideo = currentSlide.videoList.get(video);
+			VideoEntry currentVideo = currentSlide.getVideoList().get(video);
 			
 			File tempFile = new File(presentation.getPath() + "/" + currentVideo.getVideoSourceFile());
 			String videoPath = tempFile.toURI().toASCIIString();
@@ -1395,7 +1395,7 @@ public class PresentationGui extends Application {
 	 */
 	private void displayAudios(SlideEntry currentSlide) {
 		// Get the total number of audio files to be played
-		int numberOfAudios = currentSlide.audioList.size();
+		int numberOfAudios = currentSlide.getAudioList().size();
 				
 		// Load all audio
 		for(int audio = 0; audio < numberOfAudios; audio++) {
@@ -1403,7 +1403,7 @@ public class PresentationGui extends Application {
 			AudioPlayer audioPlayer = new AudioPlayer(mediaPlayerFactory);
 			audioPlayerList.add(audioPlayer);
 			
-			AudioEntry currentAudio = currentSlide.audioList.get(audio);
+			AudioEntry currentAudio = currentSlide.getAudioList().get(audio);
 			
 			audioPlayerList.get(audio).loadLocalAudio(presentation.getPath() + "/" + currentAudio.getAudioSourceFile());
 			audioPlayerList.get(audio).loopAudio(currentAudio.getAudioLoop());

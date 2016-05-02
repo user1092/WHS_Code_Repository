@@ -15,7 +15,7 @@ import java.util.List;
 * It also stores a list of all instances of all slides contained in the XML file.
 *
 * @author ajff500, sqk501 and ch1092
-* @version v0.1 18/04/16
+* @version v0.3 02/05/16
 */
 
 public class PresentationEntry 
@@ -37,13 +37,12 @@ public class PresentationEntry
 	private List<SlideEntry> slideList = new ArrayList<SlideEntry>();
 	
 	/**
-	* getSlideEntry method. Gets the specific element of the SlideList.
-	* @param i The index of the slide
-	* @return slideList.get(i) Returns the element slide of the slide array.
+	* getSlideEntry method. Gets the SlideList.
+	* @return slideList Returns the slide array.
 	*/
-	public SlideEntry getSlideListEntry(int i)
+	public List<SlideEntry> getSlideList()
 	{
-		return slideList.get(i);
+		return slideList;
 	}
 	
 	/**
