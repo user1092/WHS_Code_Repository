@@ -15,8 +15,8 @@ import java.util.List;
 * It also stores lists of all instances of all other types of media contained in the XML file:
 * 	(audio, image, polygon, shape, text and video).
 *
-* @author ajff500 and sqk501
-* @version v0.1 18/04/16
+* @author ajff500, sqk501 and ch1092
+* @version v0.3 02/05/16
 */
 
 public class SlideEntry 
@@ -54,63 +54,57 @@ public class SlideEntry
 	}
 	
 	/**
-	* getTextEntry method. Gets the specific element of the TextList.
-	* @param i The index of the text
-	* @return textList.get(i) Returns the element text of the text array.
+	* getTextEntry method. Gets the TextList.
+	* @return textList Returns the text array.
 	*/
-	public TextEntry getTextListEntry(int i)
+	public List<TextEntry> getTextList()
 	{
-		return textList.get(i);
+		return textList;
 	}
 	
 	/**
-	* getShapeEntry method. Gets the specific element of the ShapeList.
-	* @param i The index of the shape
-	* @return shapeList.get(i) Returns the element shape of the shape array.
+	* getShapeEntry method. Gets the ShapeList.
+	* @return shapeList Returns the shape array.
 	*/
-	public ShapeEntry getShapeListEntry(int i)
+	public List<ShapeEntry> getShapeList()
 	{
-		return shapeList.get(i);
+		return shapeList;
 	}
 	
 	/**
-	* getPolygonEntry method. Gets the specific element of the PolygonList.
-	* @param i The index of the polygon
-	* @return polygonList.get(i) Returns the element polygon of the polygon array.
+	* getPolygonEntry method. Gets the PolygonList.
+	* @return polygonList Returns the polygon array.
 	*/
-	public PolygonEntry getPolygonListEntry(int i)
+	public List<PolygonEntry> getPolygonList()
 	{
-		return polygonList.get(i);
+		return polygonList;
 	}
 	
 	/**
-	* getImageEntry method. Gets the specific element of the ImageList.
-	* @param i The index of the image
-	* @return imageList.get(i) Returns the element image of the image array.
+	* getImageEntry method. Gets the ImageList.
+	* @return imageList Returns the image array.
 	*/
-	public ImageEntry getImageListEntry(int i)
+	public List<ImageEntry> getImageList()
 	{
-		return imageList.get(i);
+		return imageList;
 	}
 	
 	/**
-	* getVideoEntry method. Gets the specific element of the VideoList.
-	* @param i The index of the video
-	* @return videoList.get(i) Returns the element video of the video array.
+	* getVideoEntry method. Gets the VideoList.
+	* @return videoList Returns the video array.
 	*/
-	public VideoEntry getVideoListEntry(int i)
+	public List<VideoEntry> getVideoList()
 	{
-		return videoList.get(i);
+		return videoList;
 	}
 	
 	/**
-	* getAudioEntry method. Gets the specific element of the AudioList.
-	* @param i The index of the audio
-	* @return audioList.get(i) Returns the element audio of the audio array.
+	* getAudioEntry method. Gets the AudioList.
+	* @return audioList.get(i) Returns the audio array.
 	*/
-	public AudioEntry getAudioListEntry(int i)
+	public List<AudioEntry> getAudioList()
 	{
-		return audioList.get(i);
+		return audioList;
 	}
 	
 	/**
