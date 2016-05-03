@@ -53,7 +53,7 @@ public class CommentParserTests {
 		assertEquals("0", testContents.get(2).getRating());
 		
 		assertEquals("Cos", testContents.get(3).getName());
-		assertEquals("This is the \"fourth\" comment!?£$%^&*()", testContents.get(3).getComment());
+		assertEquals("This is the \"fourth\" comment !?£$%^&*()", testContents.get(3).getComment());
 		assertEquals("5", testContents.get(3).getRating());
 	}
 }
