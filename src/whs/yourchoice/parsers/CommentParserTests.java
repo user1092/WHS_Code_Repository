@@ -45,7 +45,7 @@ public class CommentParserTests {
 		assertEquals("4", testContents.get(0).getRating());
 		
 		assertEquals("George", testContents.get(1).getName());
-		assertEquals("This is the second comment and it demonstrates that the manual line wrapping that has \nbeen implemented works correctly and does not split words", testContents.get(1).getComment());
+		assertEquals("This is the second comment", testContents.get(1).getComment());
 		assertEquals("5", testContents.get(1).getRating());
 		
 		assertEquals("Chris", testContents.get(2).getName());
@@ -53,7 +53,7 @@ public class CommentParserTests {
 		assertEquals("0", testContents.get(2).getRating());
 		
 		assertEquals("Cos", testContents.get(3).getName());
-		assertEquals("This is the \"fourth\" comment!£$%^&*()", testContents.get(3).getComment());
+		assertEquals("This is the \"fourth\" comment!?£$%^&*()", testContents.get(3).getComment());
 		assertEquals("5", testContents.get(3).getRating());
 	}
 }
