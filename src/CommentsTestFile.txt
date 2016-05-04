@@ -1,0 +1,4 @@
+"Jason","This is the first comment",4,
+"George","This is the second comment",5,
+"Chris","This is, the third comment, and it demonstrates, that commas in the comment, don't cause issues.",0,
+"Cos","This is the "fourth" comment !?£$%^&*()",5,
