@@ -1,7 +1,14 @@
 package whs.yourchoice.server;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.ServerSocket;
+
 
 /**
  * Class for the server's back end handling communications to the clients. 
@@ -17,13 +24,17 @@ public class Server {
 	private ConnectedClient[] clients;
 	private int currentClientNumber = 0;
 	private final int connectedClientsMaxNumber = 2;
-		
+	
+	//registered modules variables
+	private final String rmPath = "src/registered_modules.xml";
 	
 	/**
 	 * Constructor to create a new array of connected clients.
 	 */
 	public Server() {
 		clients = new ConnectedClient[connectedClientsMaxNumber];
+
+		
 	}
 	
 	
@@ -174,6 +185,13 @@ public class Server {
 				clients[clientNumber] = currentClient;
 				System.out.println("(null)Current Client" + currentClient.getID());
 				sendData(currentClient.getID(), currentClient.getID());
+				try {
+					sendRMFile(currentClient.getID());
+				}
+				catch (IOException e) {
+					System.out.println("Error sending module list");
+					System.out.println(e);
+				}
 				listenToClient(currentClient);
 			} else {
 				/*
@@ -290,6 +308,18 @@ public class Server {
 			}
 		};
 		listenToClientThread[client.getID()].start();
+	}
+	
+	// not currently happy with variety of Exceptions that can be thrown
+	private void sendRMFile(int clientID) throws IOException {
+		File moduleFile = new File(rmPath);
+		byte[] mybytearray = new byte[(int) moduleFile.length()];
+		BufferedInputStream bis = new BufferedInputStream(new FileInputStream(moduleFile));
+		bis.read(mybytearray, 0, mybytearray.length);
+		OutputStream os = clients[clientID].getOutputStream();
+		os.write(mybytearray, 0, mybytearray.length);
+		os.flush();
+		bis.close();
 	}
 
 	
