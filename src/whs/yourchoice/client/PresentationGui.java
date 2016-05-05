@@ -1396,7 +1396,13 @@ public class PresentationGui extends Application {
 	private void displayAudios(SlideEntry currentSlide) {
 		// Get the total number of audio files to be played
 		int numberOfAudios = currentSlide.getAudioList().size();
-				
+		
+		Pane duffPane = new Pane();
+		duffPane.setVisible(true);
+		duffPane.setMinHeight(PRESENTATION_HEIGHT);
+		duffPane.setMinWidth(PRESENTATION_WIDTH);
+		presentationLayout.getChildren().add(duffPane);
+		
 		// Load all audio
 		for(int audio = 0; audio < numberOfAudios; audio++) {
 			// Create a audio player
