@@ -26,7 +26,7 @@ public class Server {
 	private final int connectedClientsMaxNumber = 2;
 	
 	//registered modules variables
-	private final String rmPath = "src/registered_modules.xml";
+	private final String rmPath = new File("").getAbsolutePath() + "/src/registered_modules.xml";
 	
 	/**
 	 * Constructor to create a new array of connected clients.

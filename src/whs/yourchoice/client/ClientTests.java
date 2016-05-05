@@ -165,9 +165,9 @@ public class ClientTests {
 		System.out.println(module.getCourse());
 		assertEquals("Electronics and Computer Engineering", module.getStream());
 		System.out.println(module.getStream());
-		assertEquals(2016, module.getYear());
+		assertEquals(3, module.getYear());
 		System.out.println(module.getYear());
-		assertEquals("Checking Title", module.getTitle());
+		assertEquals("Software Engineering", module.getTitle());
 		System.out.println(module.getTitle());
 		assertEquals("ele000034.zip", module.getFileName());
 		System.out.println(module.getFileName());
@@ -181,7 +181,7 @@ public class ClientTests {
 		System.out.println(module.getCourse());
 		assertEquals("Philosophy", module.getStream());
 		System.out.println(module.getStream());
-		assertEquals(2015, module.getYear());
+		assertEquals(2, module.getYear());
 		System.out.println(module.getYear());
 		assertEquals("Bhuddist Philosophy", module.getTitle());
 		System.out.println(module.getTitle());

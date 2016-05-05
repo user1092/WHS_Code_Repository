@@ -6,8 +6,7 @@ package whs.yourchoice.parsers;
 */
 import static org.junit.Assert.assertEquals;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.File;
 
 import org.junit.Test;
 
@@ -30,8 +29,8 @@ public class RegisteredModulesParserTests
 	@Test
 	public void ExtractPresentationInfo()
 	{		
-		Path path = Paths.get("/Users/williamsharrard/Documents/SWEng_workspace/work/src/registered_modules.xml");
-		String filePath = path.toString();
+		String filePath = new File("").getAbsolutePath() + ("/src/registered_modules.xml");
+		//String filePath = path.toString();
 		RegisteredModulesParser parser = new RegisteredModulesParser();		
 		RegisteredModules modules = parser.parseModules(filePath);
 		
@@ -44,9 +43,9 @@ public class RegisteredModulesParserTests
 		System.out.println(module.getCourse());
 		assertEquals("Electronics and Computer Engineering", module.getStream());
 		System.out.println(module.getStream());
-		assertEquals(2016, module.getYear());
+		assertEquals(3, module.getYear());
 		System.out.println(module.getYear());
-		assertEquals("Checking Title", module.getTitle());
+		assertEquals("Software Engineering", module.getTitle());
 		System.out.println(module.getTitle());
 		assertEquals("ele000034.zip", module.getFileName());
 		System.out.println(module.getFileName());
@@ -60,7 +59,7 @@ public class RegisteredModulesParserTests
 		System.out.println(module.getCourse());
 		assertEquals("Philosophy", module.getStream());
 		System.out.println(module.getStream());
-		assertEquals(2015, module.getYear());
+		assertEquals(2, module.getYear());
 		System.out.println(module.getYear());
 		assertEquals("Bhuddist Philosophy", module.getTitle());
 		System.out.println(module.getTitle());
