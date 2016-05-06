@@ -535,7 +535,9 @@ public class PresentationGui extends Application {
 					
 					// Clear the current slide
 					presentationLayout.getChildren().clear();									
-					currentSlideNumber++;
+					//currentSlideNumber++;
+					
+					currentSlideNumber = presentation.getSlideList().get(currentSlideNumber).getSlideNext();
 					
 					if (!presentationState.equals("Stopped")) {
 						storedCurrentNodeNumber = 0;
@@ -813,7 +815,14 @@ public class PresentationGui extends Application {
 			if (audioPlayerList.get(audio).wasPlaying()) {
 				audioPlayerList.get(audio).playAudio();
 				// Fixes "feature" with vlc where audio is not observed if not playing
-				while(-1 == audioPlayerList.get(audio).getAudioVolume());
+				while(-1 == audioPlayerList.get(audio).getAudioVolume()) {
+					try {
+						Thread.sleep(20);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
 				if(muteButton.isSelected()) {
 					audioPlayerList.get(audio).muteAudio(true);
 				}
@@ -1401,6 +1410,8 @@ public class PresentationGui extends Application {
 		duffPane.setVisible(true);
 		duffPane.setMinHeight(PRESENTATION_HEIGHT);
 		duffPane.setMinWidth(PRESENTATION_WIDTH);
+		// Allow mouse clicks through the pane
+		duffPane.setPickOnBounds(false);
 		presentationLayout.getChildren().add(duffPane);
 		
 		// Load all audio
