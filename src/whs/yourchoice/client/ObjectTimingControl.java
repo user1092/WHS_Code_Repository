@@ -13,13 +13,15 @@ import javafx.scene.Node;
 * Can set audio to play or stop.
 * 
 * @author cd828 & ch1092
-* @version v0.1 28/04/16
+* @version v0.3 13/05/16
 */
 public class ObjectTimingControl {
 	
 	private Node tempNode;
 	private VideoPlayer tempVideoPlayer;
 	private AudioPlayer tempAudioPlayer;
+	private int masterVolume;
+	private boolean masterMute;
 	private int time;
 	private boolean visible;
 	private SimpleTimer displayTimer;
@@ -56,10 +58,12 @@ public class ObjectTimingControl {
 	 * @param time
 	 * @param visible
 	 */
-	public ObjectTimingControl(AudioPlayer tempAudioPlayer, int time, boolean visible) {
+	public ObjectTimingControl(AudioPlayer tempAudioPlayer, int time, boolean visible, int masterVolume, boolean masterMute) {
 		this.tempAudioPlayer = tempAudioPlayer;
 		this.time = time;
 		this.visible = visible;
+		this.masterMute = masterMute;
+		this.masterVolume = masterVolume;
 		displayTimerDone = null;
 		displayTimer = new SimpleTimer();
 	}
@@ -97,6 +101,17 @@ public class ObjectTimingControl {
 		if ((true == displayTimerDone) && (null == tempNode)) {
 			if (visible) {
 				tempAudioPlayer.playAudio();
+				// Fixes "feature" with vlc where audio is not observed if not playing
+				while(-1 == tempAudioPlayer.getAudioVolume()) {
+					try {
+						Thread.sleep(50);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				tempAudioPlayer.setAudioVolume(masterVolume);
+				tempAudioPlayer.muteAudio(masterMute);
 			}
 			else {
 				tempAudioPlayer.stopAudio();

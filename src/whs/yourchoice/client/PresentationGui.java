@@ -69,7 +69,7 @@ import javafx.util.StringConverter;
 * Class for creation of the presentation window and adding functionality
 *
 * @author cd828 & cd1092
-* @version v0.9 28/04/16
+* @version v0.10 13/05/16
 */
 public class PresentationGui extends Application {
 	
@@ -106,6 +106,8 @@ public class PresentationGui extends Application {
     private ToolBar controlBar;
     
     private Number masterVolume = DEFAULT_START_VOLUME;
+    
+    private boolean masterMute = false;
     
     // Objects present on the control bar
     private Slider volumeSlider;
@@ -148,6 +150,7 @@ public class PresentationGui extends Application {
 	private List<AudioPlayer> audioPlayerList = new ArrayList<AudioPlayer>();
 	
 	private List<VideoPlayer> videoPlayerList = new ArrayList<VideoPlayer>();
+	private VideoPlayer tempVideoPlayer;
 	
 	// Object for formatting the text fields to only accept integers
 	private StringConverter<Integer> integerFormatter;
@@ -699,6 +702,7 @@ public class PresentationGui extends Application {
 			public void handle(ActionEvent e) {
 				if (muteButton.isSelected() == true) {
 					muteButton.setGraphic(muteView);
+					masterMute = true;
 					// Mute all audio players
 					for(int audio = 0; audio < audioPlayerList.size(); audio++) {
 	        			audioPlayerList.get(audio).muteAudio(true);
@@ -710,6 +714,7 @@ public class PresentationGui extends Application {
 				}
 				else {
 					muteButton.setGraphic(unmutedView);
+					masterMute = false;
 					// Unmute all audio players
 					for(int audio = 0; audio < audioPlayerList.size(); audio++) {
 	        			audioPlayerList.get(audio).muteAudio(false);
@@ -817,18 +822,14 @@ public class PresentationGui extends Application {
 				// Fixes "feature" with vlc where audio is not observed if not playing
 				while(-1 == audioPlayerList.get(audio).getAudioVolume()) {
 					try {
-						Thread.sleep(20);
+						Thread.sleep(50);
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
-				if(muteButton.isSelected()) {
-					audioPlayerList.get(audio).muteAudio(true);
-				}
-				else {
-					audioPlayerList.get(audio).setAudioVolume(masterVolume.intValue());
-				}
+				audioPlayerList.get(audio).setAudioVolume(masterVolume.intValue());
+				audioPlayerList.get(audio).muteAudio(masterMute);
 			}
 		}
 		// Set all video players to play 
@@ -1029,9 +1030,28 @@ public class PresentationGui extends Application {
 							if (!(objectTimingList.get(currentManualNodeNumber).getNode().isVisible())) {
 								objectTimingList.get(currentManualNodeNumber).getNode().setVisible(true);
 							}
+							if (!(null == objectTimingList.get(currentManualNodeNumber).getVideoPlayer())) {
+								tempVideoPlayer = objectTimingList.get(currentManualNodeNumber).getVideoPlayer();
+								Platform.runLater(new Runnable() {
+									@Override public void run() {
+										tempVideoPlayer.playVideo();
+									}
+								});
+							}
 						}
 						else {
 							objectTimingList.get(currentManualNodeNumber).getAudioPlayer().playAudio();
+							// Fixes "feature" with vlc where audio is not observed if not playing
+							while(-1 == objectTimingList.get(currentManualNodeNumber).getAudioPlayer().getAudioVolume()) {
+								try {
+									Thread.sleep(50);
+								} catch (InterruptedException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}
+							objectTimingList.get(currentManualNodeNumber).getAudioPlayer().setAudioVolume(masterVolume.intValue());
+							objectTimingList.get(currentManualNodeNumber).getAudioPlayer().muteAudio(masterMute);
 						}
 					}
 					else {
@@ -1057,10 +1077,42 @@ public class PresentationGui extends Application {
 						// Check if the object is on a node, if null it must be audio
 						if (!(null == tempNode)) {
 							objectTimingList.get(currentManualNodeNumber).getNode().setVisible(visible);
+							if (!(null == objectTimingList.get(currentManualNodeNumber).getVideoPlayer())) {
+								tempVideoPlayer = objectTimingList.get(currentManualNodeNumber).getVideoPlayer();
+								if (visible) {
+									Platform.runLater(new Runnable() {
+										@Override public void run() {
+											tempVideoPlayer.playVideo();
+										}
+									});
+								}
+								else {
+									Platform.runLater(new Runnable() {
+										@Override public void run() {
+											tempVideoPlayer.stopVideo();
+										}
+									});
+								}
+							}
+							
 						}
 						else {
 							if (visible) {
 								objectTimingList.get(currentManualNodeNumber).getAudioPlayer().playAudio();
+								// Fixes "feature" with vlc where audio is not observed if not playing
+								while(-1 == objectTimingList.get(currentManualNodeNumber).getAudioPlayer().getAudioVolume()) {
+									try {
+										Thread.sleep(50);
+									} catch (InterruptedException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
+								}
+								System.out.println("master volume: " + masterVolume.intValue());
+								System.out.println("master mute: " + masterMute);
+								objectTimingList.get(currentManualNodeNumber).getAudioPlayer().setAudioVolume(masterVolume.intValue());
+								objectTimingList.get(currentManualNodeNumber).getAudioPlayer().muteAudio(masterMute);
+								//System.out.println("master volume: " + masterVolume.intValue());
 							}
 							else {
 								objectTimingList.get(currentManualNodeNumber).getAudioPlayer().stopAudio();
@@ -1142,7 +1194,8 @@ public class PresentationGui extends Application {
 							objectTimingControl = new ObjectTimingControl(
 											objectTimingList.get(currentAutomaticNodeNumber).getAudioPlayer(),
 											objectTimingList.get(currentAutomaticNodeNumber).getTimeSinceLastNode(),
-											objectTimingList.get(currentAutomaticNodeNumber).getVisible());
+											objectTimingList.get(currentAutomaticNodeNumber).getVisible(),
+											masterVolume.intValue(), masterMute);
 						}
 						
 					}
@@ -1382,6 +1435,8 @@ public class PresentationGui extends Application {
 			String videoPath = tempFile.toURI().toASCIIString();
 			
 			VideoPlayer videoPlayer = new VideoPlayer();
+			
+			
 			videoPlayerList.add(videoPlayer);
 			
 			Pane tempPane = videoPlayerList.get(video).videoPlayerWindow(
@@ -1389,6 +1444,9 @@ public class PresentationGui extends Application {
 					currentVideo.getVideoYStart(),
 					currentVideo.getVideoXStart(),
 					VIDEO_WIDTH, VIDEO_HEIGHT, duffCanvas);
+			
+			videoPlayerList.get(video).setVolume(masterVolume.intValue());
+			videoPlayerList.get(video).muteAudio(masterMute);
 			
 			// Allow mouse clicks through the pane where the video is not located
 			tempPane.setPickOnBounds(false);
