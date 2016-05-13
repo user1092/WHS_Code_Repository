@@ -120,6 +120,9 @@ public class PresentationGui extends Application {
     private Button nextSlideButton;
     private Image nextSlideImage;
     private ImageView nextSlideView;
+    private Button aboutPresentationButton;
+    private Image aboutPresentationImage;
+    private ImageView aboutPresentationView;
         
 	private ToggleButton modeButton;
 	private ToggleButton muteButton;
@@ -471,14 +474,47 @@ public class PresentationGui extends Application {
 		
 		createSlideButtonsHBox();
 		
+		createAboutPresentationButton();
+		
 		// Instantiation of the separator on the control bar
 		Separator separator = new Separator();
 		// Adding all the items on the control bar
 		controlBar.getItems().addAll(slideButtonsHBox, separator, playButton, stopButton, modeButton, volumeSlider, 
-													muteButton, fullScreenButton);
+													muteButton, fullScreenButton, aboutPresentationButton);
 	}
 	
 	
+	private void createAboutPresentationButton() {
+		// Image for next slide button
+		//TODO set the image!
+		aboutPresentationImage = new Image(getClass().getResourceAsStream("resources/nextbutton.png"));
+		aboutPresentationView = new ImageView(aboutPresentationImage);
+		// Instantiation of next slide button
+		aboutPresentationButton = new Button();
+		aboutPresentationButton.setGraphic(nextSlideView);
+		aboutPresentationButton.setMaxSize(35, 30);
+		aboutPresentationButton.setPrefSize(35, 30);
+		aboutPresentationButton.setMinSize(35, 30);
+		aboutPresentationButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent e) {
+				Platform.runLater(new Runnable() {
+	 	    		 public void run() {             
+	 	    			try {				 	        	  
+	 	     				new metaDataGui(presentation).start(new Stage());
+	 	     			}
+	 	    			catch (Exception e) {
+	 	     				// TODO Auto-generated catch block
+	 	     				e.printStackTrace();
+	 	     			}
+	 	    		 }
+	 	    	 });
+			}
+		});
+		
+	}
+
+
 	/**
 	 * Method for the creation of the HBox that contains the 
 	 * slide navigation controls, Previous/Next slide buttons 
