@@ -2,6 +2,8 @@ package whs.yourchoice.client;
 
 import whs.yourchoice.audio.AudioPlayer;
 import whs.yourchoice.utilities.SimpleTimer;
+import whs.yourchoice.video.VideoPlayer;
+import javafx.application.Platform;
 import javafx.scene.Node;
 
 /**
@@ -16,6 +18,7 @@ import javafx.scene.Node;
 public class ObjectTimingControl {
 	
 	private Node tempNode;
+	private VideoPlayer tempVideoPlayer;
 	private AudioPlayer tempAudioPlayer;
 	private int time;
 	private boolean visible;
@@ -35,6 +38,14 @@ public class ObjectTimingControl {
 		this.tempNode = tempNode;
 		this.time = time;
 		this.visible = visible;
+		displayTimer = new SimpleTimer();
+	}
+	
+	public ObjectTimingControl(Node tempNode, int time, boolean visible, VideoPlayer tempVideoPlayer) {
+		this.tempNode = tempNode;
+		this.time = time;
+		this.visible = visible;
+		this.tempVideoPlayer = tempVideoPlayer;
 		displayTimer = new SimpleTimer();
 	}
 	
@@ -67,6 +78,21 @@ public class ObjectTimingControl {
 		// Adjust visibility of node or play/stop audio
 		if ((true == displayTimerDone) && !(null == tempNode)) {
 			tempNode.setVisible(visible);
+			System.out.println("Node Name: " + tempNode.getId());
+			if ((null != tempVideoPlayer) && (visible)) {
+				Platform.runLater(new Runnable() {
+					@Override public void run() {
+						tempVideoPlayer.playVideo();
+					}
+				});
+			}
+			if ((null != tempVideoPlayer) && !(visible)) {
+				Platform.runLater(new Runnable() {
+					@Override public void run() {
+						tempVideoPlayer.stopVideo();
+					}
+				});
+			}
 		}
 		if ((true == displayTimerDone) && (null == tempNode)) {
 			if (visible) {

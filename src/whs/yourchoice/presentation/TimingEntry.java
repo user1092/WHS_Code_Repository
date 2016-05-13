@@ -2,6 +2,7 @@ package whs.yourchoice.presentation;
 
 import javafx.scene.Node;
 import whs.yourchoice.audio.AudioPlayer;
+import whs.yourchoice.video.VideoPlayer;
 
 /**
 * Class for creation of TimingEntry object
@@ -14,6 +15,7 @@ public class TimingEntry {
 	private int timeInPresentation;
 	private Node tempNode;
 	private AudioPlayer tempAudioPlayer;
+	private VideoPlayer tempVideoPlayer;
 	private boolean visible;
 	private int timeSinceLastNode;
 	
@@ -62,6 +64,20 @@ public class TimingEntry {
 	}
 	
 	
+	public TimingEntry(Node tempNode, int startTime, int duration, boolean visible, VideoPlayer tempVideoPlayer) {
+		if(true == visible) {
+			timeInPresentation = startTime;
+		}
+		else {
+			timeInPresentation = startTime + duration;
+		}
+		this.tempNode = tempNode;
+		this.visible = visible;
+		this.tempVideoPlayer = tempVideoPlayer;
+		
+		objectType = "VideoPlayer";
+	}
+
 	/**
 	 * Method for returning the time of the object in the presentation
 	 * 
@@ -123,6 +139,15 @@ public class TimingEntry {
 	 */
 	public void setTimeSinceLastNode(int timeSinceLastNode) {
 		this.timeSinceLastNode = timeSinceLastNode;
+	}
+
+	/**
+	 * Method to return the video player of the presentation
+	 * 
+	 * @return tempVideoPlayer - temporary video player being timed
+	 */
+	public VideoPlayer getVideoPlayer() {
+		return tempVideoPlayer;
 	}	
 		
 }
