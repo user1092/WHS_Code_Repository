@@ -216,12 +216,6 @@ public class PresentationGui extends Application {
 		
 		Scene scene = setupLayout(slideStage);
 		
-		//import and set background image
-		String background = getClass().getResource("resources/SlideBackground.jpg").toExternalForm();
-		windowLayout.setStyle("-fx-background-image: url('" + background + "'); " +
-		           "-fx-background-position: center center; " +
-		           "-fx-background-repeat: stretch;");
-		
 		// Scale the presentation for any window size
 		scalePresentation(scene);
 		
@@ -283,6 +277,15 @@ public class PresentationGui extends Application {
 		
 		windowLayout.setTop(subPresentationLayout);
 		subPresentationLayout.setLeft(presentationLayout);
+		
+		presentationLayout.setMinHeight(PRESENTATION_HEIGHT);
+		presentationLayout.setMinWidth(PRESENTATION_WIDTH);
+		presentationLayout.setMaxHeight(PRESENTATION_HEIGHT);
+		presentationLayout.setMaxWidth(PRESENTATION_WIDTH);
+		subPresentationLayout.setMinHeight(PRESENTATION_HEIGHT);
+		subPresentationLayout.setMinWidth(PRESENTATION_WIDTH);
+		subPresentationLayout.setMaxHeight(PRESENTATION_HEIGHT);
+		subPresentationLayout.setMaxWidth(PRESENTATION_WIDTH);
 		
 		slideStage.setMinHeight(WINDOW_MIN_HEIGHT);
 		slideStage.setMinWidth(WINDOW_MIN_WIDTH);
@@ -917,14 +920,18 @@ public class PresentationGui extends Application {
 		
 		objectTimingList.clear();
 		storedCurrentNodeNumber = 0;
-		
+				
 		// An empty canvas to represent the size of the slide area
 		Canvas duffCanvas = new Canvas(PRESENTATION_WIDTH,  PRESENTATION_HEIGHT);
 		
 		// Retrieve the slide information that was requested
 		SlideEntry currentSlide = presentation.getSlideList().get(slideId);
 		
-		displayTexts(currentSlide, duffCanvas);				
+		presentationLayout.setStyle("-fx-background-color: #" + currentSlide.getSlideBackgroundColour() + ";");
+				
+		System.out.println(currentSlide.getSlideBackgroundColour());
+		
+		displayTexts(currentSlide, duffCanvas);			
 		displayImages(currentSlide);		
 		displayShapes(currentSlide);		
 		displayPolygons(currentSlide);		
@@ -1108,11 +1115,8 @@ public class PresentationGui extends Application {
 										e.printStackTrace();
 									}
 								}
-								System.out.println("master volume: " + masterVolume.intValue());
-								System.out.println("master mute: " + masterMute);
 								objectTimingList.get(currentManualNodeNumber).getAudioPlayer().setAudioVolume(masterVolume.intValue());
 								objectTimingList.get(currentManualNodeNumber).getAudioPlayer().muteAudio(masterMute);
-								//System.out.println("master volume: " + masterVolume.intValue());
 							}
 							else {
 								objectTimingList.get(currentManualNodeNumber).getAudioPlayer().stopAudio();
