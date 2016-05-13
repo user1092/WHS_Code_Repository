@@ -1091,7 +1091,8 @@ public class PresentationGui extends Application {
 				boolean slideTimerDone = false;
 				
 				slideTimer = new SimpleTimer();
-				slideTimerDone = slideTimer.startTimer(presentation.getSlideList().get(slideNumber).getSlideDuration());
+				slideTimerDone = slideTimer.startTimer(presentation.getSlideList().get(slideNumber).getSlideDuration()
+										- objectTimingList.get(currentAutomaticNodeNumber).getTimeInPresentation());
 				
 				// If the timer finished click the next slide button
 				if (slideTimerDone) {
