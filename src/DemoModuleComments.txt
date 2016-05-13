@@ -9,5 +9,3 @@
 "Antonio","This is the ninth comment",5,
 "Cos","This is the tenth comment",5,
 "Jason Loveridge","TestComment",2,
-"George Woolley","This module was "decent" but not amazing. Would prefer more Tony Tew for example!",3,
-"Rachel Scott","This module sucks",5,
