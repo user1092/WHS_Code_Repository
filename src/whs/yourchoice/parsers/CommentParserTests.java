@@ -9,7 +9,7 @@ import javafx.collections.ObservableList;
 
 import org.junit.Test;
 
-import whs.yourchoice.client.ViewFeedbackGui.Comment;
+import whs.yourchoice.client.ViewFeedbackGui.Feedback;
 
 /**
 * Test class for CommentParser
@@ -19,7 +19,7 @@ import whs.yourchoice.client.ViewFeedbackGui.Comment;
 */
 public class CommentParserTests {
 	
-	public ObservableList<Comment> testContents = FXCollections.observableArrayList();
+	public ObservableList<Feedback> testContents = FXCollections.observableArrayList();
 	
 	/**
 	* Test - checkCommentsContents 

@@ -4,6 +4,8 @@ import javafx.application.Application;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -28,22 +30,29 @@ import whs.yourchoice.parsers.CommentParser;
 * comments stored in a .txt file
 *
 * @author user513, user679
-* @version v0.2 27/04/16
+* @version v0.3 10/05/16
 */
 public class ViewFeedbackGui extends Application {
 	
-	// Path names will need changing and adapting for integration
+	// Path name will need changing and adapting for integration
 	private String textFilePath = "src/DemoModuleComments.txt";
+	// Module name should be passed to this class so it can be displayed
+	private String moduleName = "Test Module Name";
 	
 	// Table and list of type Comment to fill the table with
-	private TableView<Comment> table = new TableView<Comment>();
-	private ObservableList<Comment> comments = FXCollections.observableArrayList();
+	private TableView<Feedback> table = new TableView<Feedback>();
+	private ObservableList<Feedback> feedback = FXCollections.observableArrayList();
 	
 	// Average module rating according to text file contents
 	private float avgRating;
-	private CommentParser commentsParser;
 	
-
+	// CommentParser used to parse text file and gui/stage ready to display
+	// feedback gui window when required
+	private CommentParser commentsParser;
+	private GiveFeedbackGui feedbackGui;
+	private Stage feedbackWindowStage = new Stage();
+	
+	
 	
 	public static void main(String[] args) {
 		launch(ViewFeedbackGui.class, args);
@@ -58,7 +67,7 @@ public class ViewFeedbackGui extends Application {
 		commentsParser = new CommentParser();
 		commentsParser.parseTextFile(textFilePath);
 		avgRating = commentsParser.getAverageRating();
-		comments = commentsParser.getComments();
+		feedback = commentsParser.getComments();
 
 		// Import and set background image
 		String background = ClientGui.class.getResource("resources/SlideBackground.jpg").toExternalForm();
@@ -68,7 +77,7 @@ public class ViewFeedbackGui extends Application {
 
 		// Call methods to create boxes for display
 		VBox titleVBox = titleVBoxCreation();
-		HBox bottomHBox = bottomHBoxCreation();
+		HBox bottomHBox = bottomHBoxCreation(primaryStage);
 		VBox tableVBox = tableVBoxCreation();
 		
 		// Add boxes to guiLayout
@@ -93,7 +102,7 @@ public class ViewFeedbackGui extends Application {
 	 * @param primaryStage  -  The application window
 	 * @return HBox  -  The box that contains the VBox and buttons
 	 */
-	private HBox bottomHBoxCreation() {
+	private HBox bottomHBoxCreation(final Stage primaryStage) {
 		
 		// Call method to create VBox to go within HBox
 		VBox ratingVBox = ratingVBoxCreation();
@@ -105,10 +114,31 @@ public class ViewFeedbackGui extends Application {
 		bottomHBox.setStyle("-fx-background-colour: #336699;");
 		
 		// Create comment and back buttons
-		Button commentButton = new Button("Create Comment");
+		Button commentButton = new Button("Give Feedback");
 		commentButton.setPrefSize(150, 30);
+		
+		commentButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent e) {
+				feedbackGui = new GiveFeedbackGui();
+				try {
+					feedbackGui.start(feedbackWindowStage, moduleName);
+				} catch (Exception e1) {
+					System.out.println("Unable to open give feedback window");
+					e1.printStackTrace();
+				}
+			}
+		});
+		
 		Button returnButton = new Button ("Back");
 		returnButton.setPrefSize(150,30);
+		
+		returnButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent e) {
+				primaryStage.close();
+			}
+		});
 		
 		// Add everything to HBox and return it
 		bottomHBox.setAlignment(Pos.CENTER);
@@ -128,7 +158,7 @@ public class ViewFeedbackGui extends Application {
 		
 		titleLabel = new Label("Module Comments");
 		titleLabel.setFont(Font.font("Verdana", FontWeight.BOLD, 36));
-		moduleNameLabel = new Label("Module Name Here");
+		moduleNameLabel = new Label(moduleName);
 		moduleNameLabel.setFont(Font.font("Verdana", FontWeight.BOLD, 20));
 		
 		// Creates a VBox, adds the two labels and returns it
@@ -174,24 +204,24 @@ public class ViewFeedbackGui extends Application {
 	private VBox tableVBoxCreation(){
 		
 		// Sets up three columns to contain the information in the text file 
-       TableColumn<Comment,String> nameCol = new TableColumn<Comment,String>("Name");
+       TableColumn<Feedback,String> nameCol = new TableColumn<Feedback,String>("Name");
        nameCol.setMinWidth(110);
        nameCol.setMaxWidth(110);
-       nameCol.setCellValueFactory(new PropertyValueFactory<Comment, String>("name"));
+       nameCol.setCellValueFactory(new PropertyValueFactory<Feedback, String>("name"));
        
-       TableColumn<Comment,String> commentCol = new TableColumn<Comment,String>("Comment");
+       TableColumn<Feedback,String> commentCol = new TableColumn<Feedback,String>("Comment");
        commentCol.setMinWidth(500);
        commentCol.setMaxWidth(500);
-       commentCol.setCellValueFactory(new PropertyValueFactory<Comment, String>("comment"));
+       commentCol.setCellValueFactory(new PropertyValueFactory<Feedback, String>("comment"));
        
-       TableColumn<Comment,String> ratingCol = new TableColumn<Comment,String>("Rating");
+       TableColumn<Feedback,String> ratingCol = new TableColumn<Feedback,String>("Rating");
        ratingCol.setMinWidth(100);
        ratingCol.setMaxWidth(100);
-       ratingCol.setCellValueFactory(new PropertyValueFactory<Comment, String>("rating"));
+       ratingCol.setCellValueFactory(new PropertyValueFactory<Feedback, String>("rating"));
        
        // Fills table with contents of data (which is a list of Comments)
        table.setEditable(false);
-       table.setItems(comments);
+       table.setItems(feedback);
        
        table.getColumns().add(0, nameCol);
        table.getColumns().add(1, commentCol);
@@ -234,9 +264,6 @@ public class ViewFeedbackGui extends Application {
 		// Opens image file and sets size of image view
 		avgRatingImg = new Image(getClass().getResourceAsStream("resources/Stars/" + avgRatingPicNo + ".png"));
 		avgRatingImgView = new ImageView(avgRatingImg);
-		//avgRatingImg = new Image(starsFilePath + avgRatingPicNo + ".png");
-		//avgRatingImgView = new ImageView();
-		//avgRatingImgView.setImage(avgRatingImg);
 		avgRatingImgView.setFitWidth(150);
 		avgRatingImgView.setFitHeight(30);
 		
@@ -244,14 +271,14 @@ public class ViewFeedbackGui extends Application {
 		
 	}
 	
-	// Comment class is used to store name, comment and rating of each individual comment
-	public static class Comment {
+	// Feedback class is used to store name, comment and rating of each individual comment
+	public static class Feedback {
 		 
         private final SimpleStringProperty name;
         private final SimpleStringProperty comment;
         private final SimpleStringProperty rating;
  
-        public Comment(String uName, String uComment, String uRating) {
+        public Feedback(String uName, String uComment, String uRating) {
             this.name = new SimpleStringProperty(uName);
             this.comment = new SimpleStringProperty(uComment);
             this.rating = new SimpleStringProperty(uRating);
