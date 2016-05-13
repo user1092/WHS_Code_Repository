@@ -1124,17 +1124,27 @@ public class PresentationGui extends Application {
 				// Display all Nodes at correct time
 				for(currentAutomaticNodeNumber = storedCurrentNodeNumber; currentAutomaticNodeNumber < numberOfNodes; currentAutomaticNodeNumber++) {
 									
-					if("Node" == objectTimingList.get(currentAutomaticNodeNumber).getObjectType()) {
+					if ("Node" == objectTimingList.get(currentAutomaticNodeNumber).getObjectType()) {
 						objectTimingControl = new ObjectTimingControl(
 										objectTimingList.get(currentAutomaticNodeNumber).getNode(),
 										objectTimingList.get(currentAutomaticNodeNumber).getTimeSinceLastNode(),
 										objectTimingList.get(currentAutomaticNodeNumber).getVisible());
 					}
 					else {
-						objectTimingControl = new ObjectTimingControl(
-								objectTimingList.get(currentAutomaticNodeNumber).getAudioPlayer(),
-								objectTimingList.get(currentAutomaticNodeNumber).getTimeSinceLastNode(),
-								objectTimingList.get(currentAutomaticNodeNumber).getVisible());
+						if ("VideoPlayer" == objectTimingList.get(currentAutomaticNodeNumber).getObjectType()) {
+							objectTimingControl = new ObjectTimingControl(
+									objectTimingList.get(currentAutomaticNodeNumber).getNode(),
+									objectTimingList.get(currentAutomaticNodeNumber).getTimeSinceLastNode(),
+									objectTimingList.get(currentAutomaticNodeNumber).getVisible(),
+									objectTimingList.get(currentAutomaticNodeNumber).getVideoPlayer());
+						}
+						else {
+							objectTimingControl = new ObjectTimingControl(
+											objectTimingList.get(currentAutomaticNodeNumber).getAudioPlayer(),
+											objectTimingList.get(currentAutomaticNodeNumber).getTimeSinceLastNode(),
+											objectTimingList.get(currentAutomaticNodeNumber).getVisible());
+						}
+						
 					}
 					
 					objectTimingControl.start();
@@ -1390,8 +1400,8 @@ public class PresentationGui extends Application {
 			tempPane.setVisible(false);
 			
 			// Add pane to objectTimingList 
-			TimingEntry tempVideoTimingEntryAppear = new TimingEntry(tempPane, currentVideo.getVideoStartTime(), currentVideo.getVideoDuration(), true);
-			TimingEntry tempVideoTimingEntryDisappear = new TimingEntry(tempPane, currentVideo.getVideoStartTime(), currentVideo.getVideoDuration(), false);
+			TimingEntry tempVideoTimingEntryAppear = new TimingEntry(tempPane, currentVideo.getVideoStartTime(), currentVideo.getVideoDuration(), true, videoPlayer);
+			TimingEntry tempVideoTimingEntryDisappear = new TimingEntry(tempPane, currentVideo.getVideoStartTime(), currentVideo.getVideoDuration(), false, videoPlayer);
 			objectTimingList.add(tempVideoTimingEntryAppear);
 			objectTimingList.add(tempVideoTimingEntryDisappear);
 		}
