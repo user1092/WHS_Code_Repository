@@ -484,37 +484,6 @@ public class PresentationGui extends Application {
 	}
 	
 	
-	private void createAboutPresentationButton() {
-		// Image for next slide button
-		//TODO set the image!
-		aboutPresentationImage = new Image(getClass().getResourceAsStream("resources/nextbutton.png"));
-		aboutPresentationView = new ImageView(aboutPresentationImage);
-		// Instantiation of next slide button
-		aboutPresentationButton = new Button();
-		aboutPresentationButton.setGraphic(nextSlideView);
-		aboutPresentationButton.setMaxSize(35, 30);
-		aboutPresentationButton.setPrefSize(35, 30);
-		aboutPresentationButton.setMinSize(35, 30);
-		aboutPresentationButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				Platform.runLater(new Runnable() {
-	 	    		 public void run() {             
-	 	    			try {				 	        	  
-	 	     				new metaDataGui(presentation).start(new Stage());
-	 	     			}
-	 	    			catch (Exception e) {
-	 	     				// TODO Auto-generated catch block
-	 	     				e.printStackTrace();
-	 	     			}
-	 	    		 }
-	 	    	 });
-			}
-		});
-		
-	}
-
-
 	/**
 	 * Method for the creation of the HBox that contains the 
 	 * slide navigation controls, Previous/Next slide buttons 
@@ -947,6 +916,40 @@ public class PresentationGui extends Application {
 	}
 	
 	
+	/**
+		 * Method for the setup of the about presentation button
+		 */
+		private void createAboutPresentationButton() {
+			// Image for next slide button
+			//TODO set the image, if required!
+	//		aboutPresentationImage = new Image(getClass().getResourceAsStream("resources/nextbutton.png"));
+	//		aboutPresentationView = new ImageView(aboutPresentationImage);
+			// Instantiation of next slide button
+			aboutPresentationButton = new Button("About Presentation");
+	//		aboutPresentationButton.setGraphic(aboutPresentationView);
+			aboutPresentationButton.setMaxSize(120, 30);
+			aboutPresentationButton.setPrefSize(120, 30);
+			aboutPresentationButton.setMinSize(120, 30);
+			aboutPresentationButton.setOnAction(new EventHandler<ActionEvent>() {
+				@Override
+				public void handle(ActionEvent e) {
+					Platform.runLater(new Runnable() {
+		 	    		 public void run() {             
+		 	    			try {				 	        	  
+		 	     				new MetaDataGui(presentation).start(new Stage());
+		 	     			}
+		 	    			catch (Exception e) {
+		 	     				// TODO Auto-generated catch block
+		 	     				e.printStackTrace();
+		 	     			}
+		 	    		 }
+		 	    	 });
+				}
+			});
+			
+		}
+
+
 	/**
 	 * Method for loading all objects on current slide within the current presentation
 	 * 
