@@ -120,6 +120,9 @@ public class PresentationGui extends Application {
     private Button nextSlideButton;
     private Image nextSlideImage;
     private ImageView nextSlideView;
+    private Button aboutPresentationButton;
+    private Image aboutPresentationImage;
+    private ImageView aboutPresentationView;
         
 	private ToggleButton modeButton;
 	private ToggleButton muteButton;
@@ -471,11 +474,13 @@ public class PresentationGui extends Application {
 		
 		createSlideButtonsHBox();
 		
+		createAboutPresentationButton();
+		
 		// Instantiation of the separator on the control bar
 		Separator separator = new Separator();
 		// Adding all the items on the control bar
 		controlBar.getItems().addAll(slideButtonsHBox, separator, playButton, stopButton, modeButton, volumeSlider, 
-													muteButton, fullScreenButton);
+													muteButton, fullScreenButton, aboutPresentationButton);
 	}
 	
 	
@@ -911,6 +916,40 @@ public class PresentationGui extends Application {
 	}
 	
 	
+	/**
+		 * Method for the setup of the about presentation button
+		 */
+		private void createAboutPresentationButton() {
+			// Image for next slide button
+			//TODO set the image, if required!
+	//		aboutPresentationImage = new Image(getClass().getResourceAsStream("resources/nextbutton.png"));
+	//		aboutPresentationView = new ImageView(aboutPresentationImage);
+			// Instantiation of next slide button
+			aboutPresentationButton = new Button("About Presentation");
+	//		aboutPresentationButton.setGraphic(aboutPresentationView);
+			aboutPresentationButton.setMaxSize(120, 30);
+			aboutPresentationButton.setPrefSize(120, 30);
+			aboutPresentationButton.setMinSize(120, 30);
+			aboutPresentationButton.setOnAction(new EventHandler<ActionEvent>() {
+				@Override
+				public void handle(ActionEvent e) {
+					Platform.runLater(new Runnable() {
+		 	    		 public void run() {             
+		 	    			try {				 	        	  
+		 	     				new MetaDataGui(presentation).start(new Stage());
+		 	     			}
+		 	    			catch (Exception e) {
+		 	     				// TODO Auto-generated catch block
+		 	     				e.printStackTrace();
+		 	     			}
+		 	    		 }
+		 	    	 });
+				}
+			});
+			
+		}
+
+
 	/**
 	 * Method for loading all objects on current slide within the current presentation
 	 * 
