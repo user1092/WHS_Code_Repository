@@ -18,20 +18,25 @@ import javafx.util.StringConverter;
 * Class for creation of the configure window for inputting 
 * the ip address and port of the server
 *
-* @author user828
-* @version v0.1 17/02/16
+* @author cd828 & ch1092
+* @version v0.2 20/05/16
 */
 public class ConfigureWindow extends Application {
 
-	//private Stage primaryStage;
+	private String ipAddress = "127.0.0.1";
+	private int port = 1138;
 	// text field used for inputting the ip address and port of the server
 	private TextField ipAddressTextField_1, ipAddressTextField_2, ipAddressTextField_3, 
 							ipAddressTextField_4, portTextField;
 	// object for formatting the text fields to only accept integers
 	private StringConverter<Integer> integerFormatter;
 	
-	private Button cancelButton;
+	private Button saveButton;
+	private Button closeButton;
 		
+	public ConfigureWindow () {
+	}
+	
 	public static void main(String[] args) {
 		launch(ConfigureWindow.class, args);
 	}
@@ -59,53 +64,6 @@ public class ConfigureWindow extends Application {
 		primaryStage.setWidth(500);
 		primaryStage.setTitle("Configure Server");
 		primaryStage.show();
-	}
-	
-	/** 
-	 * Class for setting the text fields to only accept integers 
-	 * and have a range of 0-255 for the ip address and 0-65535 for the port
-	 */
-	private static class IntRangeStringConverter extends StringConverter<Integer> {
-
-	    private final int min;
-	    private final int max;
-	    private final int length;
-	    
-	    /**
-	     * Method for instantiating the max min values and length of the text fields
-	     * @param min  -  Minimum value of text field
-	     * @param max  -  Maximum value of text field
-	     * @param length  -  Length of the text field
-	     */
-	    public IntRangeStringConverter(int min, int max, int length) {
-	        this.min = min;
-	        this.max = max;
-	        this.length = length;
-	    }
-	    
-	    /**
-	     * Method for setting the length of the text field
-	     * @param object  -  the number of the length of the text field
-	     * @return string  -  
-	     */
-	    @Override
-	    public String toString(Integer object) {
-	        return String.format("%0"+length+"d", object);
-	    }
-
-	    /**
-	     * Method for setting the maximum and minimum value of the text field
-	     * @param string
-	     * @return integer  -  the integer value of the max and min
-	     */
-	    @Override
-	    public Integer fromString(String string) {
-	        int integer = Integer.parseInt(string);
-	        if (integer > max || integer < min) {
-	            throw new IllegalArgumentException();
-	        }
-	        return integer;
-	    }
 	}
 	
 	/**
@@ -190,10 +148,9 @@ public class ConfigureWindow extends Application {
 		buttonHBox.setPadding(new Insets(0, 0, 10, 135));
 		buttonHBox.setSpacing(10);
 		buttonHBox.setStyle("-fx-background-colour: #336699;");
-		Button saveButton = new Button("Save");
-		saveButton.setPrefSize(100, 20);
-		cancelButtonSetup(primaryStage);
-		buttonHBox.getChildren().addAll(saveButton, cancelButton);
+		saveButtonSetup(primaryStage);
+		closeButtonSetup(primaryStage);
+		buttonHBox.getChildren().addAll(saveButton, closeButton);
 		return buttonHBox;	
 	}
 	
@@ -201,10 +158,35 @@ public class ConfigureWindow extends Application {
 	 * Method for setting up the cancel button, when pressed the window closes
 	 * @param primaryStage  -  The application window
 	 */
-	private void cancelButtonSetup(final Stage primaryStage) {
-		cancelButton = new Button("Cancel");
-		cancelButton.setPrefSize(100, 20);
-		cancelButton.setOnAction(new EventHandler<ActionEvent>() {
+	private void saveButtonSetup(final Stage primaryStage) {
+		saveButton = new Button("Save");
+		saveButton.setPrefSize(100, 20);
+		saveButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent e) {
+
+				Integer ipAddressText_1 = Integer.parseInt(ipAddressTextField_1.getText());
+				Integer ipAddressText_2 = Integer.parseInt(ipAddressTextField_2.getText());
+				Integer ipAddressText_3 = Integer.parseInt(ipAddressTextField_3.getText());
+				Integer ipAddressText_4 = Integer.parseInt(ipAddressTextField_4.getText());
+				
+				ipAddress = (ipAddressText_1 + "." + ipAddressText_2 + "." + ipAddressText_3
+						+ "." + ipAddressText_4);
+
+				port = Integer.parseInt(portTextField.getText());
+				
+			}
+		});
+	}
+	
+	/**
+	 * Method for setting up the cancel button, when pressed the window closes
+	 * @param primaryStage  -  The application window
+	 */
+	private void closeButtonSetup(final Stage primaryStage) {
+		closeButton = new Button("Close");
+		closeButton.setPrefSize(100, 20);
+		closeButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
 				primaryStage.close();
@@ -212,5 +194,22 @@ public class ConfigureWindow extends Application {
 		});
 	}
 	
+	/**
+	 * Method for returning the ipAddress stored
+	 * 
+	 * @return ipAddress - the server's ip Address
+	 */
+	public String getIpAddress() {
+		return ipAddress;
+	}
 	
+	/**
+	 * Method for returning the port number stored
+	 * 
+	 * @return port - the server's port number
+	 */
+	public int getPort() {
+		return port;
+		
+	}
 }

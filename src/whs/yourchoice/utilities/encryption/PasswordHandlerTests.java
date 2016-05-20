@@ -3,20 +3,24 @@ package whs.yourchoice.utilities.encryption;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 import org.junit.Test;
 
+
 /**
- * @author ch1092
- *
+ * Class for testing the password handlers
+ * 
+ * @author 		ch1092, cd828
+ * @version		v0.1 20/05/2016
  */
 public class PasswordHandlerTests {
 
+	String clientDetailsLocation = "src/DemoClientDetails.txt";
+	
 	/**
-	 * 
+	 * Test to check the user details can be stored in an object
 	 */
 	@Test
 	public void checkClientDetailsClassStoresCorrectData() {
@@ -35,7 +39,7 @@ public class PasswordHandlerTests {
 	}
 	
 	/**
-	 * 
+	 * Test to check the user details can be stored in a file
 	 */
 	@Test
 	public void checkClientDetailsFileStoresCorrectData() {
@@ -55,12 +59,12 @@ public class PasswordHandlerTests {
 		}
 		
 		ServerPasswordHandler serverPasswordHandler = new ServerPasswordHandler();
-		serverPasswordHandler.storeDetails(enteredClientDetails);
+		serverPasswordHandler.storeDetails(enteredClientDetails, clientDetailsLocation);
 		
-		retrievedClientDetails = serverPasswordHandler.getDetails(userName);
+		retrievedClientDetails = serverPasswordHandler.getDetails(userName, clientDetailsLocation);
 		
 		try {
-			serverPasswordHandler.clearClientDetailsFile();
+			serverPasswordHandler.clearClientDetailsFile(clientDetailsLocation);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -76,7 +80,7 @@ public class PasswordHandlerTests {
 	}
 	
 	/**
-	 * 
+	 * Test to check that the password can be verified once stored
 	 */
 	@Test
 	public void checkPasswordValidates() {
@@ -86,7 +90,7 @@ public class PasswordHandlerTests {
 		
 		String userName = "bob";
 		String rightPassword = "ABCDEF";
-		String wrongPassword = "bollocks";
+		String wrongPassword = "badPassword";
 		String wrongHash = null;
 		String rightHash = null;
 		
@@ -99,12 +103,12 @@ public class PasswordHandlerTests {
 		}
 		
 		ServerPasswordHandler serverPasswordHandler = new ServerPasswordHandler();
-		serverPasswordHandler.storeDetails(enteredClientDetails);
+		serverPasswordHandler.storeDetails(enteredClientDetails, clientDetailsLocation);
 		
-		retrievedClientDetails = serverPasswordHandler.getDetails(userName);
+		retrievedClientDetails = serverPasswordHandler.getDetails(userName, clientDetailsLocation);
 				
 		try {
-			serverPasswordHandler.clearClientDetailsFile();
+			serverPasswordHandler.clearClientDetailsFile(clientDetailsLocation);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -117,5 +121,9 @@ public class PasswordHandlerTests {
 		rightHash = clientPasswordHandler.generateHash(rightPassword, retrievedClientDetails.getSalt());
 		
 		assertTrue(enteredClientDetails.getHash().equals(rightHash));
+		
+		assertFalse(serverPasswordHandler.validateHash(wrongHash, enteredClientDetails));
+		
+		assertTrue(serverPasswordHandler.validateHash(rightHash, enteredClientDetails));
 	}
 }

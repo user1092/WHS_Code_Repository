@@ -7,15 +7,19 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.UnknownHostException;
+import java.security.NoSuchAlgorithmException;
 
 import whs.yourchoice.parsers.RegisteredModulesParser;
 import whs.yourchoice.presentation.RegisteredModules;
+import whs.yourchoice.utilities.encryption.ClientDetails;
+import whs.yourchoice.utilities.encryption.ClientPasswordHandler;
 
 /**
  * Class for the client's back end handling communications to the server 
  * 
- * @author		user1092, guest501
- * @version		v0.8 06/04/2016
+ * @author		ch1092, skq501, cd828
+ * @version		v0.9 20/05/2016
  */
 public class Client {
 	
@@ -38,10 +42,12 @@ public class Client {
 	 * 
 	 * @param host - The socket's host number
 	 * @param port - The socket's port number
+	 * @throws IOException 
+	 * @throws UnknownHostException 
 	 */
-	protected void openSocket(String host, int port) {
+	protected void openSocket(String host, int port) throws UnknownHostException, IOException {
 		// Connect to the server	
-		try {			
+			
 			serverSocket = new Socket(host, port);
 			System.out.println("Connected to Server, host: " + host + ",port: " + port);
 			createOutputStream();
@@ -49,11 +55,6 @@ public class Client {
 			receiveID();
 			getModules();
 			parseModules();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
-			System.out.println("Could not connected to Server, host: " + host + ",port: " + port);
-		}
 	}
 
 	
@@ -178,5 +179,25 @@ public class Client {
 		moduleList = parser.parseModules(modulePath);
 	}
 	
-	
+	protected boolean checkPassword(String userName, String password) throws IOException {
+		ClientDetails enteredClientDetails = new ClientDetails();
+		
+		enteredClientDetails.setUserName(userName);
+		
+		sendData(userName);
+		
+		if (userName.equals("Admin")) {
+			
+			enteredClientDetails.setSalt((byte[]) receiveData());
+			
+			ClientPasswordHandler clientPasswordHandler = new ClientPasswordHandler();
+			
+			enteredClientDetails.setHash(clientPasswordHandler.generateHash(password, 
+														enteredClientDetails.getSalt()));
+			
+			sendData(enteredClientDetails);
+		}
+		
+		return (boolean) receiveData();
+	}
 }

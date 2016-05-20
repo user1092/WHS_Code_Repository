@@ -1,3 +1,6 @@
+/**
+ * Licensing information
+ */
 package whs.yourchoice.utilities.encryption;
 
 import java.io.BufferedReader;
@@ -9,17 +12,21 @@ import java.io.IOException;
 import org.apache.commons.codec.binary.Base64;
 
 /**
- * @author ch1092
- *
+ * Class for handling the passwords on the server side
+ * 
+ * @author 		ch1092, cd828
+ * @version		v0.1 20/05/2016
  */
 public class ServerPasswordHandler {
 	
-	String clientDetailsLocation = "src/DemoClientDetails.txt";
 	
 	/**
-	 * @param clientDetails
+	 * Method to store the user details in a txt file.
+	 * 
+	 * @param clientDetails		-	The client details to be stored
+	 * @param clientDetailsLocation	-	The file location where the details are stored
 	 */
-	public void storeDetails(ClientDetails clientDetails) {
+	public void storeDetails(ClientDetails clientDetails, String clientDetailsLocation) {
 		String formattedClientDetails = formatClientDetails(clientDetails);
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter(clientDetailsLocation, true))){
 			bw.newLine();
@@ -32,8 +39,10 @@ public class ServerPasswordHandler {
 
 	
 	/**
-	 * @param clientDetails
-	 * @return
+	 * Method to format the client details into a csv format.
+	 * 
+	 * @param clientDetails		-	The client details to be formatted
+	 * @return formattedClientDetails	-	The formatted client details
 	 */
 	private String formatClientDetails(ClientDetails clientDetails) {
 			
@@ -42,8 +51,10 @@ public class ServerPasswordHandler {
 		String formattedSalt = null;
 		formattedSalt = Base64.encodeBase64String(clientDetails.getSalt());
 		
-		// Concatenate feedback to form a single string ready for insertion
-		// into text file by inserting a comma between each field
+		/*
+		 *  Concatenate client details to form a single string ready for insertion
+		 *  into text file by inserting a comma between each field
+		 */		
 		formattedClientDetails = clientDetails.getUserName() + "," + clientDetails.getHash() 
 			+ "," + formattedSalt + ",";
 		
@@ -51,10 +62,13 @@ public class ServerPasswordHandler {
 	}
 	
 	/**
-	 * @param userName
-	 * @return
+	 * Method to retrieve the client details from the txt file.
+	 * 
+	 * @param userName	-	The user name of the details to be retrieved
+	 * @param clientDetailsLocation	-	The file location where the details are stored
+	 * @return clientDetails	-	The details relating to the user name passed in.
 	 */
-	public ClientDetails getDetails(String userName) {
+	public ClientDetails getDetails(String userName, String clientDetailsLocation) {
 		BufferedReader br = null;
 		
 		ClientDetails clientDetails = new ClientDetails();
@@ -65,6 +79,7 @@ public class ServerPasswordHandler {
 			// Parse text file line by line
 			br = new BufferedReader(new FileReader(clientDetailsLocation));
 			String line;
+			// Search line by line till the username is found
 			while ((line = br.readLine()) != null) {
 
 			    // Regex code to split a line of the text file by commas, only if the comma
@@ -98,12 +113,14 @@ public class ServerPasswordHandler {
 	}
 	
 	/**
-	 * @param hash
-	 * @param clientDetails
-	 * @return
+	 * Method to check whether the hash entered matches that of what is stored.
+	 * 
+	 * @param hash	-	The hash created by the user entering the password
+	 * @param clientDetails	-	The client details containing the hash that should match the passed in hash 
+	 * @return valid	-	Boolean that states whether the hashes match
 	 */
 	public boolean validateHash(String hash, ClientDetails clientDetails) {
-		if (hash == clientDetails.getHash()) {
+		if (clientDetails.getHash().equals(hash)) {
 			return true;
 		}
 		return false;
@@ -111,9 +128,14 @@ public class ServerPasswordHandler {
 	
 	
 	/**
+	 * Method to clear all stored user entries in the txt file
+	 * 
+	 * DANGEROUS ONLY CALL IF NEEDED!
+	 * 
+	 * @param clientDetailsLocation	-	The file location where the details are stored
 	 * @throws IOException
 	 */
-	public void clearClientDetailsFile() throws IOException {
+	public void clearClientDetailsFile(String clientDetailsLocation) throws IOException {
 		BufferedWriter bw = null;
 		bw = new BufferedWriter(new FileWriter(clientDetailsLocation));
 		bw.close();

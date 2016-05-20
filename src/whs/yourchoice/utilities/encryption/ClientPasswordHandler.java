@@ -1,3 +1,6 @@
+/**
+ * Licensing information
+ */
 package whs.yourchoice.utilities.encryption;
 
 import java.security.MessageDigest;
@@ -5,11 +8,21 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
 /**
- * @author ch1092
- *
+ * Class for handling the passwords on the client side
+ * 
+ * @author 		ch1092, cd828
+ * @version		v0.1 20/05/2016
  */
 public class ClientPasswordHandler {
 
+	/**
+	 * Method to encrypt a password and return the user name, hash and salt in a object
+	 * 
+	 * @param userName	-	The user name of the client
+	 * @param password	-	The password entered by the client
+	 * @return clientDetails	-	An object that contains the user name, hash and salt
+	 * @throws NoSuchAlgorithmException
+	 */
 	public ClientDetails encryptNewPassword(String userName, String password) throws NoSuchAlgorithmException {
 		byte[] salt = null;
 		String hash = null;
@@ -26,7 +39,11 @@ public class ClientPasswordHandler {
 	}
 
 	/**
-	 * @param password
+	 * Method to create a hash from the password and salt
+	 * 
+	 * @param password	-	The password to be encrypted
+	 * @param salt		-	The salt to be hashed with the password
+	 * @return hash		-	The encrypted password
 	 */
 	public String generateHash(String password, byte[] salt) {
 		String hash = null;
@@ -49,7 +66,9 @@ public class ClientPasswordHandler {
 	}
 
 	/**
-	 * @return
+	 * Method to randomly create a salt.
+	 * 
+	 * @return salt	-	The salt to be hashed with the password
 	 * @throws NoSuchAlgorithmException
 	 */
 	private byte[] getSalt() throws NoSuchAlgorithmException {

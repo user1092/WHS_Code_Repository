@@ -1,11 +1,22 @@
+/**
+ * Licensing information
+ */
 package whs.yourchoice.utilities.encryption;
 
-/**
- * @author ch1092
- *
- */
-public class ClientDetails {
+import java.io.Serializable;
 
+/**
+ * Class for holding the details of the client.
+ * 
+ * @author 		ch1092, cd828
+ * @version		v0.1 20/05/2016
+ */
+public class ClientDetails implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8924002940111723369L;
 	private String userName = null;
 	private String hash = null;
 	private byte[] salt = null;
