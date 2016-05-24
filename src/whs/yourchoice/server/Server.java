@@ -1,20 +1,28 @@
+/**
+ * Licensing information
+ */
 package whs.yourchoice.server;
 
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.ServerSocket;
+import java.security.Key;
+import java.security.NoSuchAlgorithmException;
+
+import whs.yourchoice.utilities.encryption.ClientDetails;
+import whs.yourchoice.utilities.encryption.ClientPasswordHandler;
+import whs.yourchoice.utilities.encryption.RsaEncryption;
+import whs.yourchoice.utilities.encryption.ServerPasswordHandler;
 
 
 /**
  * Class for the server's back end handling communications to the clients. 
  * 
- * @author		user1092, guest501
- * @version		v08 06/04/2016
+ * @author		ch1092, skq501, cd828
+ * @version		v0.9 24/05/2016
  */
 public class Server {
 	
@@ -27,14 +35,14 @@ public class Server {
 	
 	//registered modules variables
 	private final String rmPath = new File("").getAbsolutePath() + "/src/registered_modules.xml";
+	private final String clientDetailsLocation = "AdminDetails.txt";
+	private String serverPrivKeyFileName = "serverPrivKeyFileName.key";
 	
 	/**
 	 * Constructor to create a new array of connected clients.
 	 */
 	public Server() {
 		clients = new ConnectedClient[connectedClientsMaxNumber];
-
-		
 	}
 	
 	
@@ -95,6 +103,7 @@ public class Server {
 				while(!serverSocket.isClosed()) {
 					// Only check if current entry is connected
 					if(clients[currentClientNumber].socketIsConnected()) {
+						System.out.println("Checking for disconnected clients");
 						// Cycle through clients array to see if one has disconnected
 						for(int clientNumber = 0; clientNumber < connectedClientsMaxNumber; clientNumber++) {
 							if(!clients[clientNumber].socketIsConnected()) {
@@ -103,6 +112,12 @@ public class Server {
 								break;
 							}
 						}
+					}
+					try {
+						Thread.sleep(5000);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
 				}
 			}
@@ -186,6 +201,15 @@ public class Server {
 				System.out.println("(null)Current Client" + currentClient.getID());
 				sendData(currentClient.getID(), currentClient.getID());
 				try {
+					currentClient.setPublicKey((Key) receiveData(currentClient.getID()));
+				} catch (ClassNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				try {
 					sendRMFile(currentClient.getID());
 				}
 				catch (IOException e) {
@@ -202,6 +226,22 @@ public class Server {
 					clients[clientNumber] = currentClient;
 					System.out.println("(not connected)Current Client" + currentClient.getID());
 					sendData(currentClient.getID(), currentClient.getID());
+					try {
+						currentClient.setPublicKey((Key) receiveData(currentClient.getID()));
+					} catch (ClassNotFoundException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					try {
+						sendRMFile(currentClient.getID());
+					}
+					catch (IOException e) {
+						System.out.println("Error sending module list");
+						System.out.println(e);
+					}
 					listenToClient(currentClient);
 				} else {
 					/*
@@ -284,11 +324,20 @@ public class Server {
 		
 		listenToClientThread[client.getID()] = new Thread("Listen to connected clients") {
 			public void run() {
+				boolean validPassword = false;
+				Object object = null;
 				while (!serverSocket.isClosed() && client.socketIsConnected()) {
-					
-					Object object;
+										
 					try {
-						// Wait for the client to send some data
+						// Check the client's password or if a guest login						
+						while ((!validPassword) && client.socketIsConnected())  {
+							validPassword = validate(client);
+							if (client.socketIsConnected()) {
+								sendData(validPassword, client.getID());
+							}
+						}
+						
+						// Wait for the client to send some data, below is for tests
 						object = receiveData(client.getID());
 						sendData(object, client.getID());
 					} catch (ClassNotFoundException e1) {
@@ -306,6 +355,7 @@ public class Server {
 					}
 				}
 			}
+
 		};
 		listenToClientThread[client.getID()].start();
 	}
@@ -322,5 +372,117 @@ public class Server {
 		bis.close();
 	}
 
+	/**
+	 * Method to set the administrators password.
+	 * 
+	 * @param password	-	The administrators password to be set.
+	 */
+	protected void setAdminPassword(String password) {
+				
+		ClientDetails adminDetails = new ClientDetails();
+		
+		ServerPasswordHandler serverPasswordHandler = new ServerPasswordHandler();
+		
+		// Clear the current password
+		try {
+			serverPasswordHandler.clearClientDetailsFile(clientDetailsLocation);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		ClientPasswordHandler clientPasswordHandler = new ClientPasswordHandler();
+		try {
+			adminDetails = clientPasswordHandler.encryptNewPassword("Admin", password);
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		serverPasswordHandler.storeDetails(adminDetails, clientDetailsLocation);
+	}
 	
+	/**
+	 * Method to ensure the user logs in with a valid account
+	 * 
+	 * @param client	-	The Client attempting to login
+	 * @return valid	-	Boolean that returns true if a valid login is used
+	 * @throws ClassNotFoundException
+	 */
+	private boolean validate(final ConnectedClient client)
+			throws ClassNotFoundException {
+		
+		boolean validPassword = false;
+		Object encryptedObject = null;
+		try {
+			System.out.println("Getting username, client:" + client.getID());
+			encryptedObject = receiveData(client.getID());
+			System.out.println("Got username, client:" + client.getID());
+		} catch (IOException e1) {
+			//e1.printStackTrace();
+			// Client Disconnected so close the socket.
+			try {
+				System.out.println("Didn't Get username, client:" + client.getID());
+				client.closeClientSocket();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		Object object;
+		ClientDetails clientDetails = null;
+		RsaEncryption rsaHandler = new RsaEncryption();
+		
+		if (client.socketIsConnected()) {
+			object = rsaHandler.rsaDecryptDataToObject((byte[]) encryptedObject, serverPrivKeyFileName);
+		
+			clientDetails = (ClientDetails) object;
+					
+			if (clientDetails.getUserName().equals("Admin")) {
+				ServerPasswordHandler serverPasswordHandler = new ServerPasswordHandler();
+				ClientDetails retrievedClientDetails = serverPasswordHandler.getDetails(clientDetails.getUserName(), clientDetailsLocation);
+				
+				sendData(encryptData(retrievedClientDetails.getSalt(), client), client.getID());
+				
+				try {
+					encryptedObject = receiveData(client.getID());
+				} catch (IOException e1) {
+					//e1.printStackTrace();
+					// Client Disconnected so close the socket.
+					try {
+						client.closeClientSocket();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				object = rsaHandler.rsaDecryptDataToObject((byte[]) encryptedObject, serverPrivKeyFileName);
+				
+				ClientDetails currentClientDetails = (ClientDetails) object;
+				
+				validPassword = serverPasswordHandler.validateHash(currentClientDetails.getHash(), retrievedClientDetails);
+			}
+			else {
+				validPassword = true;
+			}
+		}
+		return validPassword;
+	}
+	
+	
+	
+	/**
+	 * Method to encrypt an object for a specific client using RSA 
+	 * 
+	 * @param objectToEncrypt	-	The object to encrypt
+	 * @param client	-	The client whose key is to be used
+	 * @return encryptData	-	The data that has been encrypted
+	 */
+	private byte[] encryptData(Object objectToEncrypt, ConnectedClient client) {
+		RsaEncryption rsaHandler = new RsaEncryption();
+		Key publicKey = client.getPublicKey();
+		
+		return rsaHandler.rsaEncryptObject(objectToEncrypt, publicKey);
+	}
 }

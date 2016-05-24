@@ -1,7 +1,5 @@
 /**
- * ServerGui.java		v0.6 23/02/2016
- * 
- * 
+ * Licensing information
  */
 
 package whs.yourchoice.server;
@@ -14,12 +12,17 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DocumentFilter;
+import javax.swing.text.PlainDocument;
+import javax.swing.text.AttributeSet;
 
 /**
  * Class for the server's front end controlling the back end through buttons. 
  * 
- * @author		user1092, guest501
- * @version		v0.6 23/02/2016
+ * @author		ch1092, skq501, cd828
+ * @version		v0.7 20/05/2016
  */
 public class ServerGui {
 	
@@ -27,9 +30,12 @@ public class ServerGui {
 	
 	private JFrame serverFrame;
 	private JPanel buttonPanel;
+	private JPanel passwordPanel;
 	private JPanel upperPanel;
 	
 	private Boolean serverSocketIsOpen = false;
+	
+	private JPasswordField passwordField;
 
 	/**
 	 * Constructor
@@ -59,7 +65,7 @@ public class ServerGui {
 	 */
 	private void setupGui() {
 		//Create a new frame
-		serverFrame = new JFrame(); 
+		serverFrame = new JFrame();
 		
 		// Setup window title and size
 		serverFrame.setTitle("YourChoice Server");
@@ -75,13 +81,21 @@ public class ServerGui {
 		// Create button panel for the open and close socket buttons
 		upperPanel = new JPanel();
 		buttonPanel = new JPanel();
-		serverFrame.add(upperPanel, BorderLayout.NORTH);
-		upperPanel.add(buttonPanel, BorderLayout.CENTER);
+		serverFrame.add(upperPanel);
+		upperPanel.add(buttonPanel);
 		buttonPanel.setLayout(new BorderLayout());
+		
+		passwordPanel = new JPanel();
+		passwordPanel.setLayout(new BorderLayout());
+		buttonPanel.add(passwordPanel, BorderLayout.SOUTH);
 		
 		setupOpenSocketButton();
 		
 		setupCloseSocketButton();
+		
+		setupPasswordField();
+		
+		setupSetPasswordButton();
 	}
 
 	/**
@@ -124,6 +138,46 @@ public class ServerGui {
 					JOptionPane.showMessageDialog(null, "Sockets already closed!", "Error", JOptionPane.ERROR_MESSAGE);
 				}
 			}          
+	    });
+	}
+	
+	/**
+	 * Method to create a field to enter an administrator password
+	 */
+	private void setupPasswordField() {
+		passwordField = new JPasswordField(20);
+		
+		// Limit the password length to 20 characters
+		PlainDocument document = (PlainDocument) passwordField.getDocument();
+        document.setDocumentFilter(new DocumentFilter() {
+
+            @Override
+            public void replace(DocumentFilter.FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+                String string = fb.getDocument().getText(0, fb.getDocument().getLength()) + text;
+
+                if (string.length() <= 20) {
+                    super.replace(fb, offset, length, text, attrs);
+                }
+            }
+
+        });
+        
+		passwordPanel.add(passwordField, BorderLayout.CENTER);
+	}
+	
+	/**
+	 * This method will setup a button for setting the password
+	 */
+	private void setupSetPasswordButton() {
+		JButton setPasswordButton;
+		setPasswordButton = new JButton("Set Administrator Password");
+		passwordPanel.add(setPasswordButton, BorderLayout.SOUTH);
+				
+		setPasswordButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("Password Set");
+				server.setAdminPassword(String.valueOf(passwordField.getPassword()));
+			}
 	    });
 	}
 

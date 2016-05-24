@@ -1,5 +1,5 @@
 /**
-* ClientGui.java v0.2 28/01/16
+* ClientGui.java v0.4 20/05/16
 *
 * Copyright and Licensing Information if applicable
 */
@@ -7,23 +7,29 @@
 package whs.yourchoice.client;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.UnknownHostException;
 
 import whs.yourchoice.parsers.PresentationParser;
 import whs.yourchoice.presentation.PresentationEntry;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -33,12 +39,11 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.util.StringConverter;
 /**
 * Class for creation of the Client GUI and adding functionality
 *
 * @author cd828 & ch1092
-* @version v0.3 28/03/16
+* @version v0.4 20/05/16
 */
 public class ClientGui extends Application{
 	// object for the file chooser for getting the XML file
@@ -46,24 +51,34 @@ public class ClientGui extends Application{
 
 	private Stage primaryStage;
 
-	private Button requestButton;
+	private Button loginButton;
 	private Button connectButton;
 	private Button disconnectButton;
-	
 	// presentation related declarations
 	private File xmlFile;
 	private PresentationEntry presentation;
 	
 	// text box to show the file browse status
 	private Text actionStatus;
-	// text field used for inputting the ip address and port of the server
-	private TextField ipAddressTextField_1, ipAddressTextField_2, ipAddressTextField_3, 
-							ipAddressTextField_4, portTextField;
-	// object for formatting the text fields to only accept integers
-	private StringConverter<Integer> integerFormatter;
+	
+	private PasswordField passwordTextField;
+	
+	private CheckBox adminCheckBox;
+	
+	private boolean autoConnect = true;
+	private boolean validPassword = false;
+	private boolean adminMode = false;
+	private final static String numbers = "0123456789";
+	private final static String lowercase = "abcdefghijklmnopqrstuvwxyz";
+	private final static String uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	private final static String acceptablePasswordCharacters = numbers+lowercase+uppercase;
+
 	
 	// Declare a backend for the client
 	private Client client;
+	
+
+	private ConfigureWindow configureWindow = new ConfigureWindow();
 	
 	public ClientGui() {
 		client = new Client();
@@ -88,25 +103,27 @@ public class ClientGui extends Application{
 		HBox buttonHBox = buttonHBoxCreation();
 		//Log box set up
 		HBox logHBox = logHBoxCreation();
-		//Box that contains the ip address and port labels and text boxes
-		VBox ipAndPortVbox = ipAndPortVBoxCreation();
 		
 		MenuBar menuBar = createMenuBar();
+		
+		VBox loginVBox = loginVBoxCreation();
 		
 		//place the boxes inside the layout created
 		guiLayout.setTop(menuBar);
 		guiLayout.setBottom(buttonHBox);
 		guiLayout.setRight(logHBox);
-		guiLayout.setLeft(ipAndPortVbox);
+		guiLayout.setCenter(loginVBox);
 		
 		//main stage set up with appropriate scene and size
 		primaryStage.setScene(scene);
 		primaryStage.setHeight(600);
 		primaryStage.setWidth(800);
-		primaryStage.setTitle("Client GUI");
+		primaryStage.setTitle("YourChoice");
 		primaryStage.show();
+		
+		autoConnect();
 	}
-	
+
 	/**
 	 * Method for the creation of the HBox that contains the buttons
 	 * @return HBox  -  The box that contains the buttons 
@@ -117,13 +134,13 @@ public class ClientGui extends Application{
 		buttonHBox.setSpacing(10);
 		buttonHBox.setStyle("-fx-background-colour: #336699;");
 
-		requestButtonSetup();
+		loginButtonSetup();
 		
 		connectButtonSetup();
 		
 		disconnectButtonSetup();
 		
-		buttonHBox.getChildren().addAll(requestButton, connectButton, disconnectButton);
+		buttonHBox.getChildren().addAll(loginButton, connectButton, disconnectButton);
 		
 		return buttonHBox;	
 	}
@@ -131,44 +148,83 @@ public class ClientGui extends Application{
 	/**
 	 * Method to setup the request button
 	 */
-	private void requestButtonSetup() {
-		requestButton = new Button("Request");
-		requestButton.setDisable(false);
-		requestButton.setPrefSize(100, 20);
-		requestButton.setOnAction(new EventHandler<ActionEvent>() {
+	private void loginButtonSetup() {
+		loginButton = new Button("Login As Guest");
+		loginButton.setDisable(false);
+		loginButton.setPrefSize(100, 20);
+		loginButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
-				System.out.println("Requesting presentation from server");
+				System.out.println(passwordTextField.getText());
+				if (!(null == client.serverSocket)) {
+					if(!client.serverSocket.isClosed()) {
+						if (!validPassword) {
+							if (adminCheckBox.isSelected()) {
+								try {
+									validPassword = client.checkPassword("Admin", passwordTextField.getText());
+									adminMode = validPassword;
+								} catch (IOException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}
+								System.out.println(validPassword);
+								
+								System.out.println(passwordTextField.getText());
+							}
+							else {
+								try {
+									validPassword = client.checkPassword("Guest", null);
+								} catch (IOException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}
+								System.out.println(validPassword);
+							}
+							
+						}
+					}
+				}
+				
 			}
 		});
 	}
+	
+	
 	
 	/**
 	 * Method to setup the connect button
 	 */
 	private void connectButtonSetup() {
 		connectButton = new Button("Connect");
-		connectButton.setDisable(false);
+		connectButton.setDisable(autoConnect);
 		connectButton.setPrefSize(100, 20);
 		//action event that happens when the connect button is pressed
 		//ip address and port from text boxes is stored and shown in the console
 		connectButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
-				Integer ipAddressText_1 = Integer.parseInt(ipAddressTextField_1.getText());
-				Integer ipAddressText_2 = Integer.parseInt(ipAddressTextField_2.getText());
-				Integer ipAddressText_3 = Integer.parseInt(ipAddressTextField_3.getText());
-				Integer ipAddressText_4 = Integer.parseInt(ipAddressTextField_4.getText());
-				int port = Integer.parseInt(portTextField.getText());
-				
-				String ipAddress = (ipAddressText_1 + "." + ipAddressText_2 + "." + ipAddressText_3
-										+ "." + ipAddressText_4);
-			
-				client.openSocket(ipAddress, port);
-				if(!client.serverSocket.isClosed()) {
-					connectButton.setDisable(true);
-					disconnectButton.setDisable(false);
+				try {
+					client.openSocket(configureWindow.getIpAddress(), configureWindow.getPort());
+				} catch (UnknownHostException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+					connectButton.setDisable(false);
+					disconnectButton.setDisable(true);
+				} catch (IOException e2) {
+					// TODO Auto-generated catch block
+//					e.printStackTrace();
+					System.out.println("Could not connect to server");
+					connectButton.setDisable(false);
+					disconnectButton.setDisable(true);
 				}
+				
+				if (!(null == client.serverSocket)) {
+					if(!client.serverSocket.isClosed()) {
+						connectButton.setDisable(true);
+						disconnectButton.setDisable(false);
+					}
+				}
+				
 			}
 		});
 	}
@@ -178,7 +234,7 @@ public class ClientGui extends Application{
 	 */
 	private void disconnectButtonSetup() {
 		disconnectButton = new Button("Disconnect");
-		disconnectButton.setDisable(true);
+		disconnectButton.setDisable(!autoConnect);
 		disconnectButton.setPrefSize(100, 20);
 		disconnectButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -190,44 +246,6 @@ public class ClientGui extends Application{
 				}
 			}
 		});
-	}
-
-	/**
-	 * Method for the creation of the HBox that contains the ip address labels and text boxes
-	 * @return HBox  -  The box that contains the ip address labels and text boxes
-	 */
-	private HBox ipHBoxCreation() {
-		//HBox instantiation
-		HBox ipHBox = new HBox();
-		//set the position of the HBox
-		ipHBox.setPadding(new Insets(10, 10, 10, 20));
-		//set the spacing between objects in the box
-		ipHBox.setSpacing(5);
-		//set the HBox to have the background colour
-		ipHBox.setStyle("-fx-background-colour: #336699;");
-		//call method for setting the format of text fields
-		integerFormatter = new IntRangeStringConverter(0, 255, 3);
-		//labels and text boxes instantiation for the ip address
-		Label ipAddressLabel = new Label("IP Address");
-		ipAddressTextField_1 = new TextField();
-		ipAddressTextField_1.setPrefWidth(40);
-		ipAddressTextField_1.setTextFormatter(new TextFormatter<>(integerFormatter, 127));
-		Label dot_1 = new Label(".");
-		ipAddressTextField_2 = new TextField();
-		ipAddressTextField_2.setPrefWidth(40);
-		ipAddressTextField_2.setTextFormatter(new TextFormatter<>(integerFormatter, 0));
-		Label dot_2 = new Label(".");
-		ipAddressTextField_3 = new TextField();
-		ipAddressTextField_3.setPrefWidth(40);
-		ipAddressTextField_3.setTextFormatter(new TextFormatter<>(integerFormatter, 0));
-		Label dot_3 = new Label(".");
-		ipAddressTextField_4 = new TextField();
-		ipAddressTextField_4.setPrefWidth(40);
-		ipAddressTextField_4.setTextFormatter(new TextFormatter<>(integerFormatter, 1));
-		//place the objects for the ip address in the HBox
-		ipHBox.getChildren().addAll(ipAddressLabel, ipAddressTextField_1, dot_1, ipAddressTextField_2,
-				dot_2, ipAddressTextField_3, dot_3, ipAddressTextField_4);
-		return ipHBox;	
 	}
 	
 	/**
@@ -247,40 +265,88 @@ public class ClientGui extends Application{
 		return logHBox;
 	}
 	
-	/**  
-	 * Method for the creation of the HBox that contains the port label and text box
-	 * @return HBox  -  The box that contains the port label and text box
+	/**
+	 * @return
 	 */
-	private HBox portHBoxCreation() {
-		HBox portHBox = new HBox();
-		portHBox.setPadding(new Insets(10, 10, 10, 20));
-		portHBox.setSpacing(5);
-		portHBox.setStyle("-fx-background-colour: #336699;");
-		integerFormatter = new IntRangeStringConverter(0, 65535, 5);
-		Label portLabel = new Label("Port");
-		portTextField = new TextField();
-		portTextField.setPrefWidth(50);
-		portTextField.setTextFormatter(new TextFormatter<>(integerFormatter, 1138));
-		portHBox.getChildren().addAll(portLabel, portTextField);
-		return portHBox;
+	private HBox passwordHBoxCreation() {
+		HBox passwordHBox = new HBox();
+		passwordHBox.setPadding(new Insets(10, 10, 10, 10));
+		passwordHBox.setSpacing(5);
+		passwordHBox.setStyle("-fx-background-colour: #336699;");
+		Label passwordLabel = new Label("Password:");
+		passwordLabel.setPadding(new Insets(5, 0, 0, 0));
+		passwordTextField = new PasswordField();
+		addTextLimiter(passwordTextField, 20);
+		passwordTextField.addEventFilter(KeyEvent.KEY_TYPED, charFilter());
+		passwordTextField.setPrefWidth(100);
+		passwordTextField.setDisable(true);
+		passwordHBox.getChildren().addAll(passwordLabel, passwordTextField);
+		return passwordHBox;
+	}
+	
+	public static void addTextLimiter(final TextField tf, final int maxLength) {
+	    tf.textProperty().addListener(new ChangeListener<String>() {
+	        @Override
+	        public void changed(final ObservableValue<? extends String> ov, final String oldValue, final String newValue) {
+	            if (tf.getText().length() > maxLength) {
+	                String s = tf.getText().substring(0, maxLength);
+	                tf.setText(s);
+	            }
+	        }
+	    });
+	}
+	
+	public static EventHandler<KeyEvent> charFilter() {
+
+        EventHandler<KeyEvent> aux = new EventHandler<KeyEvent>() {
+            public void handle(KeyEvent keyEvent) {
+                if (!acceptablePasswordCharacters.contains(keyEvent.getCharacter())) {
+                    keyEvent.consume();
+                }
+            }
+        };
+        return aux;
+    }
+	
+	/**
+	 * @return
+	 */
+	private HBox adminLoginHBoxCreation() {
+		HBox admninLoginHBox = new HBox();
+		admninLoginHBox.setPadding(new Insets(10, 10, 10, 40));
+		admninLoginHBox.setSpacing(5);
+		admninLoginHBox.setStyle("-fx-background-colour: #336699;");
+		adminCheckBox = new CheckBox("Admin Login");
+		adminCheckBox.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent e) {
+				if (adminCheckBox.isSelected()){
+					passwordTextField.setDisable(false);
+					loginButton.setText("Login As Admin");
+					
+				}
+				else
+				{
+					passwordTextField.setDisable(true);
+					loginButton.setText("Login As Guest");
+				}
+			}
+		});
+		admninLoginHBox.getChildren().add(adminCheckBox);
+		return admninLoginHBox;
 	}
 	
 	/**
-	 * VBox that contains the two HBoxes, one for the ip address and one for the port
-	 * @return VBox  --  The box that contains the ip address and port HBoxes
+	 * @return
 	 */
-	private VBox ipAndPortVBoxCreation() {
-	    VBox ipAndPortVbox = new VBox();
-	    ipAndPortVbox.setPadding(new Insets(10));
-	    ipAndPortVbox.setSpacing(8);
-	    
-	    HBox ipHBox = ipHBoxCreation();
-		HBox portHBox = portHBoxCreation();
-	   
-	    ipAndPortVbox.getChildren().addAll(ipHBox, portHBox);
-	    return ipAndPortVbox;
+	private VBox loginVBoxCreation() {
+		VBox loginVBox = new VBox();
+		loginVBox.setPadding(new Insets(200, 200, 200, 300));
+		HBox passwordHBox = passwordHBoxCreation();
+		HBox guestLoginHBox = adminLoginHBoxCreation();
+		loginVBox.getChildren().addAll(passwordHBox, guestLoginHBox);
+		return loginVBox;
 	}
-	
 	/**
 	 * Method that creates the menu bar on the top of the window
 	 * @return menuBar  -  menu bar object that contains the open file and configure menus
@@ -294,7 +360,7 @@ public class ClientGui extends Application{
             	Platform.runLater(new Runnable() {
         	       public void run() {             
         	           try {
-        	        	   new ConfigureWindow().start(new Stage());
+        	        	   configureWindow.start(new Stage());
         	           } 
         	           catch (Exception e) {
         	        	   // TODO Auto-generated catch block
@@ -345,9 +411,45 @@ public class ClientGui extends Application{
 		return menuBar;
 	}
 
-	protected Object getID() {
+	/**
+	 * Method to get the ID of the client
+	 * 
+	 * @return iD	-	The ID of the client
+	 */
+	protected int getID() {
 		// TODO Auto-generated method stub
 		return client.getID();
+	}
+
+	/**
+	 * Method to handle automatic connection to the server
+	 * if the autoConnect boolean is true
+	 */
+	private void autoConnect() {
+		if (autoConnect) {
+			try {
+				client.openSocket(configureWindow.getIpAddress(), configureWindow.getPort());
+				connectButton.setDisable(true);
+				disconnectButton.setDisable(false);
+				if(-1 == getID()) {
+					client.closeSocket();
+					connectButton.setDisable(false);
+					disconnectButton.setDisable(true);
+				}
+			} catch (UnknownHostException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				connectButton.setDisable(false);
+				disconnectButton.setDisable(true);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+//				e.printStackTrace();
+				System.out.println("Could not connect to server");
+				connectButton.setDisable(false);
+				disconnectButton.setDisable(true);
+			}
+						
+		}
 	}
 
 }
