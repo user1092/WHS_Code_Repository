@@ -24,6 +24,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -35,6 +36,7 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
@@ -59,6 +61,7 @@ public class ClientGui extends Application{
 
 	private Stage primaryStage;
 	private StackPane contentLayout;
+	private BorderPane loginLayout;
 
 	private Button loginButton;
 	private Button connectButton;
@@ -74,6 +77,8 @@ public class ClientGui extends Application{
 	private PasswordField passwordTextField;
 	
 	private CheckBox adminCheckBox;
+	
+	private ProgressBar progressBar;
 	
 	private boolean autoConnect = true;
 	private boolean validPassword = false;
@@ -108,7 +113,7 @@ public class ClientGui extends Application{
 	public void start(Stage primaryStage) throws Exception {
 		BorderPane guiLayout = new BorderPane();
 		contentLayout = new StackPane();
-		BorderPane loginLayout = new BorderPane();
+		loginLayout = new BorderPane();
 		
 		Scene scene = new Scene(guiLayout);
 		
@@ -130,7 +135,7 @@ public class ClientGui extends Application{
 		loginLayout.setBottom(buttonHBox);
 		loginLayout.setCenter(loginVBox);
 		
-		contentLayout.getChildren().add(loginLayout);
+//		contentLayout.getChildren().add(loginLayout);
 		
 		//place the boxes inside the layout created
 		guiLayout.setTop(menuBar);
@@ -142,9 +147,15 @@ public class ClientGui extends Application{
 		primaryStage.setHeight(600);
 		primaryStage.setWidth(800);
 		primaryStage.setTitle("YourChoice");
-		primaryStage.show();
+		
+		progressBar = new ProgressBar(0);
+		progressBar.setProgress(0);
 		
 		autoConnect();
+		
+		contentLayout.getChildren().add(progressBar);
+		
+		primaryStage.show();
 	}
 	
 
@@ -226,33 +237,8 @@ public class ClientGui extends Application{
 		requestModuleButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
-				if (!(null == client.serverSocket)) {
-					if (validPassword) {
-						File zippedPresentation = null;
-						try {
-							client.sendData("Example_Presentation");
-						} catch (IOException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
-						try {
-							zippedPresentation = (File) client.receiveData();
-						} catch (IOException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
-						try {
-							unzip(zippedPresentation);
-						} catch (IOException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
-						openPresentation(new File(tempPresentationDirectory + "/Example_Presentation.xml"));
-					}
-				}
+				requestModule();
 			}
-
-			
 		});
 	}
 	
@@ -550,29 +536,150 @@ public class ClientGui extends Application{
 	 */
 	private void autoConnect() {
 		if (autoConnect) {
-			try {
-				client.openSocket(configureWindow.getIpAddress(), configureWindow.getPort());
-				connectButton.setDisable(true);
-				disconnectButton.setDisable(false);
-				if(-1 == getID()) {
-					client.closeSocket();
-					connectButton.setDisable(false);
-					disconnectButton.setDisable(true);
+			Task<Void> autoConnectTask = new Task<Void>() {
+				@Override protected Void call() throws Exception {
+					try {
+						updateProgress(10, 100);
+						client.openSocket(configureWindow.getIpAddress(), configureWindow.getPort());
+						updateProgress(30, 100);
+						Platform.runLater(new Runnable() {
+							@Override public void run() {
+								connectButton.setDisable(true);
+								disconnectButton.setDisable(false);
+							}
+						});
+						updateProgress(50, 100);
+						if(-1 == getID()) {
+							client.closeSocket();
+							Platform.runLater(new Runnable() {
+								@Override public void run() {
+									connectButton.setDisable(false);
+									disconnectButton.setDisable(true);
+								}
+							});
+						}
+					} catch (UnknownHostException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						connectButton.setDisable(false);
+						disconnectButton.setDisable(true);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+//						e.printStackTrace();
+						System.out.println("Could not connect to server");
+						Platform.runLater(new Runnable() {
+							@Override public void run() {
+								connectButton.setDisable(false);
+								disconnectButton.setDisable(true);
+							}
+						});
+					}
+					updateProgress(100, 100);
+					return null;
 				}
-			} catch (UnknownHostException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				connectButton.setDisable(false);
-				disconnectButton.setDisable(true);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-//				e.printStackTrace();
-				System.out.println("Could not connect to server");
-				connectButton.setDisable(false);
-				disconnectButton.setDisable(true);
-			}
+			};
+			final Thread autoConnectThread = new Thread(autoConnectTask);
+			autoConnectThread.setDaemon(true);
+			
+			progressBar.progressProperty().bind(autoConnectTask.progressProperty());
+			
+			autoConnectThread.start();
 						
+			removeProgressBar(autoConnectThread, true);
 		}
 	}
 
+
+	/**
+	 * @param autoConnectThread
+	 */
+	private void removeProgressBar(final Thread thread, final boolean initial) {
+		Task<Void> waitTask = new Task<Void>() {
+			@Override protected Void call() throws Exception {
+				while (thread.isAlive()) {
+					try {
+						Thread.sleep(500);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				
+				progressBar.progressProperty().unbind();
+				progressBar.setProgress(0);
+				
+				Platform.runLater(new Runnable() {
+		    		 public void run() {             
+		    			try {				 	        	  
+		    				contentLayout.getChildren().remove(progressBar);
+		    				if (initial) {
+		    					contentLayout.getChildren().add(loginLayout);
+		    				}
+		     			}
+		    			catch (Exception e) {
+		     				// TODO Auto-generated catch block
+		     				e.printStackTrace();
+		     			}
+		    		 }
+		    	});
+				return null;
+			}
+		};
+		Thread waitThread = new Thread(waitTask);
+		waitThread.setDaemon(true);
+		waitThread.start();
+	}
+
+	
+	/**
+	 * 
+	 */
+	private void requestModule() {
+		
+		contentLayout.getChildren().add(progressBar);
+		
+		Task<Void> requestTask = new Task<Void>() {
+			@Override protected Void call() throws Exception {
+				if (!(null == client.serverSocket)) {
+					updateProgress(10, 100);
+					if (validPassword) {
+						File zippedPresentation = null;
+						try {
+							client.sendData("Example_Presentation");
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						updateProgress(30, 100);
+						try {
+							zippedPresentation = (File) client.receiveData();
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						updateProgress(50, 100);
+						try {
+							unzip(zippedPresentation);
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						updateProgress(90, 100);
+						openPresentation(new File(tempPresentationDirectory + "/Example_Presentation.xml"));
+						updateProgress(100, 100);
+					}
+				}				
+				
+				return null;
+			}
+		};
+		Thread requestThread = new Thread(requestTask);
+		requestThread.setDaemon(true);
+		
+		progressBar.progressProperty().bind(requestTask.progressProperty());
+		
+		requestThread.start();
+		
+		removeProgressBar(requestThread, false);
+	}
 }
