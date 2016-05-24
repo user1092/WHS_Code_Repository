@@ -123,6 +123,9 @@ public class PresentationGui extends Application {
     private Button aboutPresentationButton;
     private Image aboutPresentationImage;
     private ImageView aboutPresentationView;
+    private Button viewFeedbackButton;
+    private Image viewFeedbackImage;
+    private ImageView viewFeedbackView;
         
 	private ToggleButton modeButton;
 	private ToggleButton muteButton;
@@ -143,6 +146,7 @@ public class PresentationGui extends Application {
 	private ImageView exitView;
 	
 	private PresentationEntry presentation;
+	private Client client;
 	
 	// Location of where VLC is installed
 	private String vlcLibraryLocation;
@@ -181,8 +185,9 @@ public class PresentationGui extends Application {
 	 * 
 	 * @param passedPresentation	-	The presentation to be played
 	 */
-	public PresentationGui(PresentationEntry passedPresentation) {
+	public PresentationGui(PresentationEntry passedPresentation, Client client) {
 		presentation = passedPresentation;
+		this.client = client;
 		
 		// Find and load VLC libraries depending on the JVM
 		if("32".equals(System.getProperty("sun.arch.data.model"))) {
@@ -476,11 +481,13 @@ public class PresentationGui extends Application {
 		
 		createAboutPresentationButton();
 		
+		createViewFeedbackButton();
+		
 		// Instantiation of the separator on the control bar
 		Separator separator = new Separator();
 		// Adding all the items on the control bar
 		controlBar.getItems().addAll(slideButtonsHBox, separator, playButton, stopButton, modeButton, volumeSlider, 
-													muteButton, fullScreenButton, aboutPresentationButton);
+													muteButton, fullScreenButton, aboutPresentationButton, viewFeedbackButton);
 	}
 	
 	
@@ -917,38 +924,72 @@ public class PresentationGui extends Application {
 	
 	
 	/**
-		 * Method for the setup of the about presentation button
-		 */
-		private void createAboutPresentationButton() {
-			// Image for next slide button
-			//TODO set the image, if required!
-	//		aboutPresentationImage = new Image(getClass().getResourceAsStream("resources/nextbutton.png"));
-	//		aboutPresentationView = new ImageView(aboutPresentationImage);
-			// Instantiation of next slide button
-			aboutPresentationButton = new Button("About Presentation");
-	//		aboutPresentationButton.setGraphic(aboutPresentationView);
-			aboutPresentationButton.setMaxSize(120, 30);
-			aboutPresentationButton.setPrefSize(120, 30);
-			aboutPresentationButton.setMinSize(120, 30);
-			aboutPresentationButton.setOnAction(new EventHandler<ActionEvent>() {
-				@Override
-				public void handle(ActionEvent e) {
-					Platform.runLater(new Runnable() {
-		 	    		 public void run() {             
-		 	    			try {				 	        	  
-		 	     				new MetaDataGui(presentation).start(new Stage());
-		 	     			}
-		 	    			catch (Exception e) {
-		 	     				// TODO Auto-generated catch block
-		 	     				e.printStackTrace();
-		 	     			}
-		 	    		 }
-		 	    	 });
-				}
-			});
-			
-		}
+	 * Method for the setup of the about presentation button
+	 */
+	private void createAboutPresentationButton() {
+		// Image for next slide button
+		//TODO set the image, if required!
+//		aboutPresentationImage = new Image(getClass().getResourceAsStream("resources/nextbutton.png"));
+//		aboutPresentationView = new ImageView(aboutPresentationImage);
+		// Instantiation of next slide button
+		aboutPresentationButton = new Button("About Presentation");
+//		aboutPresentationButton.setGraphic(aboutPresentationView);
+		aboutPresentationButton.setMaxSize(120, 30);
+		aboutPresentationButton.setPrefSize(120, 30);
+		aboutPresentationButton.setMinSize(120, 30);
+		aboutPresentationButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent e) {
+				Platform.runLater(new Runnable() {
+	 	    		 public void run() {             
+	 	    			try {				 	        	  
+	 	     				new MetaDataGui(presentation).start(new Stage());
+	 	     			}
+	 	    			catch (Exception e) {
+	 	     				// TODO Auto-generated catch block
+	 	     				e.printStackTrace();
+	 	     			}
+	 	    		 }
+	 	    	 });
+			}
+		});
+		
+	}
 
+	/**
+	 * Method for the setup of the about presentation button
+	 */
+	private void createViewFeedbackButton() {
+		// Image for next slide button
+		//TODO set the image, if required!
+//		viewFeedbackImage = new Image(getClass().getResourceAsStream("resources/nextbutton.png"));
+//		viewFeedbackView = new ImageView(viewFeedbackImage);
+		// Instantiation of next slide button
+		viewFeedbackButton = new Button("View Feedback");
+//		viewFeedbackButton.setGraphic(aboutPresentationView);
+		viewFeedbackButton.setMaxSize(120, 30);
+		viewFeedbackButton.setPrefSize(120, 30);
+		viewFeedbackButton.setMinSize(120, 30);
+		viewFeedbackButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent e) {
+				Platform.runLater(new Runnable() {
+	 	    		 public void run() {             
+	 	    			try {				 	        	  
+//	 	     				new MetaDataGui(presentation).start(new Stage());
+	 	    				// TODO CHANGE THE FILENAME
+	 	    				new ViewFeedbackGui(presentation.getPresentationTitle(), "src/DemoModuleComments.txt", client).start(new Stage());
+	 	     			}
+	 	    			catch (Exception e) {
+	 	     				// TODO Auto-generated catch block
+	 	     				e.printStackTrace();
+	 	     			}
+	 	    		 }
+	 	    	 });
+			}
+		});
+		
+	}
 
 	/**
 	 * Method for loading all objects on current slide within the current presentation

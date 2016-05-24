@@ -1,6 +1,7 @@
 package whs.yourchoice.client;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
 
 /**
  * Class for the test classes to interface with the client's back end
@@ -28,7 +29,15 @@ public class ClientInterfacer {
 	 * Method to open socket, in order to connect to the server. 
 	 */
 	public void openSocket(String host, int port) {
-		client.openSocket(host, port);
+		try {
+			client.openSocket(host, port);
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**

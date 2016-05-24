@@ -4,6 +4,8 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.net.UnknownHostException;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -52,7 +54,15 @@ public class ClientTests {
 		server.checkAndAcceptClientConnections();
 		
 		client = new Client();
-		client.openSocket(host, port);
+		try {
+			client.openSocket(host, port);
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	

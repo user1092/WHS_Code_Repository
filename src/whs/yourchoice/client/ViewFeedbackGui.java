@@ -53,6 +53,11 @@ public class ViewFeedbackGui extends Application {
 	private Stage feedbackWindowStage = new Stage();
 	
 	
+	public ViewFeedbackGui(String moduleName, String textFilePath, Client client) {
+		this.moduleName = moduleName + " Feedback";
+		this.textFilePath = textFilePath;
+	}
+	
 	
 	public static void main(String[] args) {
 		launch(ViewFeedbackGui.class, args);
