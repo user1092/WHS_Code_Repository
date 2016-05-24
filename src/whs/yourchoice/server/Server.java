@@ -337,6 +337,11 @@ public class Server {
 							}
 						}
 						
+						object = receiveData(client.getID());
+						if (((String) object).equals("Example_Presentation")) {
+							sendData(new File("Example_Presentation.zip"), client.getID());
+						}
+						
 						// Wait for the client to send some data, below is for tests
 						object = receiveData(client.getID());
 						sendData(object, client.getID());

@@ -6,9 +6,16 @@
 
 package whs.yourchoice.client;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.UnknownHostException;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import whs.yourchoice.parsers.PresentationParser;
 import whs.yourchoice.presentation.PresentationEntry;
@@ -32,6 +39,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -50,12 +58,14 @@ public class ClientGui extends Application{
 	private FileChooser xmlFileChooser;
 
 	private Stage primaryStage;
+	private StackPane contentLayout;
 
 	private Button loginButton;
 	private Button connectButton;
 	private Button disconnectButton;
+	private Button requestModuleButton;
 	// presentation related declarations
-	private File xmlFile;
+//	private File xmlFile;
 	private PresentationEntry presentation;
 	
 	// text box to show the file browse status
@@ -72,6 +82,10 @@ public class ClientGui extends Application{
 	private final static String lowercase = "abcdefghijklmnopqrstuvwxyz";
 	private final static String uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	private final static String acceptablePasswordCharacters = numbers+lowercase+uppercase;
+	
+	// ZIP related
+	private String tempPresentationDirectory = "temp";
+	private static final int BUFFER_SIZE = 4096;
 
 	
 	// Declare a backend for the client
@@ -84,13 +98,18 @@ public class ClientGui extends Application{
 		client = new Client();
 	}
 	
+	
 	public static void main(String[] args) {
 		launch(ClientGui.class, args);
 	}
 	
+	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		BorderPane guiLayout = new BorderPane();
+		contentLayout = new StackPane();
+		BorderPane loginLayout = new BorderPane();
+		
 		Scene scene = new Scene(guiLayout);
 		
 		//import and set background image
@@ -108,11 +127,15 @@ public class ClientGui extends Application{
 		
 		VBox loginVBox = loginVBoxCreation();
 		
+		loginLayout.setBottom(buttonHBox);
+		loginLayout.setCenter(loginVBox);
+		
+		contentLayout.getChildren().add(loginLayout);
+		
 		//place the boxes inside the layout created
 		guiLayout.setTop(menuBar);
-		guiLayout.setBottom(buttonHBox);
 		guiLayout.setRight(logHBox);
-		guiLayout.setCenter(loginVBox);
+		guiLayout.setCenter(contentLayout);
 		
 		//main stage set up with appropriate scene and size
 		primaryStage.setScene(scene);
@@ -123,6 +146,7 @@ public class ClientGui extends Application{
 		
 		autoConnect();
 	}
+	
 
 	/**
 	 * Method for the creation of the HBox that contains the buttons
@@ -144,6 +168,7 @@ public class ClientGui extends Application{
 		
 		return buttonHBox;	
 	}
+	
 
 	/**
 	 * Method to setup the request button
@@ -182,13 +207,91 @@ public class ClientGui extends Application{
 							}
 							
 						}
+						if (validPassword) {
+							contentLayout.getChildren().clear();
+							requestModuleButtonSetup();
+						}
 					}
 				}
-				
 			}
 		});
 	}
 	
+	
+	private void requestModuleButtonSetup() {
+		requestModuleButton = new Button("Request Module");
+		requestModuleButton.setDisable(false);
+		requestModuleButton.setPrefSize(150, 20);
+		contentLayout.getChildren().add(requestModuleButton);
+		requestModuleButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent e) {
+				if (!(null == client.serverSocket)) {
+					if (validPassword) {
+						File zippedPresentation = null;
+						try {
+							client.sendData("Example_Presentation");
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						try {
+							zippedPresentation = (File) client.receiveData();
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						try {
+							unzip(zippedPresentation);
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						openPresentation(new File(tempPresentationDirectory + "/Example_Presentation.xml"));
+					}
+				}
+			}
+
+			
+		});
+	}
+	
+	
+	private void unzip(File zippedPresentation) throws IOException {
+		File destDir = new File(tempPresentationDirectory);
+		if (!destDir.exists()) {
+            destDir.mkdir();
+        }
+		FileInputStream inputStream = new FileInputStream(zippedPresentation);
+        ZipInputStream zipIn = new ZipInputStream(inputStream);
+        ZipEntry entry = zipIn.getNextEntry();
+        // iterates over entries in the zip file
+        while (entry != null) {
+            String filePath = tempPresentationDirectory + File.separator + entry.getName();
+            if (!entry.isDirectory()) {
+                // if the entry is a file, extracts it
+                extractFile(zipIn, filePath);
+            } else {
+                // if the entry is a directory, make the directory
+                File dir = new File(filePath);
+                dir.mkdir();
+            }
+            zipIn.closeEntry();
+            entry = zipIn.getNextEntry();
+        }
+        zipIn.close();
+	}
+	
+	
+	private void extractFile(ZipInputStream zipIn, String filePath) throws IOException {
+        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath));
+        byte[] bytesIn = new byte[BUFFER_SIZE];
+        int read = 0;
+        while ((read = zipIn.read(bytesIn)) != -1) {
+            bos.write(bytesIn, 0, read);
+        }
+        bos.close();
+    }
 	
 	
 	/**
@@ -228,6 +331,7 @@ public class ClientGui extends Application{
 			}
 		});
 	}
+	
 
 	/**
 	 * Method to setup the disconnect button
@@ -248,6 +352,7 @@ public class ClientGui extends Application{
 		});
 	}
 	
+	
 	/**
 	 * Method for the creation of the HBox that contains the log for the file explorer
 	 * @return HBox  -  The box that contains the log for the file explorer
@@ -264,6 +369,7 @@ public class ClientGui extends Application{
 		logHBox.getChildren().add(actionStatus);
 		return logHBox;
 	}
+	
 	
 	/**
 	 * @return
@@ -284,6 +390,7 @@ public class ClientGui extends Application{
 		return passwordHBox;
 	}
 	
+	
 	public static void addTextLimiter(final TextField tf, final int maxLength) {
 	    tf.textProperty().addListener(new ChangeListener<String>() {
 	        @Override
@@ -296,6 +403,7 @@ public class ClientGui extends Application{
 	    });
 	}
 	
+	
 	public static EventHandler<KeyEvent> charFilter() {
 
         EventHandler<KeyEvent> aux = new EventHandler<KeyEvent>() {
@@ -307,6 +415,7 @@ public class ClientGui extends Application{
         };
         return aux;
     }
+	
 	
 	/**
 	 * @return
@@ -323,7 +432,6 @@ public class ClientGui extends Application{
 				if (adminCheckBox.isSelected()){
 					passwordTextField.setDisable(false);
 					loginButton.setText("Login As Admin");
-					
 				}
 				else
 				{
@@ -336,6 +444,7 @@ public class ClientGui extends Application{
 		return admninLoginHBox;
 	}
 	
+	
 	/**
 	 * @return
 	 */
@@ -347,6 +456,8 @@ public class ClientGui extends Application{
 		loginVBox.getChildren().addAll(passwordHBox, guestLoginHBox);
 		return loginVBox;
 	}
+	
+	
 	/**
 	 * Method that creates the menu bar on the top of the window
 	 * @return menuBar  -  menu bar object that contains the open file and configure menus
@@ -378,30 +489,18 @@ public class ClientGui extends Application{
 				// Restrict choice of files to xml
 				FileChooser.ExtensionFilter extensionFilter = new FileChooser.ExtensionFilter("XML files (*.xml, *.XML)", "*.xml", "*.XML");
 				xmlFileChooser.getExtensionFilters().add(extensionFilter);
-				
+				File xmlFile;
 				xmlFile = xmlFileChooser.showOpenDialog(primaryStage);
 				if (xmlFile != null) {
 					actionStatus.setText("File selected: " + xmlFile.getName());
-					PresentationParser parser = new PresentationParser();		
-					
-					System.out.println(xmlFile.getParent());
-					presentation = parser.parsePresention(xmlFile.getAbsolutePath(), xmlFile.getParent());
-					Platform.runLater(new Runnable() {
-		 	    		 public void run() {             
-		 	    			try {				 	        	  
-		 	     				new PresentationGui(presentation, client).start(new Stage());
-		 	     			}
-		 	    			catch (Exception e) {
-		 	     				// TODO Auto-generated catch block
-		 	     				e.printStackTrace();
-		 	     			}
-		 	    		 }
-		 	    	 });
+					openPresentation(xmlFile);
 				}
 				else {
 					actionStatus.setText("File selection cancelled.");
 				}
 			}
+
+			
         }); 
         Menu optionsMenu = new Menu("Options");
         optionsMenu.getItems().addAll(configureServer);
@@ -410,7 +509,30 @@ public class ClientGui extends Application{
 		menuBar.getMenus().addAll(fileMenu, optionsMenu);
 		return menuBar;
 	}
-
+	
+	
+	/**
+	 * 
+	 */
+	private void openPresentation(File xmlFile) {
+		PresentationParser parser = new PresentationParser();		
+		
+		System.out.println(xmlFile.getParent());
+		presentation = parser.parsePresention(xmlFile.getAbsolutePath(), xmlFile.getParent());
+		Platform.runLater(new Runnable() {
+			 public void run() {             
+				try {				 	        	  
+					new PresentationGui(presentation, client).start(new Stage());
+				}
+				catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			 }
+		 });
+	}
+	
+		
 	/**
 	 * Method to get the ID of the client
 	 * 
@@ -420,6 +542,7 @@ public class ClientGui extends Application{
 		// TODO Auto-generated method stub
 		return client.getID();
 	}
+	
 
 	/**
 	 * Method to handle automatic connection to the server
