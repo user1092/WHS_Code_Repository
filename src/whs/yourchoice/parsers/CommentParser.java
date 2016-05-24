@@ -9,7 +9,7 @@ import java.util.List;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import whs.yourchoice.client.ViewFeedbackGui.Comment;
+import whs.yourchoice.client.ViewFeedbackGui.Feedback;
 
 
 /**
@@ -20,7 +20,7 @@ import whs.yourchoice.client.ViewFeedbackGui.Comment;
 */
 public class CommentParser {
 	
-	public final ObservableList<Comment> comments = FXCollections.observableArrayList();
+	public final ObservableList<Feedback> feedback = FXCollections.observableArrayList();
 	private float avgRating = 0;
 		
 	/**
@@ -31,7 +31,7 @@ public class CommentParser {
 	public void parseTextFile(String textFilePath) throws FileNotFoundException {
 		
 		// List of strings used to store parsed tokens
-		final List<String> commentsList = new ArrayList<String>();
+		final List<String> tokenList = new ArrayList<String>();
 		int newLinesNeeded = 0;
 		
 		// Character limit to dictate line wrapping
@@ -58,9 +58,9 @@ public class CommentParser {
 				String[] tokens = line.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)", -1);;
 				
 				// Each line should generate three tokens which are then appended to the list
-				commentsList.add(tokens[0]);
-				commentsList.add(tokens[1]);
-				commentsList.add(tokens[2]);
+				tokenList.add(tokens[0]);
+				tokenList.add(tokens[1]);
+				tokenList.add(tokens[2]);
 			}
 
 		} catch (FileNotFoundException e) {
@@ -78,17 +78,17 @@ public class CommentParser {
 		}
 		
 		// Loop through list of tokens and re-format them accordingly
-		for (int i=0; i<commentsList.size(); i++)
+		for (int i=0; i<tokenList.size(); i++)
 		{
 			// Store the current item in tempString for re-formatting
-			tempString = commentsList.get(i);			
+			tempString = tokenList.get(i);			
 			
 			if (i%3 != 2)
 			{
 				// If i is not 2 more than a multiple of three, the current item is not a rating
 				// Therefore the first and last characters, which will be quotation marks, can be removed
 				tempString = tempString.substring(1, tempString.length()-1);
-				commentsList.set(i,tempString);
+				tokenList.set(i,tempString);
 				
 				// If i is 1 more than a multiple of 3, the current item will be a comment
 				if (i%3 == 1)
@@ -120,7 +120,7 @@ public class CommentParser {
 						}
 						
 						// The reformatted string then replaces the original in the list
-						commentsList.set(i,tempString);
+						tokenList.set(i,tempString);
 					}
 				}
 			}
@@ -129,8 +129,8 @@ public class CommentParser {
 			// so a new instance of the comment class can be created
 			else
 			{
-				comments.add(new Comment(commentsList.get(i-2), commentsList.get(i-1), 
-													commentsList.get(i)));
+				feedback.add(new Feedback(tokenList.get(i-2), tokenList.get(i-1), 
+								tokenList.get(i)));
 				
 				// Parses the current rating as an integer for averaging purposes
 				ratingTotal += Integer.parseInt(tempString);
@@ -156,9 +156,9 @@ public class CommentParser {
 	 * @return comments - List of instances of Comment class, containing information
 	 * 						from text file
 	 */
-	public ObservableList<Comment> getComments()
+	public ObservableList<Feedback> getComments()
 	{
-		return comments;
+		return feedback;
 	}
 
 }
