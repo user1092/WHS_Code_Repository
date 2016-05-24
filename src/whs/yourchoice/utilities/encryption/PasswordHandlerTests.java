@@ -1,3 +1,6 @@
+/**
+ * Licensing information
+ */
 package whs.yourchoice.utilities.encryption;
 
 import static org.junit.Assert.*;
@@ -11,6 +14,8 @@ import org.junit.Test;
 
 /**
  * Class for testing the password handlers
+ * 
+ * NOT FOR RELEASE!
  * 
  * @author 		ch1092, cd828
  * @version		v0.1 20/05/2016

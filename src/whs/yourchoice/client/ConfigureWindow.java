@@ -1,3 +1,6 @@
+/**
+ * Licensing information
+ */
 package whs.yourchoice.client;
 
 import javafx.application.Application;

@@ -8,12 +8,13 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.security.NoSuchAlgorithmException;
+import java.security.Key;
 
 import whs.yourchoice.parsers.RegisteredModulesParser;
 import whs.yourchoice.presentation.RegisteredModules;
 import whs.yourchoice.utilities.encryption.ClientDetails;
 import whs.yourchoice.utilities.encryption.ClientPasswordHandler;
+import whs.yourchoice.utilities.encryption.RsaEncryption;
 
 /**
  * Class for the client's back end handling communications to the server 
@@ -35,7 +36,8 @@ public class Client {
 	protected RegisteredModules moduleList;
 	private String modulePath = "src/registered_modules2.xml";
 	
-	
+	private String serverPubKeyFileName = "serverPubKeyFileName.key";
+	private Key privKey;
 	
 	/**
 	 * Method to open socket, in order to connect to the server. 
@@ -46,15 +48,18 @@ public class Client {
 	 * @throws UnknownHostException 
 	 */
 	protected void openSocket(String host, int port) throws UnknownHostException, IOException {
-		// Connect to the server	
-			
-			serverSocket = new Socket(host, port);
-			System.out.println("Connected to Server, host: " + host + ",port: " + port);
-			createOutputStream();
-			createInputStream();
-			receiveID();
+		// Connect to the server
+		serverSocket = new Socket(host, port);
+		System.out.println("Connected to Server, host: " + host + ",port: " + port);
+		createOutputStream();
+		createInputStream();
+		receiveID();
+		
+		if (iD > -1) {
+			handleKeys();
 			getModules();
 			parseModules();
+		}
 	}
 
 	
@@ -75,6 +80,11 @@ public class Client {
 	}
 
 	
+	/**
+	 * Method to create an output stream
+	 *  
+	 * @throws IOException
+	 */
 	private void createOutputStream() throws IOException {
 		// Create an object stream to send to server
 		System.out.println("(CLIENT) Creating output stream");
@@ -98,6 +108,8 @@ public class Client {
 
 	
 	/**
+	 * Method to create and input stream
+	 * 
 	 * @throws IOException
 	 */
 	private void createInputStream() throws IOException {
@@ -179,25 +191,60 @@ public class Client {
 		moduleList = parser.parseModules(modulePath);
 	}
 	
+	/**
+	 * Method to check with the server if the password is valid
+	 * 
+	 * @param userName	-	The username of the account trying to login
+	 * @param password	-	The password entered by the user
+	 * @return valid	-	Boolean that states true if the login was successful
+	 * @throws IOException
+	 */
 	protected boolean checkPassword(String userName, String password) throws IOException {
 		ClientDetails enteredClientDetails = new ClientDetails();
+		RsaEncryption rsaHandler = new RsaEncryption();
 		
 		enteredClientDetails.setUserName(userName);
 		
-		sendData(userName);
+		boolean valid = false;
 		
-		if (userName.equals("Admin")) {
+		// Only check if connection was successful.
+		if (iD > -1) {
+			sendData(rsaHandler.rsaEncryptObject(enteredClientDetails, serverPubKeyFileName));
+		
+			if (userName.equals("Admin")) {
+				
+				enteredClientDetails.setSalt((byte[]) rsaHandler.rsaDecryptDataToObject((byte[]) receiveData(), privKey));
+				
+				ClientPasswordHandler clientPasswordHandler = new ClientPasswordHandler();
+				
+				enteredClientDetails.setHash(clientPasswordHandler.generateHash(password, 
+															enteredClientDetails.getSalt()));
+							
+				sendData(rsaHandler.rsaEncryptObject(enteredClientDetails, serverPubKeyFileName));
+			}
 			
-			enteredClientDetails.setSalt((byte[]) receiveData());
-			
-			ClientPasswordHandler clientPasswordHandler = new ClientPasswordHandler();
-			
-			enteredClientDetails.setHash(clientPasswordHandler.generateHash(password, 
-														enteredClientDetails.getSalt()));
-			
-			sendData(enteredClientDetails);
+			valid = (boolean) receiveData();
 		}
 		
-		return (boolean) receiveData();
+		
+		return valid;
 	}
+	
+	
+	/**
+	 * Method to create keys for RSA encryption, sending the public key to the server
+	 */
+	private void handleKeys(){
+		RsaEncryption rsaHandler = new RsaEncryption();
+		Key[] keys = rsaHandler.createKeys();
+		Key pubKey = keys[0];
+		privKey = keys[1];
+		try {
+			sendData(pubKey);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+		
 }

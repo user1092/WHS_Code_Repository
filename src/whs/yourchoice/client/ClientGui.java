@@ -121,25 +121,9 @@ public class ClientGui extends Application{
 		primaryStage.setTitle("YourChoice");
 		primaryStage.show();
 		
-		if (autoConnect) {
-			try {
-				client.openSocket(configureWindow.getIpAddress(), configureWindow.getPort());
-			} catch (UnknownHostException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				connectButton.setDisable(false);
-				disconnectButton.setDisable(true);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-//				e.printStackTrace();
-				System.out.println("Could not connect to server");
-				connectButton.setDisable(false);
-				disconnectButton.setDisable(true);
-			}
-			
-		}
+		autoConnect();
 	}
-	
+
 	/**
 	 * Method for the creation of the HBox that contains the buttons
 	 * @return HBox  -  The box that contains the buttons 
@@ -219,8 +203,6 @@ public class ClientGui extends Application{
 		connectButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
-				
-				
 				try {
 					client.openSocket(configureWindow.getIpAddress(), configureWindow.getPort());
 				} catch (UnknownHostException e1) {
@@ -429,9 +411,45 @@ public class ClientGui extends Application{
 		return menuBar;
 	}
 
-	protected Object getID() {
+	/**
+	 * Method to get the ID of the client
+	 * 
+	 * @return iD	-	The ID of the client
+	 */
+	protected int getID() {
 		// TODO Auto-generated method stub
 		return client.getID();
+	}
+
+	/**
+	 * Method to handle automatic connection to the server
+	 * if the autoConnect boolean is true
+	 */
+	private void autoConnect() {
+		if (autoConnect) {
+			try {
+				client.openSocket(configureWindow.getIpAddress(), configureWindow.getPort());
+				connectButton.setDisable(true);
+				disconnectButton.setDisable(false);
+				if(-1 == getID()) {
+					client.closeSocket();
+					connectButton.setDisable(false);
+					disconnectButton.setDisable(true);
+				}
+			} catch (UnknownHostException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				connectButton.setDisable(false);
+				disconnectButton.setDisable(true);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+//				e.printStackTrace();
+				System.out.println("Could not connect to server");
+				connectButton.setDisable(false);
+				disconnectButton.setDisable(true);
+			}
+						
+		}
 	}
 
 }

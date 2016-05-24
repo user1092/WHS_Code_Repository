@@ -1,7 +1,5 @@
 /**
- * ServerGui.java		v0.7 20/05/2016
- * 
- * 
+ * Licensing information
  */
 
 package whs.yourchoice.server;
@@ -158,7 +156,7 @@ public class ServerGui {
                 String string = fb.getDocument().getText(0, fb.getDocument().getLength()) + text;
 
                 if (string.length() <= 20) {
-                    super.replace(fb, offset, length, text, attrs); //To change body of generated methods, choose Tools | Templates.
+                    super.replace(fb, offset, length, text, attrs);
                 }
             }
 
@@ -178,7 +176,6 @@ public class ServerGui {
 		setPasswordButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("Password Set");
-//				System.out.println(String.valueOf(passwordField.getPassword()));
 				server.setAdminPassword(String.valueOf(passwordField.getPassword()));
 			}
 	    });

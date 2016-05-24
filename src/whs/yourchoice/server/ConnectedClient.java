@@ -1,3 +1,6 @@
+/**
+ * Licensing information
+ */
 package whs.yourchoice.server;
 
 import java.io.IOException;
@@ -5,12 +8,13 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.security.Key;
 
 /**
  * Class for storing information about the clients that are connected to the server.
  * 
- * @author		user1092, guest501
- * @version		v0.3 06/04/2016
+ * @author		ch1092, skq501
+ * @version		v0.5 24/05/2016
  */
 public class ConnectedClient {
 	
@@ -18,8 +22,9 @@ public class ConnectedClient {
 	private Socket clientSocket = new Socket();
 	private ObjectOutputStream outputToClient = null;
 	private ObjectInputStream inputFromClient = null;
+	private Key publicKey = null;
 
-	
+
 	/**
 	 * Method to determine if the client's socket is connected
 	 * 
@@ -134,5 +139,22 @@ public class ConnectedClient {
 		System.out.println("(SERVER) Created input stream for client: " + iD);
 	}
 
-	
+
+	/**
+	 * Method to set the public key associated with the client
+	 * 
+	 * @param publicKey	-	The public key received from the client
+	 */
+	public void setPublicKey(Key publicKey) {
+		this.publicKey = publicKey;
+	}
+
+	/**
+	 * Method to get the public key associated with the client
+	 * 
+	 * @return the publicKey
+	 */
+	public Key getPublicKey() {
+		return publicKey;
+	}
 }
