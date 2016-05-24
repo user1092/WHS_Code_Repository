@@ -389,7 +389,7 @@ public class ClientGui extends Application{
 					Platform.runLater(new Runnable() {
 		 	    		 public void run() {             
 		 	    			try {				 	        	  
-		 	     				new PresentationGui(presentation).start(new Stage());
+		 	     				new PresentationGui(presentation, client).start(new Stage());
 		 	     			}
 		 	    			catch (Exception e) {
 		 	     				// TODO Auto-generated catch block
