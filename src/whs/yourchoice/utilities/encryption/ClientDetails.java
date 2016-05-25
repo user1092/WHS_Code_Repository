@@ -1,6 +1,9 @@
 /**
  * Licensing information
+ * 
+ * Copyright Woolly Hat Software
  */
+
 package whs.yourchoice.utilities.encryption;
 
 import java.io.Serializable;
@@ -13,9 +16,6 @@ import java.io.Serializable;
  */
 public class ClientDetails implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -8924002940111723369L;
 	private String userName = null;
 	private String hash = null;

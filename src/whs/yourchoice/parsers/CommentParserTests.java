@@ -1,3 +1,8 @@
+/**
+ * Licensing information
+ * 
+ * Copyright Woolly Hat Software
+ */
 package whs.yourchoice.parsers;
 
 import static org.junit.Assert.assertEquals;
@@ -13,8 +18,10 @@ import whs.yourchoice.client.ViewFeedbackGui.Feedback;
 
 /**
 * Test class for CommentParser
+* 
+* NOT FOR RELEASE!
 *
-* @author user513, user679
+* @author jcl513, gw679
 * @version v0.1 03/05/16
 */
 public class CommentParserTests {

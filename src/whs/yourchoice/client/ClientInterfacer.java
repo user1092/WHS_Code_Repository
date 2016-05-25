@@ -1,3 +1,9 @@
+/**
+ * Licensing information
+ * 
+ * Copyright Woolly Hat Software
+ */
+
 package whs.yourchoice.client;
 
 import java.io.IOException;
@@ -9,7 +15,7 @@ import java.net.UnknownHostException;
  * 
  * NOT FOR RELEASE!
  * 
- * @author		user1092, guest501
+ * @author		ch1092, skq501
  * @version		v0.5 28/02/2016
  */
 public class ClientInterfacer {

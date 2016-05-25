@@ -1,12 +1,10 @@
-package whs.yourchoice.presentation;
-
 /**
-* Video Entry
-* Latest Update: 10/03/16
-*
-* Copyright and Licensing Information if applicable
-*/
+ * Licensing information
+ * 
+ * Copyright Woolly Hat Software
+ */
 
+package whs.yourchoice.presentation;
 
 /**
 * This class is responsible for storing an video object contained in the XML file.

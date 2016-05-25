@@ -1,5 +1,5 @@
 /**
- * shapeEntry.java	v0.1 04/03/16
+ * Licensing information
  * 
  * Copyright Woolly Hat Software
  */

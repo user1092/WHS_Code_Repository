@@ -1,3 +1,9 @@
+/**
+ * Licensing information
+ * 
+ * Copyright Woolly Hat Software
+ */
+
 package whs.yourchoice.client;
 
 import java.io.BufferedOutputStream;
@@ -54,7 +60,7 @@ public class Client {
 		createOutputStream();
 		createInputStream();
 		receiveID();
-		
+		System.out.println("ID Received" + iD);
 		if (iD > -1) {
 			handleKeys();
 			getModules();
@@ -240,6 +246,7 @@ public class Client {
 		Key pubKey = keys[0];
 		privKey = keys[1];
 		try {
+			System.out.println("Sending public key");
 			sendData(pubKey);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

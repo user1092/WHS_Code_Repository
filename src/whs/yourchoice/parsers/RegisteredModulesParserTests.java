@@ -1,9 +1,11 @@
-package whs.yourchoice.parsers;
 /**
-* Registered Modules Parser Tests
-*
-* Copyright and Licensing Information if applicable
-*/
+ * Licensing information
+ * 
+ * Copyright Woolly Hat Software
+ */
+
+package whs.yourchoice.parsers;
+
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
@@ -16,9 +18,10 @@ import whs.yourchoice.presentation.RegisteredModules;
  * This class tests that a xml module list is parsed
  * and a stored in a RegisterModules object
  * 
- * @author ws659 skq501
+ * NOT FOR RELEASE!
+ * 
+ * @author ws659, skq501
  * @version v0.2 27/04/16
- *
  */
 
 public class RegisteredModulesParserTests 

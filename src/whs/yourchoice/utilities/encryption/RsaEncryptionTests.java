@@ -1,6 +1,9 @@
 /**
  * Licensing information
+ * 
+ * Copyright Woolly Hat Software
  */
+
 package whs.yourchoice.utilities.encryption;
 
 import static org.junit.Assert.*;
@@ -18,6 +21,8 @@ import org.junit.Test;
 
 /**
  * Class for testing the RsaEncrytption class
+ * 
+ * NOT FOR RELEASE!
  * 
  * @author 		ch1092, cd828
  * @version		v0.1 24/05/2016

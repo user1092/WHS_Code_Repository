@@ -1,6 +1,9 @@
 /**
+ * Licensing information
  * 
+ * Copyright Woolly Hat Software
  */
+
 package whs.yourchoice.audio;
 
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;

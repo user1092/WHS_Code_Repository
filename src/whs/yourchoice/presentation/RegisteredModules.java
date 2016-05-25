@@ -1,9 +1,10 @@
-package whs.yourchoice.presentation;
 /**
- * Registered Modules Object
+ * Licensing information
  * 
- * Copyright and Licensing Information if applicable
+ * Copyright Woolly Hat Software
  */
+
+package whs.yourchoice.presentation;
 
 import java.util.LinkedList;
 import java.util.List;

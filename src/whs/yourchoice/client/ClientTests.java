@@ -1,3 +1,9 @@
+/**
+ * Licensing information
+ * 
+ * Copyright Woolly Hat Software
+ */
+
 package whs.yourchoice.client;
 
 import static org.junit.Assert.*;
@@ -8,7 +14,6 @@ import java.net.UnknownHostException;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import whs.yourchoice.presentation.RegisteredModuleEntry;
@@ -19,7 +24,7 @@ import whs.yourchoice.server.ServerInterfacer;
  * 
  * NOT FOR RELEASE!
  * 
- * @author		user1092, guest501
+ * @author		ch1092, skq501
  * @version		v0.7 06/04/2016
  */
 public class ClientTests {

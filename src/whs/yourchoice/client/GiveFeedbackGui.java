@@ -1,3 +1,9 @@
+/**
+ * Licensing information
+ * 
+ * Copyright Woolly Hat Software
+ */
+
 package whs.yourchoice.client;
 
 import java.io.BufferedWriter;
@@ -29,7 +35,7 @@ import javafx.stage.Stage;
 * allows user to enter a name comment and rating for the
 * current module which is then saved in a text file
 *
-* @author user513, user679
+* @author jcl513, gw679
 * @version v0.1 10/05/16
 */
 public class GiveFeedbackGui {

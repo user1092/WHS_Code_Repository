@@ -1,3 +1,9 @@
+/**
+ * Licensing information
+ * 
+ * Copyright Woolly Hat Software
+ */
+
 package whs.yourchoice.server;
 
 import java.io.IOException;
@@ -8,7 +14,7 @@ import java.io.IOException;
  * 
  * NOT FOR RELEASE!
  * 
- * @author		user1092, guest501
+ * @author		ch1092, skq501
  * @version		v0.4 23/02/2016
  */
 public class ServerInterfacer {

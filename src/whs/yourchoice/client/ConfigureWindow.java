@@ -1,6 +1,9 @@
 /**
  * Licensing information
+ * 
+ * Copyright Woolly Hat Software
  */
+
 package whs.yourchoice.client;
 
 import javafx.application.Application;
