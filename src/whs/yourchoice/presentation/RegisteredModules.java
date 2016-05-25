@@ -147,4 +147,88 @@ public class RegisteredModules {
 		}
 		return courseList;
 	}
+	
+	/**
+	 * Returns stream by matching course
+	 * @param course String
+	 * @return results List<String> Stream matching course search
+	 */
+	public List<String> searchStreamByCourse(String course) {
+		List<String> results = new LinkedList<String>();
+		
+		for (int i=0; i<moduleList.size(); i++) {
+			if (course.equals(moduleList.get(i).getCourse())) {
+				results.add(moduleList.get(i).getStream());
+			}
+		}
+		
+		results = removeDuplicates(results);
+		return results;
+	}
+	
+	/**
+	 * Returns modules by matching course
+	 * @param course String
+	 * @return results List<String> Modules matching course search
+	 */
+	public List<String> searchYearsByStream(String stream) {
+		List<String> results = new LinkedList<String>();
+		
+		for (int i=0; i<moduleList.size(); i++) {
+			if (stream.equals(moduleList.get(i).getStream())) {
+				results.add(Integer.toString(moduleList.get(i).getYear()));
+			}
+		}
+		results = removeDuplicates(results);
+		return results;
+	}
+	
+	/**
+	 * Returns modules by matching course
+	 * @param course String
+	 * @return results List<String> Modules matching course search
+	 */
+	public List<String> searchModulesByYear(String year) {
+		List<String> results = new LinkedList<String>();
+		int iYear = Integer.parseInt(year);
+		
+		for (int i=0; i<moduleList.size(); i++) {
+			if (iYear == moduleList.get(i).getYear()) {
+				results.add(moduleList.get(i).getTitle());
+			}
+		}
+		results = removeDuplicates(results);
+		return results;
+	}
+	
+	/**
+	 * Method that removes duplicate entries in a List<Sting>
+	 * @param List<String> input
+	 * @return List<String> output
+	 */
+	private List<String> removeDuplicates(List<String> list) {
+		List<String> newList = new LinkedList<String>();
+		String searchTerm;
+		Boolean found = false;
+		
+		for (int i=0; i<list.size(); i++) {
+			searchTerm = list.get(i);
+			if (newList.size() < 1) {
+				newList.add(searchTerm);
+			}
+			for (int j=0; j<newList.size(); j++) {
+				if (newList.get(j).equals(searchTerm)) {
+					found = true;
+					break;
+				}
+			}
+			if (found == false) {
+				newList.add(searchTerm);
+			}
+			else {
+				found = false;
+			}
+		}
+		return newList;
+	}
 }

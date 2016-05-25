@@ -280,6 +280,33 @@ public class Client {
 	protected List<String> getRevievedCourses(){
 		return moduleList.getAllCourses();
 	}
+	
+	/**
+	 * Method that lists streams by associated course
+	 * @param String course
+	 * @return List<String> List of streams
+	 */
+	protected List<String> getStreamByCourse(String course) {
+		return moduleList.searchStreamByCourse(course);
+	}
+	
+	/**
+	 * Method that lists years by associated streams
+	 * @param String stream
+	 * @return List<String> List of years
+	 */
+	protected List<String> getYearsByStream(String stream) {
+		return moduleList.searchYearsByStream(stream);
+	}
+	
+	/**
+	 * Method that lists modules by associated years
+	 * @param String year
+	 * @return List<String> List of years
+	 */
+	protected List<String> getModulesByYear(String year) {
+		return moduleList.searchModulesByYear(year);
+	}
 }
 		
 
