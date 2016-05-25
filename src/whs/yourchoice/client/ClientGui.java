@@ -6,24 +6,19 @@
 
 package whs.yourchoice.client;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.UnknownHostException;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 import whs.yourchoice.parsers.PresentationParser;
 import whs.yourchoice.presentation.PresentationEntry;
+import whs.yourchoice.utilities.ZipUtilities;
 
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -35,10 +30,12 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -47,11 +44,13 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+
+
 /**
 * Class for creation of the Client GUI and adding functionality
 *
 * @author cd828 & ch1092
-* @version v0.4 20/05/16
+* @version v0.4 25/05/16
 */
 public class ClientGui extends Application{
 	// object for the file chooser for getting the XML file
@@ -59,13 +58,14 @@ public class ClientGui extends Application{
 
 	private Stage primaryStage;
 	private StackPane contentLayout;
+	private BorderPane loginLayout;
 
 	private Button loginButton;
 	private Button connectButton;
 	private Button disconnectButton;
 	private Button requestModuleButton;
-	// presentation related declarations
-//	private File xmlFile;
+	
+	// Presentation related declarations
 	private PresentationEntry presentation;
 	
 	// text box to show the file browse status
@@ -74,6 +74,8 @@ public class ClientGui extends Application{
 	private PasswordField passwordTextField;
 	
 	private CheckBox adminCheckBox;
+	
+	private ProgressBar progressBar;
 	
 	private boolean autoConnect = true;
 	private boolean validPassword = false;
@@ -85,13 +87,11 @@ public class ClientGui extends Application{
 	
 	// ZIP related
 	private String tempPresentationDirectory = "temp";
-	private static final int BUFFER_SIZE = 4096;
 
 	
 	// Declare a backend for the client
 	private Client client;
 	
-
 	private ConfigureWindow configureWindow = new ConfigureWindow();
 	
 	public ClientGui() {
@@ -108,7 +108,7 @@ public class ClientGui extends Application{
 	public void start(Stage primaryStage) throws Exception {
 		BorderPane guiLayout = new BorderPane();
 		contentLayout = new StackPane();
-		BorderPane loginLayout = new BorderPane();
+		loginLayout = new BorderPane();
 		
 		Scene scene = new Scene(guiLayout);
 		
@@ -129,9 +129,7 @@ public class ClientGui extends Application{
 		
 		loginLayout.setBottom(buttonHBox);
 		loginLayout.setCenter(loginVBox);
-		
-		contentLayout.getChildren().add(loginLayout);
-		
+				
 		//place the boxes inside the layout created
 		guiLayout.setTop(menuBar);
 		guiLayout.setRight(logHBox);
@@ -142,9 +140,15 @@ public class ClientGui extends Application{
 		primaryStage.setHeight(600);
 		primaryStage.setWidth(800);
 		primaryStage.setTitle("YourChoice");
-		primaryStage.show();
+		
+		progressBar = new ProgressBar(0);
+		progressBar.setProgress(0);
 		
 		autoConnect();
+		
+		contentLayout.getChildren().add(progressBar);
+		
+		primaryStage.show();
 	}
 	
 
@@ -180,7 +184,6 @@ public class ClientGui extends Application{
 		loginButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
-				System.out.println(passwordTextField.getText());
 				if (!(null == client.serverSocket)) {
 					if(!client.serverSocket.isClosed()) {
 						if (!validPassword) {
@@ -192,9 +195,6 @@ public class ClientGui extends Application{
 									// TODO Auto-generated catch block
 									e1.printStackTrace();
 								}
-								System.out.println(validPassword);
-								
-								System.out.println(passwordTextField.getText());
 							}
 							else {
 								try {
@@ -203,7 +203,6 @@ public class ClientGui extends Application{
 									// TODO Auto-generated catch block
 									e1.printStackTrace();
 								}
-								System.out.println(validPassword);
 							}
 							
 						}
@@ -218,6 +217,9 @@ public class ClientGui extends Application{
 	}
 	
 	
+	/**
+	 * Method to create a request module button and place it on the content layout
+	 */
 	private void requestModuleButtonSetup() {
 		requestModuleButton = new Button("Request Module");
 		requestModuleButton.setDisable(false);
@@ -226,73 +228,11 @@ public class ClientGui extends Application{
 		requestModuleButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
-				if (!(null == client.serverSocket)) {
-					if (validPassword) {
-						File zippedPresentation = null;
-						try {
-							client.sendData("Example_Presentation");
-						} catch (IOException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
-						try {
-							zippedPresentation = (File) client.receiveData();
-						} catch (IOException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
-						try {
-							unzip(zippedPresentation);
-						} catch (IOException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
-						openPresentation(new File(tempPresentationDirectory + "/Example_Presentation.xml"));
-					}
-				}
+				requestModule();
 			}
-
-			
 		});
 	}
-	
-	
-	private void unzip(File zippedPresentation) throws IOException {
-		File destDir = new File(tempPresentationDirectory);
-		if (!destDir.exists()) {
-            destDir.mkdir();
-        }
-		FileInputStream inputStream = new FileInputStream(zippedPresentation);
-        ZipInputStream zipIn = new ZipInputStream(inputStream);
-        ZipEntry entry = zipIn.getNextEntry();
-        // iterates over entries in the zip file
-        while (entry != null) {
-            String filePath = tempPresentationDirectory + File.separator + entry.getName();
-            if (!entry.isDirectory()) {
-                // if the entry is a file, extracts it
-                extractFile(zipIn, filePath);
-            } else {
-                // if the entry is a directory, make the directory
-                File dir = new File(filePath);
-                dir.mkdir();
-            }
-            zipIn.closeEntry();
-            entry = zipIn.getNextEntry();
-        }
-        zipIn.close();
-	}
-	
-	
-	private void extractFile(ZipInputStream zipIn, String filePath) throws IOException {
-        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath));
-        byte[] bytesIn = new byte[BUFFER_SIZE];
-        int read = 0;
-        while ((read = zipIn.read(bytesIn)) != -1) {
-            bos.write(bytesIn, 0, read);
-        }
-        bos.close();
-    }
-	
+		
 	
 	/**
 	 * Method to setup the connect button
@@ -512,7 +452,9 @@ public class ClientGui extends Application{
 	
 	
 	/**
+	 * Method to open a presentation in the PresentationGui
 	 * 
+	 * @param xmlFile	-	The xml file that contains the presentation
 	 */
 	private void openPresentation(File xmlFile) {
 		PresentationParser parser = new PresentationParser();		
@@ -550,29 +492,147 @@ public class ClientGui extends Application{
 	 */
 	private void autoConnect() {
 		if (autoConnect) {
-			try {
-				client.openSocket(configureWindow.getIpAddress(), configureWindow.getPort());
-				connectButton.setDisable(true);
-				disconnectButton.setDisable(false);
-				if(-1 == getID()) {
-					client.closeSocket();
-					connectButton.setDisable(false);
-					disconnectButton.setDisable(true);
+			Task<Void> autoConnectTask = new Task<Void>() {
+				@Override protected Void call() throws Exception {
+					try {
+						client.openSocket(configureWindow.getIpAddress(), configureWindow.getPort());
+						Platform.runLater(new Runnable() {
+							@Override public void run() {
+								connectButton.setDisable(true);
+								disconnectButton.setDisable(false);
+							}
+						});
+						if(-1 == getID()) {
+							client.closeSocket();
+							Platform.runLater(new Runnable() {
+								@Override public void run() {
+									connectButton.setDisable(false);
+									disconnectButton.setDisable(true);
+								}
+							});
+						}
+					} catch (UnknownHostException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						connectButton.setDisable(false);
+						disconnectButton.setDisable(true);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+//						e.printStackTrace();
+						System.out.println("Could not connect to server");
+						Platform.runLater(new Runnable() {
+							@Override public void run() {
+								connectButton.setDisable(false);
+								disconnectButton.setDisable(true);
+							}
+						});
+					}
+					return null;
 				}
-			} catch (UnknownHostException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				connectButton.setDisable(false);
-				disconnectButton.setDisable(true);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-//				e.printStackTrace();
-				System.out.println("Could not connect to server");
-				connectButton.setDisable(false);
-				disconnectButton.setDisable(true);
-			}
+			};
+			final Thread autoConnectThread = new Thread(autoConnectTask);
+			autoConnectThread.setDaemon(true);
+			
+			progressBar.progressProperty().bind(autoConnectTask.progressProperty());
+			
+			autoConnectThread.start();
 						
+			removeProgressBar(autoConnectThread, loginLayout);
 		}
 	}
 
+
+	/**
+	 * Method to remove the progress bar once compete, 
+	 * listens to a thread until it is dead then removes
+	 * 
+	 * @param autoConnectThread
+	 */
+	private void removeProgressBar(final Thread thread, final Pane paneToDisplay) {
+		Task<Void> waitTask = new Task<Void>() {
+			@Override protected Void call() throws Exception {
+				while (thread.isAlive()) {
+					try {
+						Thread.sleep(500);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				
+				
+				
+				Platform.runLater(new Runnable() {
+		    		 public void run() {
+		    			progressBar.progressProperty().unbind();
+		    			progressBar.setProgress(0); 
+		    			try {				 	        	  
+		    				contentLayout.getChildren().remove(progressBar);
+		    				if (null != paneToDisplay) {
+		    					contentLayout.getChildren().add(paneToDisplay);
+		    				}
+		     			}
+		    			catch (Exception e) {
+		     				// TODO Auto-generated catch block
+		     				e.printStackTrace();
+		     			}
+		    		 }
+		    	});
+				return null;
+			}
+		};
+		Thread waitThread = new Thread(waitTask);
+		waitThread.setDaemon(true);
+		waitThread.start();
+	}
+
+	
+	/**
+	 * Method to request a module to be sent from the server and then open once received
+	 */
+	private void requestModule() {
+		
+		contentLayout.getChildren().add(progressBar);
+		
+		Task<Void> requestTask = new Task<Void>() {
+			@Override protected Void call() throws Exception {
+				ZipUtilities unzipper = new ZipUtilities();
+				
+				if (!(null == client.serverSocket)) {
+					if (validPassword) {
+						File zippedPresentation = null;
+						try {
+							client.sendData("Example_Presentation");
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						try {
+							zippedPresentation = (File) client.receiveData();
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						try {
+							unzipper.unzip(zippedPresentation, tempPresentationDirectory);
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						openPresentation(new File(tempPresentationDirectory + "/Example_Presentation.xml"));
+					}
+				}				
+				
+				return null;
+			}
+		};
+		Thread requestThread = new Thread(requestTask);
+		requestThread.setDaemon(true);
+		
+		progressBar.progressProperty().bind(requestTask.progressProperty());
+		
+		requestThread.start();
+		
+		removeProgressBar(requestThread, null);
+	}
 }
