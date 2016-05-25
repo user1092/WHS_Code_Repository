@@ -6,10 +6,8 @@
 
 package whs.yourchoice.client;
 
-import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
@@ -26,7 +24,7 @@ import whs.yourchoice.utilities.encryption.RsaEncryption;
  * Class for the client's back end handling communications to the server 
  * 
  * @author		ch1092, skq501, cd828
- * @version		v0.9 20/05/2016
+ * @version		v0.10 25/05/2016
  */
 public class Client {
 	
@@ -41,6 +39,7 @@ public class Client {
 	// Variables for registered modules
 	protected RegisteredModules moduleList;
 	private String modulePath = "src/registered_modules2.xml";
+	private final int BUFFER_SIZE = 1024;
 	
 	private String serverPubKeyFileName = "serverPubKeyFileName.key";
 	private Key privKey;
@@ -183,14 +182,38 @@ public class Client {
 	 * @throws IOException
 	 */
 	private void getModules() throws IOException {
-		byte[] mybytearray = new byte[1024];
-		InputStream is = serverSocket.getInputStream();
+	    
+		Object o = null;
 		FileOutputStream fos = new FileOutputStream(modulePath);
-		BufferedOutputStream bos = new BufferedOutputStream(fos);
-		int bytesRead = is.read(mybytearray, 0, mybytearray.length);
-	    bos.write(mybytearray, 0, bytesRead);
-	    bos.close();
+		
+		byte[] mybytearray = new byte[BUFFER_SIZE];
+		Integer bytesRead = 0;
+		
+		do {
+            try {
+				o = inputFromServer.readObject();
+			} catch (ClassNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+  
+            bytesRead = (Integer)o;
+ 
+            try {
+				o = inputFromServer.readObject();
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+  
+            mybytearray = (byte[])o;
+            
+            fos.write(mybytearray, 0, bytesRead);
+        } while (bytesRead == BUFFER_SIZE);
+	    
+		fos.close();
 	}
+	
 	
 	private void parseModules() {
 		RegisteredModulesParser parser = new RegisteredModulesParser();
