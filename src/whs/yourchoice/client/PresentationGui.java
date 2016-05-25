@@ -73,7 +73,7 @@ import javafx.util.StringConverter;
 /**
 * Class for creation of the presentation window and adding functionality
 *
-* @author cd828 & cd1092
+* @author cd828 & ch1092
 * @version v0.11 25/05/16
 */
 public class PresentationGui extends Application {

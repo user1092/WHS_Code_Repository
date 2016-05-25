@@ -25,8 +25,8 @@ import javafx.stage.Stage;
 /**
  * Class for displaying the meta data for the current presentation
  * 
- * @author		user1092, cd828
- * @version		v0.2 15/05/2016
+ * @author		ch1092, cd828
+ * @version		v0.3 25/05/2016
  */
 public class MetaDataGui extends Application {
 
@@ -36,7 +36,6 @@ public class MetaDataGui extends Application {
 	private final int INFO_WIDTH = WINDOW_WIDTH - 10;
 	private final int FONT_SIZE = 20;
 	
-	private Button closeButton;
 	private String title;
 	private String author;
 	private String version;
@@ -151,7 +150,7 @@ public class MetaDataGui extends Application {
 		buttonHBox.setPadding(new Insets(0, 0, 10, 135));
 		buttonHBox.setSpacing(10);
 		buttonHBox.setStyle("-fx-background-colour: #336699;");
-		closeButtonSetup(primaryStage);
+		Button closeButton = closeButtonSetup(primaryStage);
 		buttonHBox.getChildren().addAll(closeButton);
 		return buttonHBox;	
 	}
@@ -161,9 +160,10 @@ public class MetaDataGui extends Application {
 	 * Method for setting up the close button, when pressed the window closes
 	 * 
 	 * @param primaryStage  -  The application window
+	 * @return Button	-	close button  
 	 */
-	private void closeButtonSetup(final Stage primaryStage) {
-		closeButton = new Button("Close");
+	private Button closeButtonSetup(final Stage primaryStage) {
+		Button closeButton = new Button("Close");
 		closeButton.setPrefSize(200, 20);
 		closeButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -171,5 +171,6 @@ public class MetaDataGui extends Application {
 				primaryStage.close();
 			}
 		});
+		return closeButton;
 	}
 }

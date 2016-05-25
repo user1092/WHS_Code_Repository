@@ -20,12 +20,13 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
+
 /**
 * Class for creation of the configure window for inputting 
 * the ip address and port of the server
 *
 * @author cd828 & ch1092
-* @version v0.2 20/05/16
+* @version v0.3 25/05/16
 */
 public class ConfigureWindow extends Application {
 
@@ -36,12 +37,6 @@ public class ConfigureWindow extends Application {
 							ipAddressTextField_4, portTextField;
 	// object for formatting the text fields to only accept integers
 	private StringConverter<Integer> integerFormatter;
-	
-	private Button saveButton;
-	private Button closeButton;
-		
-	public ConfigureWindow () {
-	}
 	
 	public static void main(String[] args) {
 		launch(ConfigureWindow.class, args);
@@ -72,8 +67,10 @@ public class ConfigureWindow extends Application {
 		primaryStage.show();
 	}
 	
+	
 	/**
 	 * Method for the creation of the HBox that contains the ip address labels and text boxes
+	 * 
 	 * @return HBox  -  The box that contains the ip address labels and text boxes
 	 */
 	private HBox ipHBoxCreation() {
@@ -110,8 +107,10 @@ public class ConfigureWindow extends Application {
 		return ipHBox;	
 	}
 
+	
 	/**  
 	 * Method for the creation of the HBox that contains the port label and text box
+	 * 
 	 * @return HBox  -  The box that contains the port label and text box
 	 */
 	private HBox portHBoxCreation() {
@@ -128,9 +127,11 @@ public class ConfigureWindow extends Application {
 		return portHBox;
 	}
 	
+	
 	/**
 	 * VBox that contains the two HBoxes, one for the ip address and one for the port
-	 * @return ipAndPortVbox  --  The box that contains the ip address and port HBoxes
+	 * 
+	 * @return VBox  --  The box that contains the ip address and port HBoxes
 	 */
 	private VBox ipAndPortVBoxCreation() {
 	    VBox ipAndPortVbox = new VBox();
@@ -144,8 +145,10 @@ public class ConfigureWindow extends Application {
 	    return ipAndPortVbox;
 	}
 	
+	
 	/**
 	 * Method for the creation of the HBox that contains the buttons
+	 * 
 	 * @param primaryStage  -  The application window
 	 * @return HBox  -  The box that contains the buttons
 	 */
@@ -154,18 +157,21 @@ public class ConfigureWindow extends Application {
 		buttonHBox.setPadding(new Insets(0, 0, 10, 135));
 		buttonHBox.setSpacing(10);
 		buttonHBox.setStyle("-fx-background-colour: #336699;");
-		saveButtonSetup(primaryStage);
-		closeButtonSetup(primaryStage);
+		Button saveButton = saveButtonSetup(primaryStage);
+		Button closeButton = closeButtonSetup(primaryStage);
 		buttonHBox.getChildren().addAll(saveButton, closeButton);
 		return buttonHBox;	
 	}
 	
+	
 	/**
 	 * Method for setting up the cancel button, when pressed the window closes
+	 * 
 	 * @param primaryStage  -  The application window
+	 * @return Button  -  save button
 	 */
-	private void saveButtonSetup(final Stage primaryStage) {
-		saveButton = new Button("Save");
+	private Button saveButtonSetup(final Stage primaryStage) {
+		Button saveButton = new Button("Save");
 		saveButton.setPrefSize(100, 20);
 		saveButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -183,14 +189,18 @@ public class ConfigureWindow extends Application {
 				
 			}
 		});
+		return saveButton;
 	}
+	
 	
 	/**
 	 * Method for setting up the cancel button, when pressed the window closes
+	 * 
 	 * @param primaryStage  -  The application window
+	 * @return Button  -  close button
 	 */
-	private void closeButtonSetup(final Stage primaryStage) {
-		closeButton = new Button("Close");
+	private Button closeButtonSetup(final Stage primaryStage) {
+		Button closeButton = new Button("Close");
 		closeButton.setPrefSize(100, 20);
 		closeButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -198,7 +208,9 @@ public class ConfigureWindow extends Application {
 				primaryStage.close();
 			}
 		});
+		return closeButton;
 	}
+	
 	
 	/**
 	 * Method for returning the ipAddress stored
@@ -209,6 +221,7 @@ public class ConfigureWindow extends Application {
 		return ipAddress;
 	}
 	
+	
 	/**
 	 * Method for returning the port number stored
 	 * 
@@ -216,6 +229,5 @@ public class ConfigureWindow extends Application {
 	 */
 	public int getPort() {
 		return port;
-		
 	}
 }
