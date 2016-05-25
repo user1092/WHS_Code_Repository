@@ -46,4 +46,190 @@ public class RegisteredModules {
 		}
 		return returnModule;
 	}
+	
+	/**
+	 * Method to return size of list
+	 * @return int moduleList size
+	 */
+	public int getListSize(){
+		return moduleList.size();
+	}
+	
+	/**
+	 * Returns list of modules
+	 * @return List moduleList
+	 */
+	public List<String> getAllModules() {
+		List<String> moduleNames = new LinkedList<String>();
+		for (int i=0; i<moduleList.size(); i++) {
+			moduleNames.add(moduleList.get(i).getTitle());
+		}
+		
+		return moduleNames;
+	}
+	
+	/**
+	 * Returns list of streams
+	 * @return List streamList
+	 */
+	public List<String> getAllStreams() {
+		List<String> streamList = new LinkedList<String>();
+		String stream;
+		Boolean found = false;
+		
+		for (int i=0; i<moduleList.size(); i++) {
+			stream = moduleList.get(i).getStream();
+			if (streamList.size() < 1) {
+				streamList.add(stream);
+			}
+			for (int j=0; j<streamList.size(); j++) {
+				if (stream.equals(streamList.get(j))) {
+					found = true;
+				}
+			}
+			if (found == false) {
+				streamList.add(stream);
+			}
+			found = false;
+		}
+		return streamList;
+	}
+	
+	/**
+	 * Returns list of academic year
+	 * @return List yearList
+	 */
+	public List<String> getAllYears() {
+		List<String> yearList = new LinkedList<String>();
+		String year;
+		Boolean found = false;
+		
+		for (int i=0; i<moduleList.size(); i++) {
+			year = Integer.toString(moduleList.get(i).getYear());
+			if (yearList.size() < 1) {
+				yearList.add(year);
+			}
+			for (int j=0; j<yearList.size(); j++) {
+				if (year.equals(yearList.get(j))) {
+					found = true;
+				}
+			}
+			if (found == false) {
+				yearList.add(year);
+			}
+			found = false;
+		}
+		return yearList;
+	}
+	
+	/**
+	 * Returns list of academic courses
+	 * @return List courseList
+	 */
+	public List<String> getAllCourses() {
+		List<String> courseList = new LinkedList<String>();
+		String course;
+		Boolean found = false;
+		
+		for (int i=0; i<moduleList.size(); i++) {
+			course = moduleList.get(i).getCourse();
+			if (courseList.size() < 1) {
+				courseList.add(course);
+			}
+			for (int j=0; j<courseList.size(); j++) {
+				if (course.equals(courseList.get(j))) {
+					found = true;
+				}
+			}
+			if (found == false) {
+				courseList.add(course);
+			}
+			found = false;
+		}
+		return courseList;
+	}
+	
+	/**
+	 * Returns stream by matching course
+	 * @param course String
+	 * @return results List<String> Stream matching course search
+	 */
+	public List<String> searchStreamByCourse(String course) {
+		List<String> results = new LinkedList<String>();
+		
+		for (int i=0; i<moduleList.size(); i++) {
+			if (course.equals(moduleList.get(i).getCourse())) {
+				results.add(moduleList.get(i).getStream());
+			}
+		}
+		
+		results = removeDuplicates(results);
+		return results;
+	}
+	
+	/**
+	 * Returns modules by matching course
+	 * @param course String
+	 * @return results List<String> Modules matching course search
+	 */
+	public List<String> searchYearsByStream(String stream) {
+		List<String> results = new LinkedList<String>();
+		
+		for (int i=0; i<moduleList.size(); i++) {
+			if (stream.equals(moduleList.get(i).getStream())) {
+				results.add(Integer.toString(moduleList.get(i).getYear()));
+			}
+		}
+		results = removeDuplicates(results);
+		return results;
+	}
+	
+	/**
+	 * Returns modules by matching course
+	 * @param course String
+	 * @return results List<String> Modules matching course search
+	 */
+	public List<String> searchModulesByYear(String year) {
+		List<String> results = new LinkedList<String>();
+		int iYear = Integer.parseInt(year);
+		
+		for (int i=0; i<moduleList.size(); i++) {
+			if (iYear == moduleList.get(i).getYear()) {
+				results.add(moduleList.get(i).getTitle());
+			}
+		}
+		results = removeDuplicates(results);
+		return results;
+	}
+	
+	/**
+	 * Method that removes duplicate entries in a List<Sting>
+	 * @param List<String> input
+	 * @return List<String> output
+	 */
+	private List<String> removeDuplicates(List<String> list) {
+		List<String> newList = new LinkedList<String>();
+		String searchTerm;
+		Boolean found = false;
+		
+		for (int i=0; i<list.size(); i++) {
+			searchTerm = list.get(i);
+			if (newList.size() < 1) {
+				newList.add(searchTerm);
+			}
+			for (int j=0; j<newList.size(); j++) {
+				if (newList.get(j).equals(searchTerm)) {
+					found = true;
+					break;
+				}
+			}
+			if (found == false) {
+				newList.add(searchTerm);
+			}
+			else {
+				found = false;
+			}
+		}
+		return newList;
+	}
 }
