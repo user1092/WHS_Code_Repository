@@ -1,6 +1,9 @@
 /**
+ * Licensing information
  * 
+ * Copyright Woolly Hat Software
  */
+
 package whs.yourchoice.audio;
 
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;
@@ -9,7 +12,7 @@ import uk.co.caprica.vlcj.player.headless.HeadlessMediaPlayer;
 /**
  * Class for the client's back end handling playing audio files 
  * 
- * @author		user1092, guest501
+ * @author		ch1092, skq501
  * @version		v0.1 01/03/2016
  */
 public class AudioStreamer {

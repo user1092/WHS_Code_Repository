@@ -1,3 +1,9 @@
+/**
+ * Licensing information
+ * 
+ * Copyright Woolly Hat Software
+ */
+
 package whs.yourchoice.server;
 
 import static org.junit.Assert.*;
@@ -15,7 +21,9 @@ import whs.yourchoice.client.ClientInterfacer;
 /**
  * Class for testing the server's back end handling communications to the clients. 
  * 
- * @author		user1092, guest501
+ * NOT FOR RELEASE!
+ * 
+ * @author		ch1092, skq501
  * @version		v0.7 06/04/2016
  */
 public class ServerTests {

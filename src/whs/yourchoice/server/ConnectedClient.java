@@ -1,6 +1,9 @@
 /**
  * Licensing information
+ * 
+ * Copyright Woolly Hat Software
  */
+
 package whs.yourchoice.server;
 
 import java.io.IOException;

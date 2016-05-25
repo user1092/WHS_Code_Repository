@@ -1,3 +1,9 @@
+/**
+ * Licensing information
+ * 
+ * Copyright Woolly Hat Software
+ */
+
 package whs.yourchoice.client;
 
 import javafx.util.StringConverter;
@@ -5,6 +11,9 @@ import javafx.util.StringConverter;
 /** 
  * Class for setting the text fields to only accept integers 
  * and have a range of 0-255 for the ip address and 0-65535 for the port
+ * 
+ * @author cd828
+ * @version v0.1 25/03/16
  */
 public class IntRangeStringConverter extends StringConverter<Integer> {
 

@@ -1,3 +1,9 @@
+/**
+ * Licensing information
+ * 
+ * Copyright Woolly Hat Software
+ */
+
 package whs.yourchoice.audio;
 
 import java.io.File;
@@ -32,11 +38,10 @@ import javafx.beans.value.ObservableValue;
  * vlcj-3.8.0
  * an acc format audio file
  * 
- * @author 		user1092, guest501
- * @version		v0.2 04/03/2016
- * 
  * NOT FOR RELEASE!
- *
+ * 
+ * @author 		ch1092, skq501
+ * @version		v0.2 04/03/2016
  */
 public class AudioPlayerExample extends Application {	
 	

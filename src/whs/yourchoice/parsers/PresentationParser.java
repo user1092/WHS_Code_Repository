@@ -1,11 +1,9 @@
-package whs.yourchoice.parsers;
-
 /**
-* Presentation Parser
-* Latest Update: 10/03/16
-*
-* Copyright and Licensing Information if applicable
-*/
+ * Licensing information
+ * 
+ * Copyright Woolly Hat Software
+ */
+package whs.yourchoice.parsers;
 
 import java.io.File;
 

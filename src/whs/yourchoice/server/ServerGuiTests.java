@@ -1,8 +1,9 @@
 /**
- * ServerGuiTests.java		v0.6 23/02/2016
+ * Licensing information
  * 
- * 
+ * Copyright Woolly Hat Software
  */
+
 package whs.yourchoice.server;
 
 import static org.junit.Assert.*;
@@ -18,7 +19,7 @@ import org.junit.Test;
  * 
  * NOT FOR RELEASE!
  * 
- * @author		user1092, guest501
+ * @author		ch1092, skq501
  * @version		v0.6 23/02/2016
  */
 public class ServerGuiTests {

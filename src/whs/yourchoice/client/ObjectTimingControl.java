@@ -1,3 +1,9 @@
+/**
+ * Licensing information
+ * 
+ * Copyright Woolly Hat Software
+ */
+
 package whs.yourchoice.client;
 
 import whs.yourchoice.audio.AudioPlayer;

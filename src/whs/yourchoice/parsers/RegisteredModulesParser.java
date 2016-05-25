@@ -1,10 +1,10 @@
-package whs.yourchoice.parsers;
 /**
-* Registered Modules Parser
-* Latest Update: 27/04/16
-*
-* Copyright and Licensing Information if applicable
-*/
+ * Licensing information
+ * 
+ * Copyright Woolly Hat Software
+ */
+package whs.yourchoice.parsers;
+
 import java.io.File;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -20,7 +20,7 @@ import whs.yourchoice.presentation.RegisteredModules;
 /**
  * A class to parse a registered_modules.xml file
  * 
- * @author ws659 skq501
+ * @author ws659, skq501
  * 
  * @version v0.2 27/04/16
  */

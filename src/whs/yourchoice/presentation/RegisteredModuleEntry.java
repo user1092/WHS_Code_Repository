@@ -1,14 +1,16 @@
-package whs.yourchoice.presentation;
 /**
- * Registered Module Entry Object
+ * Licensing information
  * 
- * Copyright and Licensing Information if applicable
+ * Copyright Woolly Hat Software
  */
+
+package whs.yourchoice.presentation;
 
 /**
  * Registered module object, stores module information
  * usually parsed from XML object
- * @author ws659 skw501
+ * 
+ * @author ws659, skw501
  *
  */
 public class RegisteredModuleEntry {

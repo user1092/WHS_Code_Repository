@@ -1,5 +1,5 @@
 /**
- * shapeEntryTests.java	v0.1 04/03/16
+ * Licensing information
  * 
  * Copyright Woolly Hat Software
  */
@@ -16,10 +16,10 @@ import whs.yourchoice.graphics.ShapeGraphic;
  * 
  * All shapes are drawn from top left corner
  * 
+ * NOT FOR RELEASE!
+ * 
  * @author ws659, rw1065
- * 
  * @version	v0.1 04/03/16
- * 
  */
 public class ShapeGraphicTests{
 	int startTime, duration = 0;

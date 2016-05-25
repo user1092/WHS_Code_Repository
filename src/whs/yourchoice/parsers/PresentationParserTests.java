@@ -1,19 +1,11 @@
+/**
+ * Licensing information
+ * 
+ * Copyright Woolly Hat Software
+ */
 package whs.yourchoice.parsers;
 
-/**
-* Presentation Parser Tests
-* Latest Update: 10/03/16
-*
-* Copyright and Licensing Information if applicable
-*/
 import static org.junit.Assert.assertEquals;
-
-/**
-* This class is responsible for testing the PresentationParser Class.
-*
-* @author Antonio Figueiredo and Sabrina Quinn
-* @version v1.0 10/03/16
-*/
 
 import org.junit.Test;
 
@@ -28,6 +20,8 @@ import whs.yourchoice.presentation.VideoEntry;
 
 /**
 * This class is responsible for testing if an example XML file can be parsed correctly
+* 
+* NOT FOR RELEASE!
 *
 * @author ajff500, sqk501 and ch1092
 * @version v0.1 18/04/16

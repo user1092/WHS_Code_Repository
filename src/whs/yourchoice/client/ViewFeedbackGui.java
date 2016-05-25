@@ -1,3 +1,9 @@
+/**
+ * Licensing information
+ * 
+ * Copyright Woolly Hat Software
+ */
+
 package whs.yourchoice.client;
 
 import javafx.application.Application;
@@ -29,13 +35,13 @@ import whs.yourchoice.parsers.CommentParser;
 * Class for creation of the module comments window for displaying
 * comments stored in a .txt file
 *
-* @author user513, user679
+* @author jcl513, gw679
 * @version v0.3 10/05/16
 */
 public class ViewFeedbackGui extends Application {
 	
 	// Path name will need changing and adapting for integration
-	private String textFilePath = "src/DemoModuleComments.txt";
+	private String textFilePath = null;
 	// Module name should be passed to this class so it can be displayed
 	private String moduleName = "Test Module Name";
 	

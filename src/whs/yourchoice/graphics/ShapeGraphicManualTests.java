@@ -1,5 +1,5 @@
 /**
- * shapeManualTestEntry.java	v0.1 04/03/16
+ * Licensing information
  * 
  * Copyright Woolly Hat Software
  */
@@ -17,10 +17,10 @@ import javafx.stage.Stage;
  * 
  * All shapes are drawn from top left corner
  * 
+ * NOT FOR RELEASE!
+ * 
  * @author ws659, rw1065
- * 
  * @version	v0.1 04/03/16
- * 
  */
 public class ShapeGraphicManualTests extends Application {
 	

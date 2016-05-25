@@ -1,3 +1,9 @@
+/**
+ * Licensing information
+ * 
+ * Copyright Woolly Hat Software
+ */
+
 package whs.yourchoice.video;
 
 import javafx.application.Application;
@@ -10,7 +16,9 @@ import javafx.stage.Stage;
 /**
  * Class creating a example of using the video player.
  * 
- * @author		user1092, guest501
+ * NOT FOR RELEASE!
+ * 
+ * @author		ch1092, skq501
  * @version		v0.2 10/03/2016
  */
 public class VideoPlayerExample extends Application { 
