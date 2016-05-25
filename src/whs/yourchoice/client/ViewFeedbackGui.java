@@ -36,7 +36,7 @@ import whs.yourchoice.parsers.CommentParser;
 * comments stored in a .txt file
 *
 * @author jcl513, gw679
-* @version v0.3 10/05/16
+* @version v0.4 25/05/16
 */
 public class ViewFeedbackGui extends Application {
 	
@@ -44,6 +44,7 @@ public class ViewFeedbackGui extends Application {
 	private String textFilePath = null;
 	// Module name should be passed to this class so it can be displayed
 	private String moduleName = "Test Module Name";
+	private Client client;
 	
 	// Table and list of type Comment to fill the table with
 	private TableView<Feedback> table = new TableView<Feedback>();
@@ -56,12 +57,12 @@ public class ViewFeedbackGui extends Application {
 	// feedback gui window when required
 	private CommentParser commentsParser;
 	private GiveFeedbackGui feedbackGui;
-	private Stage feedbackWindowStage = new Stage();
 	
 	
 	public ViewFeedbackGui(String moduleName, String textFilePath, Client client) {
 		this.moduleName = moduleName + " Feedback";
 		this.textFilePath = textFilePath;
+		this.client = client;
 	}
 	
 	
@@ -73,23 +74,23 @@ public class ViewFeedbackGui extends Application {
 	public void start(Stage primaryStage) throws Exception {
 		BorderPane guiLayout = new BorderPane();
 		Scene scene = new Scene(guiLayout);
-				
+		
 		// Create parser to parse text file and return a list of type comment
 		commentsParser = new CommentParser();
 		commentsParser.parseTextFile(textFilePath);
 		avgRating = commentsParser.getAverageRating();
 		feedback = commentsParser.getComments();
-
+		
 		// Import and set background image
 		String background = ClientGui.class.getResource("resources/SlideBackground.jpg").toExternalForm();
 		guiLayout.setStyle("-fx-background-image: url('" + background + "'); " +
 		           "-fx-background-position: center center; " +
 		           "-fx-background-repeat: stretch;");
-
+		
 		// Call methods to create boxes for display
 		VBox titleVBox = titleVBoxCreation();
-		HBox bottomHBox = bottomHBoxCreation(primaryStage);
 		VBox tableVBox = tableVBoxCreation();
+		HBox bottomHBox = bottomHBoxCreation(primaryStage);
 		
 		// Add boxes to guiLayout
 	    guiLayout.setTop(titleVBox);
@@ -105,8 +106,6 @@ public class ViewFeedbackGui extends Application {
 		primaryStage.show();
 	}
 	
-	
-	
 	/**
 	 * Method for the creation of a HBox that contains the create comment and back buttons
 	 * As well as a VBox containing the average rating for the current module
@@ -121,10 +120,10 @@ public class ViewFeedbackGui extends Application {
 		// Create HBox
 		HBox bottomHBox = new HBox();
 		bottomHBox.setPadding(new Insets(10, 10, 10, 10));
-		bottomHBox.setSpacing(80);
+		bottomHBox.setSpacing(30);
 		bottomHBox.setStyle("-fx-background-colour: #336699;");
 		
-		// Create comment and back buttons
+		// Create comment, refresh and back buttons
 		Button commentButton = new Button("Give Feedback");
 		commentButton.setPrefSize(150, 30);
 		
@@ -133,7 +132,7 @@ public class ViewFeedbackGui extends Application {
 			public void handle(ActionEvent e) {
 				feedbackGui = new GiveFeedbackGui();
 				try {
-					feedbackGui.start(feedbackWindowStage, moduleName);
+					feedbackGui.start(primaryStage, moduleName, textFilePath, client);
 				} catch (Exception e1) {
 					System.out.println("Unable to open give feedback window");
 					e1.printStackTrace();
@@ -151,9 +150,24 @@ public class ViewFeedbackGui extends Application {
 			}
 		});
 		
+		Button refreshButton = new Button("Refresh Feedback");
+		refreshButton.setPrefSize(150, 30);
+		
+		refreshButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent e) {
+				try {
+					start(primaryStage);
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+		
 		// Add everything to HBox and return it
 		bottomHBox.setAlignment(Pos.CENTER);
-		bottomHBox.getChildren().addAll(ratingVBox, commentButton, returnButton);
+		bottomHBox.getChildren().addAll(ratingVBox, commentButton, refreshButton, returnButton);
 		return bottomHBox;	
 	}
 	
@@ -230,10 +244,11 @@ public class ViewFeedbackGui extends Application {
        ratingCol.setMaxWidth(100);
        ratingCol.setCellValueFactory(new PropertyValueFactory<Feedback, String>("rating"));
        
-       // Fills table with contents of data (which is a list of Comments)
+       // Fills table with contents of "feedback" list
        table.setEditable(false);
        table.setItems(feedback);
        
+       table.getColumns().clear();
        table.getColumns().add(0, nameCol);
        table.getColumns().add(1, commentCol);
        table.getColumns().add(2, ratingCol);
@@ -271,7 +286,7 @@ public class ViewFeedbackGui extends Application {
 				avgRatingPicNo = 1 + (i*2);
 			}		
 		}
-		
+
 		// Opens image file and sets size of image view
 		avgRatingImg = new Image(getClass().getResourceAsStream("resources/Stars/" + avgRatingPicNo + ".png"));
 		avgRatingImgView = new ImageView(avgRatingImg);

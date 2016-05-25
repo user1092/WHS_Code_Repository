@@ -36,7 +36,7 @@ import javafx.stage.Stage;
 * current module which is then saved in a text file
 *
 * @author jcl513, gw679
-* @version v0.1 10/05/16
+* @version v0.2 25/05/16
 */
 public class GiveFeedbackGui {
 	
@@ -76,10 +76,22 @@ public class GiveFeedbackGui {
 	// or not depending on what the user has/hasn't clicked
 	private Boolean[] holdStar = new Boolean[5];
 	
+	// Path name will need changing and adapting for integration
+	private String textFilePath = null;
+	// Module name should be passed to this class so it can be displayed
+	private String moduleName;
+	private Client client;
+	private Stage stage;
 	
 	// Give feedback gui requires a stage to display on
 	// moduleName is the name of the current module to be displayed
-	public void start(Stage primaryStage, String moduleName) throws Exception {
+	public void start(Stage primaryStage, String moduleName, 
+						String textFilePath, Client client) throws Exception {
+		this.textFilePath = textFilePath;
+		this.moduleName = moduleName;
+		this.client = client;
+		this.stage = primaryStage;
+		
 		BorderPane guiLayout = new BorderPane();
 		Scene scene = new Scene(guiLayout);
 				
@@ -93,7 +105,7 @@ public class GiveFeedbackGui {
 		// 								buttons to submit or close window
 		VBox titleVBox = titleVBoxCreation(moduleName);
 		VBox feedbackEntryVBox = feedbackEntryVBoxCreation();
-		HBox buttonsHBox = buttonsHBoxCreation(primaryStage);
+		HBox buttonsHBox = buttonsHBoxCreation();
 		
 		// Add boxes to guiLayout
 	    guiLayout.setTop(titleVBox);
@@ -301,7 +313,7 @@ public class GiveFeedbackGui {
 	 * 
 	 * @return HBox  -  The box that contains the label and buttons
 	 */	
-	private HBox buttonsHBoxCreation(final Stage primaryStage) {
+	private HBox buttonsHBoxCreation() {
 		
 		// Create submit and close buttons
 		Button submitButton = new Button("Submit Feedback");
@@ -332,7 +344,6 @@ public class GiveFeedbackGui {
 					submittedComment = commentTextArea.getText();
 
 					submittedFeedback = formatSubmittedFeedback(submittedName, submittedComment, submittedRating);
-					System.out.println(submittedFeedback);
 
 					// For now the text filed is updated from here but may need to
 					// be done from the server in the future
@@ -344,8 +355,8 @@ public class GiveFeedbackGui {
 				        e1.printStackTrace();
 				    }
 					
-				    // Window is closed once user has submitted feedback
-					primaryStage.close();
+				    // View feedback gui is reopened after feedback is submitted
+				    launchViewFeedbackGui(stage, moduleName, textFilePath, client);
 				}
 			}
 		});
@@ -354,7 +365,7 @@ public class GiveFeedbackGui {
 		closeButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
-				primaryStage.close();
+				launchViewFeedbackGui(stage, moduleName, textFilePath, client);
 			}
 		});
 		
@@ -367,6 +378,22 @@ public class GiveFeedbackGui {
 		buttonsHBox.getChildren().addAll(submitButton, closeButton);
 		
 		return buttonsHBox;
+	}
+	
+	/**
+	 * Method to re-launch view feedback window in place of give feedback window
+	 * 
+	 * @param Stage - The stage to display the view feedback window in
+	 */
+	private void launchViewFeedbackGui(Stage stage, String moduleName, 
+										String textFilePath, Client client) {
+		ViewFeedbackGui viewFeedbackGui = new ViewFeedbackGui(moduleName, textFilePath, client);
+		try {
+			viewFeedbackGui.start(stage);
+		} catch (Exception e1) {
+			System.out.println("Unable to re-launch View Feedback Window");
+			e1.printStackTrace();
+		}
 	}
 	
 	/**
