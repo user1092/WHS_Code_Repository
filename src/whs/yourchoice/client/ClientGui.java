@@ -18,6 +18,8 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -25,6 +27,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -34,6 +37,7 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -49,7 +53,7 @@ import javafx.stage.Stage;
 /**
 * Class for creation of the Client GUI and adding functionality
 *
-* @author cd828 & ch1092
+* @author cd828, ch1092, ws659
 * @version v0.5 25/05/16
 */
 public class ClientGui extends Application{
@@ -57,10 +61,24 @@ public class ClientGui extends Application{
 	private Stage primaryStage;
 	private StackPane contentLayout;
 	private BorderPane loginLayout;
+	private GridPane modulePane;
 
 	private Button loginButton;
 	private Button connectButton;
 	private Button disconnectButton;
+	private Button requestModuleButton;
+	
+	private ComboBox<String> moduleCombo;
+	private ComboBox<String> streamCombo;
+	private ComboBox<String> yearCombo;
+	private ComboBox<String> courseCombo;
+	private String selModule;
+	private String selStream;
+	private String selYear;
+	private String selCourse;
+	ObservableList<String> obsStreams;
+	ObservableList<String> obsYear;
+	ObservableList<String> obsModules;
 	
 	// Presentation related declarations
 	private PresentationEntry presentation;
@@ -86,7 +104,6 @@ public class ClientGui extends Application{
 	
 	// ZIP related
 	private String tempPresentationDirectory = "temp";
-
 	
 	// Declare a backend for the client
 	private Client client;
@@ -171,6 +188,170 @@ public class ClientGui extends Application{
 		return buttonHBox;	
 	}
 	
+	/**
+	 * Creates a GridPane for module selection UI to be added
+	 * @return GridPane modulePlane
+	 */
+	private GridPane moduleGPCreation() {
+		GridPane modulePane = new GridPane();
+		modulePane.setPadding(new Insets(10, 0, 10, 0));
+		
+		return modulePane;
+	}
+	
+	/**
+	 * Adds UI elements for module selection
+	 */
+	private void addModuleSelection() {
+		modulePane = moduleGPCreation();
+		moduleCombo = constructModuleCombo();
+		Label moduleLable = new Label("Module:");
+		streamCombo = constructStreamCombo();
+		Label streamLable = new Label("Stream:");
+		yearCombo = constructYearCombo();
+		Label yearLable = new Label("Year:");
+		courseCombo = constructCourseCombo();
+		Label courseLable = new Label("Course:");
+		
+		//add module selector
+		GridPane.setRowIndex(moduleCombo, 1);
+		GridPane.setColumnIndex(moduleCombo, 2);
+		GridPane.setRowIndex(moduleLable, 1);
+		GridPane.setColumnIndex(moduleLable, 1);
+		modulePane.getChildren().addAll(moduleCombo, moduleLable);
+		
+		//add stream selector
+		GridPane.setRowIndex(streamCombo, 2);
+		GridPane.setColumnIndex(streamCombo, 2);
+		GridPane.setRowIndex(streamLable, 2);
+		GridPane.setColumnIndex(streamLable, 1);
+		modulePane.getChildren().addAll(streamCombo, streamLable);
+		
+		//add year selector
+		GridPane.setRowIndex(yearCombo, 3);
+		GridPane.setColumnIndex(yearCombo, 2);
+		GridPane.setRowIndex(yearLable, 3);
+		GridPane.setColumnIndex(yearLable, 1);
+		modulePane.getChildren().addAll(yearCombo, yearLable);
+		
+		//add course selector
+		GridPane.setRowIndex(courseCombo, 4);
+		GridPane.setColumnIndex(courseCombo, 2);
+		GridPane.setRowIndex(courseLable, 4);
+		GridPane.setColumnIndex(courseLable, 1);
+		modulePane.getChildren().addAll(courseCombo, courseLable);
+		
+		
+		contentLayout.getChildren().add(modulePane);
+	}
+	
+	/**
+	 * Creates a combobox for user to select Module
+	 * @return ComboBox moduleCombo
+	 */
+	private ComboBox<String> constructModuleCombo(){
+		ComboBox<String> moduleCombo = new ComboBox<String>();
+		ObservableList<String> obsModules = FXCollections.observableArrayList(client.getRevievedModules());
+		moduleCombo.setItems(obsModules);
+		moduleCombo.setDisable(true);
+		moduleCombo.setPrefSize(200, 30);
+		//listen for user selection
+		moduleCombo.valueProperty().addListener(new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue o, String oldModule, String newModule) {
+				selModule = newModule;
+			}
+		});
+		return moduleCombo;
+	}
+	
+	/**
+	 * Creates a combobox for user to select stream
+	 * @return ComboBox streamCombo
+	 */
+	private ComboBox<String> constructStreamCombo(){
+		ComboBox<String> streamCombo = new ComboBox<String>();
+		streamCombo.setDisable(true);
+		streamCombo.setPrefSize(200, 30);
+		
+		//listen for user selection
+		streamCombo.valueProperty().addListener(new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue o, String oldStream, String newStream) {
+				yearCombo.setDisable(true);
+				moduleCombo.setDisable(true);
+				if (!newStream.equals("")) {
+					selStream = newStream;
+					System.out.println(selStream);
+					if (!selCourse.equals("")) {
+						//get a list of matching years
+						obsYear = FXCollections.observableArrayList(client.getYearsByStream(selStream));
+						yearCombo.setItems(obsYear);
+						yearCombo.setDisable(false);
+					}
+				}
+			}
+		});
+		return streamCombo;
+	}
+	
+	/**
+	 * Creates a combobox for user to select Year
+	 * @return ComboBox yearCombo
+	 */
+	private ComboBox<String> constructYearCombo(){
+		ComboBox<String> yearCombo = new ComboBox<String>();
+		yearCombo.setDisable(true);
+		yearCombo.setPrefSize(200, 30);
+		
+		//listen for user selection
+		yearCombo.valueProperty().addListener(new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue o, String oldYear, String newYear) {
+				if (!newYear.equals("")) {
+					selYear = newYear;
+					if (!selCourse.equals("") && !selStream.equals("")) {
+						//get a list of matching modules
+						obsModules = FXCollections.observableArrayList(client.getModulesByYear(selYear));
+						moduleCombo.setItems(obsModules);
+						moduleCombo.setDisable(false);
+					}
+				}
+			}
+		});
+		return yearCombo;
+	}
+	
+	/**
+	 * Creates a combobox for user to select course
+	 * @return ComboBox courseCombo
+	 */
+	private ComboBox<String> constructCourseCombo(){
+		ComboBox<String> courseCombo = new ComboBox<String>();
+		ObservableList<String> obsCourse = FXCollections.observableArrayList(client.getRevievedCourses());
+		courseCombo.setItems(obsCourse);
+		courseCombo.setDisable(false);
+		courseCombo.setPrefSize(200, 30);
+		
+		//listen for user selection
+		courseCombo.valueProperty().addListener(new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue o, String oldCourse, String newCourse) {
+				streamCombo.setDisable(true);
+				yearCombo.setDisable(true);
+				moduleCombo.setDisable(true);
+				selCourse = newCourse;
+				if (!newCourse.equals("")) {
+					//get a list of matching streams
+					obsStreams = FXCollections.observableArrayList(client.getStreamByCourse(selCourse));
+					streamCombo.setItems(obsStreams);
+					streamCombo.setDisable(false);
+				}
+			}
+		});
+		return courseCombo;
+	}
+	
 
 	/**
 	 * Method to setup the request button
@@ -207,6 +388,8 @@ public class ClientGui extends Application{
 						if (validPassword) {
 							contentLayout.getChildren().clear();
 							requestModuleButtonSetup();
+							addModuleSelection();
+							//constructModuleCombo();
 						}
 					}
 				}

@@ -23,7 +23,6 @@ public class VideoEntry
 	private String videoSourceFile = null;
 	private boolean videoLoop = false;
 	
-	private boolean interactable = false;
 	private int targetSlide = -10;
 	
 	
@@ -45,23 +44,6 @@ public class VideoEntry
 		return targetSlide;
 	}
 	
-	/**
-	* setVideoInteractable method. Sets the interactable flag of the video.
-	* @param contents The interactable flag of the video.
-	*/
-	public void setVideoInteractable(boolean b)
-	{
-		interactable = b;
-	}
-	
-	/**
-	* getVideoInteractable method. Gets the interactable flag of the video.
-	* @return interactable Returns the interactable flag of the video.
-	*/
-	public boolean getVideoInteractable()
-	{
-		return interactable;
-	}
 	
 	/**
 	* setVideoStartTime method. Sets the start time of the video.
