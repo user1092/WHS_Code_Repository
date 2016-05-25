@@ -201,6 +201,7 @@ public class Server {
 				System.out.println("(null)Current Client" + currentClient.getID());
 				sendData(currentClient.getID(), currentClient.getID());
 				try {
+					System.out.println("Receiving public key");
 					currentClient.setPublicKey((Key) receiveData(currentClient.getID()));
 				} catch (ClassNotFoundException e1) {
 					// TODO Auto-generated catch block
