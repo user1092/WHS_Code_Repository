@@ -200,12 +200,6 @@ public class Server {
 				clients[clientNumber] = currentClient;
 				System.out.println("(null)Current Client" + currentClient.getID());
 				sendData(currentClient.getID(), currentClient.getID());
-//				try {
-//					Thread.sleep(50);
-//				} catch (InterruptedException e2) {
-//					// TODO Auto-generated catch block
-//					e2.printStackTrace();
-//				}
 				try {
 					System.out.println("Receiving public key");
 					currentClient.setPublicKey((Key) receiveData(currentClient.getID()));
