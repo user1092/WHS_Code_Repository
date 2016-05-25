@@ -643,7 +643,7 @@ public class PresentationGui extends Application {
 	 * @return ToggleButton  -  ToggleButton that changes the presentation mode
 	 */
 	private ToggleButton createModeButton() {
-		ToggleButton modeButton = new ToggleButton("Automatic");
+		final ToggleButton modeButton = new ToggleButton("Automatic");
 		modeButton.setMaxSize(80, 30);
 		modeButton.setPrefSize(80, 30);
 		modeButton.setMinSize(80, 30);
@@ -700,11 +700,11 @@ public class PresentationGui extends Application {
 	private ToggleButton createMuteButton() {
 		// Image for mute button
 		Image muteImage = new Image(getClass().getResourceAsStream("resources/mute.png"));
-		ImageView muteView = new ImageView(muteImage);
+		final ImageView muteView = new ImageView(muteImage);
 		Image unmutedImage = new Image(getClass().getResourceAsStream("resources/unmute.png"));
-		ImageView unmutedView = new ImageView(unmutedImage);
+		final ImageView unmutedView = new ImageView(unmutedImage);
 		// Instantiation of mute button
-		ToggleButton muteButton = new ToggleButton();
+		final ToggleButton muteButton = new ToggleButton();
 		muteButton.setGraphic(unmutedView);
 		muteButton.setMaxSize(50, 30);
 		muteButton.setPrefSize(50, 30);
@@ -751,7 +751,7 @@ public class PresentationGui extends Application {
 		playView = new ImageView(playImage);
 		// Image for the pause button
 		Image pauseImage = new Image(getClass().getResourceAsStream("resources/pause.png"));
-		ImageView pauseView = new ImageView(pauseImage);
+		final ImageView pauseView = new ImageView(pauseImage);
 		// Instantiation of play button
 		playButton = new ToggleButton();
 		// Set the image on the button
@@ -905,7 +905,7 @@ public class PresentationGui extends Application {
 	private void createFullScreenButton(final Stage slideStage) {
 		// Image for the full screen button
 		Image exitFullscreenImage = new Image(getClass().getResource("resources/exitFullscreen.png").toExternalForm());
-		ImageView exitFullscreenView = new ImageView(exitFullscreenImage);
+		final ImageView exitFullscreenView = new ImageView(exitFullscreenImage);
 		fullscreenImage = new Image(getClass().getResource("resources/fullscreen.png").toExternalForm());
 		fullscreenView = new ImageView(fullscreenImage);
 		// Instantiation of full screen button
