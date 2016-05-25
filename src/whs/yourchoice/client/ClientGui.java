@@ -19,17 +19,20 @@ import java.util.zip.ZipInputStream;
 
 import whs.yourchoice.parsers.PresentationParser;
 import whs.yourchoice.presentation.PresentationEntry;
-
+import whs.yourchoice.presentation.RegisteredModuleEntry;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -50,7 +53,7 @@ import javafx.stage.Stage;
 /**
 * Class for creation of the Client GUI and adding functionality
 *
-* @author cd828 & ch1092
+* @author cd828 & ch1092, ws659
 * @version v0.4 20/05/16
 */
 public class ClientGui extends Application{
@@ -64,8 +67,11 @@ public class ClientGui extends Application{
 	private Button connectButton;
 	private Button disconnectButton;
 	private Button requestModuleButton;
+	
+	ComboBox<String> moduleCombo;
+	
 	// presentation related declarations
-//	private File xmlFile;
+	// private File xmlFile;
 	private PresentationEntry presentation;
 	
 	// text box to show the file browse status
@@ -210,6 +216,7 @@ public class ClientGui extends Application{
 						if (validPassword) {
 							contentLayout.getChildren().clear();
 							requestModuleButtonSetup();
+							constructModuleCombo();
 						}
 					}
 				}
@@ -508,6 +515,16 @@ public class ClientGui extends Application{
 		fileMenu.getItems().addAll(openFile);
 		menuBar.getMenus().addAll(fileMenu, optionsMenu);
 		return menuBar;
+	}
+	
+	private void constructModuleCombo(){
+		moduleCombo = new ComboBox<String>();
+		ObservableList<String> obsModules = FXCollections.observableArrayList(client.getRevievedModules());
+		moduleCombo.setItems(obsModules);
+		moduleCombo.setDisable(false);
+		moduleCombo.setPrefSize(100, 30);
+		contentLayout.getChildren().add(moduleCombo);
+		
 	}
 	
 	

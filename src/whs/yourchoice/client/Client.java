@@ -9,8 +9,10 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.security.Key;
+import java.util.List;
 
 import whs.yourchoice.parsers.RegisteredModulesParser;
+import whs.yourchoice.presentation.RegisteredModuleEntry;
 import whs.yourchoice.presentation.RegisteredModules;
 import whs.yourchoice.utilities.encryption.ClientDetails;
 import whs.yourchoice.utilities.encryption.ClientPasswordHandler;
@@ -246,5 +248,14 @@ public class Client {
 			e.printStackTrace();
 		}
 	}
-		
+	
+	/**
+	 * Method to add combo boxes to allow the user to select modules
+	 * based on course, stream, academic year, module name.
+	 */
+	protected List<String> getRevievedModules(){
+		return moduleList.getAllModules();
+	}
 }
+		
+

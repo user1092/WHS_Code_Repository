@@ -45,4 +45,25 @@ public class RegisteredModules {
 		}
 		return returnModule;
 	}
+	
+	/**
+	 * Method to return size of list
+	 * @return int moduleList size
+	 */
+	public int getListSize(){
+		return moduleList.size();
+	}
+	
+	/**
+	 * Returns list of modules
+	 * @return List moduleList
+	 */
+	public List<String> getAllModules() {
+		List<String> moduleNames = new LinkedList<String>();
+		for (int i=0; i<moduleList.size(); i++) {
+			moduleNames.add(moduleList.get(i).getTitle());
+		}
+		
+		return moduleNames;
+	}
 }
