@@ -68,10 +68,10 @@ public class GiveFeedbackGui {
 	// 5 buttons used to display clickable star image and the corresponding
 	// images/image views to go with each button
 	private Button[] starButtons = new Button[5];
-	Image emptyStarImage;
-	Image fullStarImage;
-	ImageView[] emptyStarImageView = new ImageView[5];
-	ImageView[] fullStarImageView = new ImageView[5];
+	private Image emptyStarImage;
+	private Image fullStarImage;
+	private ImageView[] emptyStarImageView = new ImageView[5];
+	private ImageView[] fullStarImageView = new ImageView[5];
 	// Each button has a hold value dictating whether the image should toggle 
 	// or not depending on what the user has/hasn't clicked
 	private Boolean[] holdStar = new Boolean[5];
@@ -458,7 +458,6 @@ public class GiveFeedbackGui {
 				}
 			}
 		}
-		
 		return errorDetected;
 	}
 	
@@ -820,10 +819,7 @@ public class GiveFeedbackGui {
 	            		}
 	                }
 	            }
-	            
-	            
 	        }
-	
 		});
 		
 		starButtons[4].setOnAction(new EventHandler<ActionEvent>() {
@@ -850,5 +846,4 @@ public class GiveFeedbackGui {
 			}
 		});
 	}
-	
 }
