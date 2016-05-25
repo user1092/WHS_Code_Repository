@@ -41,6 +41,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -62,13 +63,13 @@ public class ClientGui extends Application{
 
 	private Stage primaryStage;
 	private StackPane contentLayout;
+	private GridPane modulePane;
 
 	private Button loginButton;
 	private Button connectButton;
 	private Button disconnectButton;
 	private Button requestModuleButton;
 	
-	ComboBox<String> moduleCombo;
 	
 	// presentation related declarations
 	// private File xmlFile;
@@ -175,6 +176,91 @@ public class ClientGui extends Application{
 		return buttonHBox;	
 	}
 	
+	private GridPane moduleGPCreation() {
+		GridPane modulePane = new GridPane();
+		modulePane.setPadding(new Insets(10, 0, 10, 0));
+		
+		return modulePane;
+	}
+	
+	private void addModuleSelection() {
+		modulePane = moduleGPCreation();
+		ComboBox<String> moduleCombo = constructModuleCombo();
+		Label moduleLable = new Label("Module:");
+		ComboBox<String> streamCombo = constructStreamCombo();
+		Label streamLable = new Label("Stream:");
+		ComboBox<String> yearCombo = constructYearCombo();
+		Label yearLable = new Label("Year:");
+		ComboBox<String> courseCombo = constructCourseCombo();
+		Label courseLable = new Label("Course:");
+		
+		GridPane.setRowIndex(moduleCombo, 1);
+		GridPane.setColumnIndex(moduleCombo, 2);
+		GridPane.setRowIndex(moduleLable, 1);
+		GridPane.setColumnIndex(moduleLable, 1);
+		modulePane.getChildren().addAll(moduleCombo, moduleLable);
+		
+		GridPane.setRowIndex(streamCombo, 2);
+		GridPane.setColumnIndex(streamCombo, 2);
+		GridPane.setRowIndex(streamLable, 2);
+		GridPane.setColumnIndex(streamLable, 1);
+		modulePane.getChildren().addAll(streamCombo, streamLable);
+		
+		GridPane.setRowIndex(yearCombo, 3);
+		GridPane.setColumnIndex(yearCombo, 2);
+		GridPane.setRowIndex(yearLable, 3);
+		GridPane.setColumnIndex(yearLable, 1);
+		modulePane.getChildren().addAll(yearCombo, yearLable);
+		
+		GridPane.setRowIndex(courseCombo, 4);
+		GridPane.setColumnIndex(courseCombo, 2);
+		GridPane.setRowIndex(courseLable, 4);
+		GridPane.setColumnIndex(courseLable, 1);
+		modulePane.getChildren().addAll(courseCombo, courseLable);
+		
+		
+		contentLayout.getChildren().add(modulePane);
+	}
+	
+	private ComboBox<String> constructModuleCombo(){
+		ComboBox<String> moduleCombo = new ComboBox<String>();
+		ObservableList<String> obsModules = FXCollections.observableArrayList(client.getRevievedModules());
+		moduleCombo.setItems(obsModules);
+		moduleCombo.setDisable(false);
+		moduleCombo.setPrefSize(200, 30);
+		//contentLayout.getChildren().add(moduleCombo);
+		return moduleCombo;
+	}
+	
+	private ComboBox<String> constructStreamCombo(){
+		ComboBox<String> streamCombo = new ComboBox<String>();
+		ObservableList<String> obsStreams = FXCollections.observableArrayList(client.getRevievedStreams());
+		streamCombo.setItems(obsStreams);
+		streamCombo.setDisable(false);
+		streamCombo.setPrefSize(200, 30);
+		//contentLayout.getChildren().add(moduleCombo);
+		return streamCombo;
+	}
+	
+	private ComboBox<String> constructYearCombo(){
+		ComboBox<String> yearCombo = new ComboBox<String>();
+		ObservableList<String> obsYear = FXCollections.observableArrayList(client.getRevievedYears());
+		yearCombo.setItems(obsYear);
+		yearCombo.setDisable(false);
+		yearCombo.setPrefSize(200, 30);
+		//contentLayout.getChildren().add(moduleCombo);
+		return yearCombo;
+	}
+	
+	private ComboBox<String> constructCourseCombo(){
+		ComboBox<String> courseCombo = new ComboBox<String>();
+		ObservableList<String> obsCourse = FXCollections.observableArrayList(client.getRevievedCourses());
+		courseCombo.setItems(obsCourse);
+		courseCombo.setDisable(false);
+		courseCombo.setPrefSize(200, 30);
+		//contentLayout.getChildren().add(moduleCombo);
+		return courseCombo;
+	}
 
 	/**
 	 * Method to setup the request button
@@ -216,7 +302,8 @@ public class ClientGui extends Application{
 						if (validPassword) {
 							contentLayout.getChildren().clear();
 							requestModuleButtonSetup();
-							constructModuleCombo();
+							addModuleSelection();
+							//constructModuleCombo();
 						}
 					}
 				}
@@ -515,16 +602,6 @@ public class ClientGui extends Application{
 		fileMenu.getItems().addAll(openFile);
 		menuBar.getMenus().addAll(fileMenu, optionsMenu);
 		return menuBar;
-	}
-	
-	private void constructModuleCombo(){
-		moduleCombo = new ComboBox<String>();
-		ObservableList<String> obsModules = FXCollections.observableArrayList(client.getRevievedModules());
-		moduleCombo.setItems(obsModules);
-		moduleCombo.setDisable(false);
-		moduleCombo.setPrefSize(100, 30);
-		contentLayout.getChildren().add(moduleCombo);
-		
 	}
 	
 	

@@ -251,10 +251,34 @@ public class Client {
 	
 	/**
 	 * Method to add combo boxes to allow the user to select modules
-	 * based on course, stream, academic year, module name.
+	 * 
 	 */
 	protected List<String> getRevievedModules(){
 		return moduleList.getAllModules();
+	}
+	
+	/**
+	 * Method to add combo boxes to allow the user to select streams
+	 * 
+	 */
+	protected List<String> getRevievedStreams(){
+		return moduleList.getAllStreams();
+	}
+	
+	/**
+	 * Method to add combo boxes to allow the user to select years
+	 * 
+	 */
+	protected List<String> getRevievedYears(){
+		return moduleList.getAllYears();
+	}
+	
+	/**
+	 * Method to add combo boxes to allow the user to select course
+	 * 
+	 */
+	protected List<String> getRevievedCourses(){
+		return moduleList.getAllCourses();
 	}
 }
 		
