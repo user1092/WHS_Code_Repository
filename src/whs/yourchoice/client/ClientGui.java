@@ -1,7 +1,7 @@
 /**
-* ClientGui.java v0.4 20/05/16
-*
-* Copyright and Licensing Information if applicable
+* Licensing information
+* 
+* Copyright Woolly Hat Software
 */
 
 package whs.yourchoice.client;
@@ -50,11 +50,9 @@ import javafx.stage.Stage;
 * Class for creation of the Client GUI and adding functionality
 *
 * @author cd828 & ch1092
-* @version v0.4 25/05/16
+* @version v0.5 25/05/16
 */
 public class ClientGui extends Application{
-	// object for the file chooser for getting the XML file
-	private FileChooser xmlFileChooser;
 
 	private Stage primaryStage;
 	private StackPane contentLayout;
@@ -63,7 +61,6 @@ public class ClientGui extends Application{
 	private Button loginButton;
 	private Button connectButton;
 	private Button disconnectButton;
-	private Button requestModuleButton;
 	
 	// Presentation related declarations
 	private PresentationEntry presentation;
@@ -80,10 +77,12 @@ public class ClientGui extends Application{
 	private boolean autoConnect = true;
 	private boolean validPassword = false;
 	private boolean adminMode = false;
-	private final static String numbers = "0123456789";
-	private final static String lowercase = "abcdefghijklmnopqrstuvwxyz";
-	private final static String uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-	private final static String acceptablePasswordCharacters = numbers+lowercase+uppercase;
+	
+	// Character restrictions on admin password
+	private final static String NUMBERS = "0123456789";
+	private final static String LOWERCASE = "abcdefghijklmnopqrstuvwxyz";
+	private final static String UPPERCASE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	private final static String ACCEPTABLE_PASSWORD_CHARACTERS = NUMBERS+LOWERCASE+UPPERCASE;
 	
 	// ZIP related
 	private String tempPresentationDirectory = "temp";
@@ -98,11 +97,9 @@ public class ClientGui extends Application{
 		client = new Client();
 	}
 	
-	
 	public static void main(String[] args) {
 		launch(ClientGui.class, args);
 	}
-	
 	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -154,6 +151,7 @@ public class ClientGui extends Application{
 
 	/**
 	 * Method for the creation of the HBox that contains the buttons
+	 * 
 	 * @return HBox  -  The box that contains the buttons 
 	 */
 	private HBox buttonHBoxCreation() {
@@ -221,7 +219,7 @@ public class ClientGui extends Application{
 	 * Method to create a request module button and place it on the content layout
 	 */
 	private void requestModuleButtonSetup() {
-		requestModuleButton = new Button("Request Module");
+		Button requestModuleButton = new Button("Request Module");
 		requestModuleButton.setDisable(false);
 		requestModuleButton.setPrefSize(150, 20);
 		contentLayout.getChildren().add(requestModuleButton);
@@ -254,8 +252,6 @@ public class ClientGui extends Application{
 					connectButton.setDisable(false);
 					disconnectButton.setDisable(true);
 				} catch (IOException e2) {
-					// TODO Auto-generated catch block
-//					e.printStackTrace();
 					System.out.println("Could not connect to server");
 					connectButton.setDisable(false);
 					disconnectButton.setDisable(true);
@@ -295,6 +291,7 @@ public class ClientGui extends Application{
 	
 	/**
 	 * Method for the creation of the HBox that contains the log for the file explorer
+	 * 
 	 * @return HBox  -  The box that contains the log for the file explorer
 	 */
 	private HBox logHBoxCreation() {
@@ -312,7 +309,9 @@ public class ClientGui extends Application{
 	
 	
 	/**
-	 * @return
+	 * Method for the creation of the HBox that contains the password label and text field
+	 * 
+	 * @return HBox  -  The box that contains the label and text field
 	 */
 	private HBox passwordHBoxCreation() {
 		HBox passwordHBox = new HBox();
@@ -331,6 +330,12 @@ public class ClientGui extends Application{
 	}
 	
 	
+	/**
+	 * Method to limit the length of the password
+	 * 
+	 * @param tf  -  The text field which the limit is applied to
+	 * @param maxLength  -  The maximum length of the text field
+	 */
 	public static void addTextLimiter(final TextField tf, final int maxLength) {
 	    tf.textProperty().addListener(new ChangeListener<String>() {
 	        @Override
@@ -343,12 +348,16 @@ public class ClientGui extends Application{
 	    });
 	}
 	
-	
+	/**
+	 * Event handler to restrict the characters entered in the password text field
+	 * 
+	 * @return EventHandler  -  The handler that restricts the characters
+	 */
 	public static EventHandler<KeyEvent> charFilter() {
 
         EventHandler<KeyEvent> aux = new EventHandler<KeyEvent>() {
             public void handle(KeyEvent keyEvent) {
-                if (!acceptablePasswordCharacters.contains(keyEvent.getCharacter())) {
+                if (!ACCEPTABLE_PASSWORD_CHARACTERS.contains(keyEvent.getCharacter())) {
                     keyEvent.consume();
                 }
             }
@@ -358,7 +367,9 @@ public class ClientGui extends Application{
 	
 	
 	/**
-	 * @return
+	 * Method for creating the HBox that contains the admin login check box
+	 * 
+	 * @return HBox  -  The HBox that contains the check box
 	 */
 	private HBox adminLoginHBoxCreation() {
 		HBox admninLoginHBox = new HBox();
@@ -386,7 +397,9 @@ public class ClientGui extends Application{
 	
 	
 	/**
-	 * @return
+	 * Method that creates the VBox that contains passwordHBox and the guestLoginHBox
+	 * 
+	 * @return VBox  -  The VBox that containts the two other HBoxes
 	 */
 	private VBox loginVBoxCreation() {
 		VBox loginVBox = new VBox();
@@ -400,6 +413,7 @@ public class ClientGui extends Application{
 	
 	/**
 	 * Method that creates the menu bar on the top of the window
+	 * 
 	 * @return menuBar  -  menu bar object that contains the open file and configure menus
 	 */
 	private MenuBar createMenuBar() {
@@ -423,9 +437,11 @@ public class ClientGui extends Application{
 		});
 		// File->OpenFile... submenu 
         MenuItem openFile = new MenuItem("Open File...");
+        
         openFile.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
-            	xmlFileChooser = new FileChooser();
+            	// object for the file chooser for getting the XML file
+            	FileChooser xmlFileChooser = new FileChooser();
 				// Restrict choice of files to xml
 				FileChooser.ExtensionFilter extensionFilter = new FileChooser.ExtensionFilter("XML files (*.xml, *.XML)", "*.xml", "*.XML");
 				xmlFileChooser.getExtensionFilters().add(extensionFilter);
@@ -481,7 +497,6 @@ public class ClientGui extends Application{
 	 * @return iD	-	The ID of the client
 	 */
 	protected int getID() {
-		// TODO Auto-generated method stub
 		return client.getID();
 	}
 	
@@ -517,8 +532,6 @@ public class ClientGui extends Application{
 						connectButton.setDisable(false);
 						disconnectButton.setDisable(true);
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
-//						e.printStackTrace();
 						System.out.println("Could not connect to server");
 						Platform.runLater(new Runnable() {
 							@Override public void run() {
@@ -559,8 +572,6 @@ public class ClientGui extends Application{
 						e.printStackTrace();
 					}
 				}
-				
-				
 				
 				Platform.runLater(new Runnable() {
 		    		 public void run() {
