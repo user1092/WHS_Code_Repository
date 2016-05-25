@@ -53,7 +53,7 @@ import javafx.stage.Stage;
 /**
 * Class for creation of the Client GUI and adding functionality
 *
-* @author cd828 & ch1092
+* @author cd828, ch1092, ws659
 * @version v0.5 25/05/16
 */
 public class ClientGui extends Application{
@@ -66,14 +66,7 @@ public class ClientGui extends Application{
 	private Button loginButton;
 	private Button connectButton;
 	private Button disconnectButton;
-	
-	// Presentation related declarations
-	private PresentationEntry presentation;
-	
-	// text box to show the file browse status
-	private Text actionStatus;
-	
-	private PasswordField passwordTextField;
+	private Button requestModuleButton;
 	
 	private ComboBox<String> moduleCombo;
 	private ComboBox<String> streamCombo;
@@ -86,6 +79,14 @@ public class ClientGui extends Application{
 	ObservableList<String> obsStreams;
 	ObservableList<String> obsYear;
 	ObservableList<String> obsModules;
+	
+	// Presentation related declarations
+	private PresentationEntry presentation;
+	
+	// text box to show the file browse status
+	private Text actionStatus;
+	
+	private PasswordField passwordTextField;
 	
 	private CheckBox adminCheckBox;
 	
@@ -103,7 +104,6 @@ public class ClientGui extends Application{
 	
 	// ZIP related
 	private String tempPresentationDirectory = "temp";
-
 	
 	// Declare a backend for the client
 	private Client client;
@@ -187,7 +187,7 @@ public class ClientGui extends Application{
 		
 		return buttonHBox;	
 	}
-
+	
 	/**
 	 * Creates a GridPane for module selection UI to be added
 	 * @return GridPane modulePlane
@@ -351,6 +351,7 @@ public class ClientGui extends Application{
 		});
 		return courseCombo;
 	}
+	
 
 	/**
 	 * Method to setup the request button
@@ -388,6 +389,7 @@ public class ClientGui extends Application{
 							contentLayout.getChildren().clear();
 							requestModuleButtonSetup();
 							addModuleSelection();
+							//constructModuleCombo();
 						}
 					}
 				}

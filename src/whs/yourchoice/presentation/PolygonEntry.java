@@ -30,7 +30,6 @@ public class PolygonEntry
 	private float polygonShadeY2 = -10;
 	private String polygonShadeColour2 = null;
 	
-	private boolean interactable = false;
 	private int targetSlide = -10;
 	
 	
@@ -52,23 +51,6 @@ public class PolygonEntry
 		return targetSlide;
 	}
 	
-	/**
-	* setPolygonInteractable method. Sets the interactable flag of the polygon.
-	* @param contents The interactable flag of the polygon.
-	*/
-	public void setPolygonInteractable(boolean b)
-	{
-		interactable = b;
-	}
-	
-	/**
-	* getPolygonInteractable method. Gets the interactable flag of the polygon.
-	* @return interactable Returns the interactable flag of the polygon.
-	*/
-	public boolean getPolygonInteractable()
-	{
-		return interactable;
-	}
 	
 	/**
 	* setPolygonStartTime method. Sets the start time of the polygon.
