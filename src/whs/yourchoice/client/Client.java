@@ -13,8 +13,10 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.security.Key;
+import java.util.List;
 
 import whs.yourchoice.parsers.RegisteredModulesParser;
+import whs.yourchoice.presentation.RegisteredModuleEntry;
 import whs.yourchoice.presentation.RegisteredModules;
 import whs.yourchoice.utilities.encryption.ClientDetails;
 import whs.yourchoice.utilities.encryption.ClientPasswordHandler;
@@ -276,5 +278,65 @@ public class Client {
 			e.printStackTrace();
 		}
 	}
-		
+	
+	/**
+	 * Method to add combo boxes to allow the user to select modules
+	 * 
+	 */
+	protected List<String> getRevievedModules(){
+		return moduleList.getAllModules();
+	}
+	
+	/**
+	 * Method to add combo boxes to allow the user to select streams
+	 * 
+	 */
+	protected List<String> getRevievedStreams(){
+		return moduleList.getAllStreams();
+	}
+	
+	/**
+	 * Method to add combo boxes to allow the user to select years
+	 * 
+	 */
+	protected List<String> getRevievedYears(){
+		return moduleList.getAllYears();
+	}
+	
+	/**
+	 * Method to add combo boxes to allow the user to select course
+	 * 
+	 */
+	protected List<String> getRevievedCourses(){
+		return moduleList.getAllCourses();
+	}
+	
+	/**
+	 * Method that lists streams by associated course
+	 * @param String course
+	 * @return List<String> List of streams
+	 */
+	protected List<String> getStreamByCourse(String course) {
+		return moduleList.searchStreamByCourse(course);
+	}
+	
+	/**
+	 * Method that lists years by associated streams
+	 * @param String stream
+	 * @return List<String> List of years
+	 */
+	protected List<String> getYearsByStream(String stream) {
+		return moduleList.searchYearsByStream(stream);
+	}
+	
+	/**
+	 * Method that lists modules by associated years
+	 * @param String year
+	 * @return List<String> List of years
+	 */
+	protected List<String> getModulesByYear(String year) {
+		return moduleList.searchModulesByYear(year);
+	}
 }
+		
+

@@ -137,6 +137,7 @@ public class PresentationGui extends Application {
 	
 	// Location of where VLC is installed
 	private String vlcLibraryLocation;
+
 	
 	// Set VLC video output to a dummy, waveout used as bug with DX
 	private final String[] VLC_ARGS = {"--vout", "dummy", "--aout", "waveout"};
@@ -182,6 +183,7 @@ public class PresentationGui extends Application {
 		}
 		else {
 			vlcLibraryLocation = new File("").getAbsolutePath() + "/vlc-2.1.0-win64";
+			//vlcLibraryLocation = "/Applications/VLC.app/Contents/MacOS/lib";
 		}
 		System.out.println(vlcLibraryLocation);
 		NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), vlcLibraryLocation);
