@@ -129,6 +129,8 @@ public class PresentationGui extends Application {
 	private Image playImage;
 	private ImageView playView;
 	private ToggleButton fullScreenButton;
+	private Image fullscreenImage;
+	private ImageView fullscreenView;
 	
 	private PresentationEntry presentation;
 	private Client client;
@@ -245,6 +247,7 @@ public class PresentationGui extends Application {
 		scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
 	        public void handle(KeyEvent ke) {
 	            if (ke.getCode() == KeyCode.ESCAPE) {
+	            	fullScreenButton.setGraphic(fullscreenView);
 	            	fullScreenButton.setSelected(true);
 	            }
 	        }
@@ -516,7 +519,7 @@ public class PresentationGui extends Application {
 	 */
 	private void nextSlideButtonSetup() {
 		// Image for next slide button
-		Image nextSlideImage = new Image(getClass().getResourceAsStream("resources/nextbutton.png"));
+		Image nextSlideImage = new Image(getClass().getResourceAsStream("resources/nextSlide.png"));
 		ImageView nextSlideView = new ImageView(nextSlideImage);
 		// Instantiation of next slide button
 		nextSlideButton = new Button();
@@ -561,7 +564,7 @@ public class PresentationGui extends Application {
 	 */
 	private void previousSlideButtonSetup() {
 		// Image for previous slide button
-		Image previousSlideImage = new Image(getClass().getResourceAsStream("resources/previousbutton.png"));
+		Image previousSlideImage = new Image(getClass().getResourceAsStream("resources/previousSlide.png"));
 		ImageView previousSlideView = new ImageView(previousSlideImage);
 		// Instantiation of previous slide button
 		previousSlideButton = new Button();
@@ -901,20 +904,24 @@ public class PresentationGui extends Application {
 	 */
 	private void createFullScreenButton(final Stage slideStage) {
 		// Image for the full screen button
-		Image exitImage = new Image(getClass().getResource("resources/exit.png").toExternalForm());
-		ImageView exitView = new ImageView(exitImage);
+		Image exitFullscreenImage = new Image(getClass().getResource("resources/exitFullscreen.png").toExternalForm());
+		ImageView exitFullscreenView = new ImageView(exitFullscreenImage);
+		fullscreenImage = new Image(getClass().getResource("resources/fullscreen.png").toExternalForm());
+		fullscreenView = new ImageView(fullscreenImage);
 		// Instantiation of full screen button
 		fullScreenButton = new ToggleButton();
 		// Set the image on the button
-		fullScreenButton.setGraphic(exitView);
+		fullScreenButton.setGraphic(exitFullscreenView);
 		
 		fullScreenButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
 				if (fullScreenButton.isSelected() == true) {
+					fullScreenButton.setGraphic(fullscreenView);
 					slideStage.setFullScreen(false);
 				}
 				else {
+					fullScreenButton.setGraphic(exitFullscreenView);
 					slideStage.setFullScreen(true);
 				}
 			}

@@ -152,7 +152,7 @@ public class VideoPlayer{
 	 * Method for the creation of the stop button on the control bar
 	 */
 	private void createStopButton() {
-		stopImage = new Image(getClass().getResourceAsStream("resources/stop.png"));
+		stopImage = new Image(getClass().getResourceAsStream("resources/stopSmall.png"));
 		stopView = new ImageView(stopImage);
 		// stop button on tool bar
 		stopButton = new Button();
@@ -177,7 +177,7 @@ public class VideoPlayer{
 	 */
 	private void createLoopButton() {
 		// Loop Button 
-		loopImage = new Image(getClass().getResourceAsStream("resources/loop.png"));
+		loopImage = new Image(getClass().getResourceAsStream("resources/loopSmall.png"));
 		loopView = new ImageView(loopImage);
 		loopButton = new Button();
 		loopButton.setGraphic(loopView);
@@ -227,9 +227,9 @@ public class VideoPlayer{
 	 */
 	private void createMuteButton() {
 		// image for mute button
-		muteImage = new Image(getClass().getResourceAsStream("resources/mute.png"));
+		muteImage = new Image(getClass().getResourceAsStream("resources/muteSmall.png"));
 		muteView = new ImageView(muteImage);
-		unmutedImage = new Image(getClass().getResourceAsStream("resources/unmute.png"));
+		unmutedImage = new Image(getClass().getResourceAsStream("resources/unmuteSmall.png"));
 		unmutedView = new ImageView(unmutedImage);
 		// instantiation of mute button
 		muteButton = new ToggleButton();
@@ -258,10 +258,10 @@ public class VideoPlayer{
 	 */
 	private void createPlayButton() {
 		// image for the play button
-		playImage = new Image(getClass().getResourceAsStream("resources/play.png"));
+		playImage = new Image(getClass().getResourceAsStream("resources/playSmall.png"));
 		playView = new ImageView(playImage);
 		// image for the pause button
-		pauseImage = new Image(getClass().getResourceAsStream("resources/pause.png"));
+		pauseImage = new Image(getClass().getResourceAsStream("resources/pauseSmall.png"));
 		pauseView = new ImageView(pauseImage);
 		// instantiation of play button
 		playButton = new ToggleButton();
