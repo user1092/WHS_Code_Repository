@@ -1,22 +1,6 @@
 <?xml version="1.0"?>
 <registeredModules>
     <module>
-        <code>ELE000034</code>
-        <course>Electronics</course>
-        <stream>Electronics and Computer Engineering</stream>
-        <year>3</year>
-        <title>Software Engineering</title>
-        <filename>ele000034.zip</filename>
-    </module>
-    <module>
-        <code>ELE000054</code>
-        <course>Electronics</course>
-        <stream>Electronics and Computer Engineering</stream>
-        <year>3</year>
-        <title>Further Digital Engineering</title>
-        <filename>ele000054.zip</filename>
-    </module>
-    <module>
         <code>PH000079</code>
         <course>Philosophy</course>
         <stream>Bhuddist Philosophy</stream>
@@ -31,5 +15,53 @@
         <year>1</year>
         <title>Example Title</title>
         <filename>Example_Presentation.zip</filename>
+    </module>
+    <module>
+        <code>ELE00004C</code>
+        <course>Electronics</course>
+        <stream>Electronics and Electromagnetics</stream>
+        <year>1</year>
+        <title>Analogue Electronics</title>
+        <filename>AnalogueElectronics.zip</filename>
+    </module>
+    <module>
+        <code>ELE00005C</code>
+        <course>Electronics</course>
+        <stream>Digital and Computing</stream>
+        <year>1</year>
+        <title>Digital Electronics</title>
+        <filename>DigitalElectronics.zip</filename>
+    </module>
+    <module>
+        <code>ELE00002H</code>
+        <course>Electronics</course>
+        <stream>Electronics and Electromagnetics</stream>
+        <year>3</year>
+        <title>Electromagnetic Fields and Waves</title>
+        <filename>EMFandW.zip</filename>
+    </module>
+    <module>
+        <code>ELE00002C</code>
+        <course>Electronics</course>
+        <stream>Digital and Computing</stream>
+        <year>1</year>
+        <title>Maths and Programming</title>
+        <filename>MathsAndProgramming.zip</filename>
+    </module>
+    <module>
+        <code>ELE00025H</code>
+        <course>Electronics</course>
+        <stream>Nanotechnology</stream>
+        <year>3</year>
+        <title>Photonics and Nanophotonics</title>
+        <filename>PhotonicsandNanophotonics.zip</filename>
+    </module>
+    <module>
+        <code>ELE00001I</code>
+        <course>Electronics</course>
+        <stream>Electronics and Electromagnetics</stream>
+        <year>2</year>
+        <title>Signals and Systems</title>
+        <filename>SignalsAndSystems.zip</filename>
     </module>
 </registeredModules>
