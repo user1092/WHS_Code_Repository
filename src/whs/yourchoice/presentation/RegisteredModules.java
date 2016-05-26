@@ -220,6 +220,29 @@ public class RegisteredModules {
 	}
 	
 	/**
+	 * returns all relevant modules when all combo boxes selected
+	 * @param String course
+	 * @param String stream
+	 * @param String year
+	 * @return List<String> results
+	 */
+	public List<String> searchResultModules(String course, String stream, String year) {
+		List<String> results = new LinkedList<String>();
+		RegisteredModuleEntry tempModule;
+		int iYear = Integer.parseInt(year);
+		
+		for (int i=0; i<moduleList.size(); i++) {
+			tempModule = moduleList.get(i);
+			if (iYear == tempModule.getYear() 
+					&& stream.equals(tempModule.getStream())
+					&& course.equals(tempModule.getCourse())) {
+				results.add(moduleList.get(i).getTitle());
+			}
+		}
+		return results;
+	}
+	
+	/**
 	 * Method that removes duplicate entries in a List<Sting>
 	 * @param List<String> input
 	 * @return List<String> output
