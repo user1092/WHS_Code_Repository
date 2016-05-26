@@ -6,7 +6,10 @@
 package whs.yourchoice.presentation;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+
+import whs.yourchoice.client.TimeInPresentationComparator;
 
 /**
 * This class is responsible for storing the presentation object contained in the XML file.
@@ -40,6 +43,8 @@ public class PresentationEntry
 	*/
 	public List<SlideEntry> getSlideList()
 	{
+		// Sort List by slideID
+		Collections.sort(slideList, new SlideIDComparator());
 		return slideList;
 	}
 	
