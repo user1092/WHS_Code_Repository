@@ -50,6 +50,8 @@ public class CommentParser {
 		float ratingTotal = 0;
 		float ratingCounter = 0;
 		
+		int remainder = 0;
+		
 		BufferedReader br = null;
 		try {
 			
@@ -57,7 +59,7 @@ public class CommentParser {
 			br = new BufferedReader(new FileReader(textFilePath));
 			String line;
 			while ((line = br.readLine()) != null) {
-
+				
 			    // Regex code to split a line of the text file by commas, only if the comma
 				// is followed by an even number of quotation marks
 				// This means that commas inside quotation marks won't cause a line split
@@ -67,6 +69,7 @@ public class CommentParser {
 				tokenList.add(tokens[0]);
 				tokenList.add(tokens[1]);
 				tokenList.add(tokens[2]);
+				tokenList.add(tokens[3]);
 			}
 
 		} catch (FileNotFoundException e) {
@@ -88,17 +91,21 @@ public class CommentParser {
 		{
 			// Store the current item in tempString for re-formatting
 			tempString = tokenList.get(i);			
-			
-			if (i%3 != 2)
+			remainder = i%4;
+			System.out.println(tempString);
+			switch(remainder)
 			{
-				// If i is not 2 more than a multiple of three, the current item is not a rating
-				// Therefore the first and last characters, which will be quotation marks, can be removed
-				tempString = tempString.substring(1, tempString.length()-1);
-				tokenList.set(i,tempString);
-				
-				// If i is 1 more than a multiple of 3, the current item will be a comment
-				if (i%3 == 1)
-				{
+				// Current item is a name
+				case 0:
+					// Remove quotation marks surrounding name
+					tempString = tempString.substring(1, tempString.length()-1);
+					break;
+					
+				// Current item is a comment
+				case 1:
+					// Remove quotation marks surrounding comment
+					tempString = tempString.substring(1, tempString.length()-1);
+					
 					// If the comment is longer than the character limit new lines 
 					// need to be inserted
 					// This is essentially manual text wrapping
@@ -124,24 +131,28 @@ public class CommentParser {
 							tempString = tempString.substring(0, location + 1) + "\n" 
 										+ tempString.substring(location + 1, tempString.length());	
 						}
-						
-						// The reformatted string then replaces the original in the list
-						tokenList.set(i,tempString);
 					}
-				}
+					break;
+					
+				// Current item is a rating
+				case 2:
+					// Parse the current rating as an integer for averaging purposes
+					ratingTotal += Integer.parseInt(tempString);
+					ratingCounter++;
+					break;
+					
+				// Current item is a score therefore a new instance of Feedback can be
+				// created
+				case 3:
+					feedback.add(new Feedback(tokenList.get(i-3), tokenList.get(i-2), 
+							tokenList.get(i-1), tokenList.get(i)));
+					break;
+					
+				default:
+					break;
 			}
-			
-			// If i is 2 more than a multiple of 3, the current item is a rating and 
-			// so a new instance of the comment class can be created
-			else
-			{
-				feedback.add(new Feedback(tokenList.get(i-2), tokenList.get(i-1), 
-								tokenList.get(i)));
-				
-				// Parses the current rating as an integer for averaging purposes
-				ratingTotal += Integer.parseInt(tempString);
-				ratingCounter++;
-			}
+			// Set formatted item into list
+			tokenList.set(i,tempString);
 		}
 		
 		// Calculates average rating

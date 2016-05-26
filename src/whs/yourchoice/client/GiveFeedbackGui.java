@@ -571,7 +571,7 @@ public class GiveFeedbackGui {
 		// into text file by surrounding name and comment with quotation marks
 		// and inserting a comma between each field
 		formattedFeedback = "\"" + name + "\",\"" + comment 
-				+ "\"," + rating + ","; 
+				+ "\"," + rating + "," + "0,"; 
 		
 		return formattedFeedback;
 	}

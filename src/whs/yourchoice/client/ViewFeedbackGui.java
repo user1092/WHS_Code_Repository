@@ -6,6 +6,10 @@
 
 package whs.yourchoice.client;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+
 import javafx.application.Application;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -17,6 +21,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -28,6 +33,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 
 import whs.yourchoice.parsers.CommentParser;
 
@@ -101,9 +107,39 @@ public class ViewFeedbackGui extends Application {
 		// Main stage set up with appropriate scene and size
 		primaryStage.setScene(scene);
 		primaryStage.setHeight(500);
-		primaryStage.setWidth(800);
+		primaryStage.setWidth(750);
 		primaryStage.setTitle("Module Feedback");
 		primaryStage.show();
+	}
+	
+	private void saveFeedback(){
+		String tempString = "";
+		String tempComment = "";
+		
+		try (BufferedWriter bw = new BufferedWriter(new FileWriter("src/DemoModuleComments.txt", false))){
+	        
+			for (int i = 0; i < feedback.size(); i++) {
+				tempComment = feedback.get(i).getComment();
+				tempComment = tempComment.replace("\n", "");
+				
+				tempString = "\"" 	+ feedback.get(i).getName() + "\",\"" 
+									+ tempComment + "\","
+									+ feedback.get(i).getRating() + ","
+									+ feedback.get(i).getScore() + ",";
+				
+				bw.write(tempString);
+				if (i != feedback.size() - 1) {
+					bw.newLine();
+				}
+				System.out.println(tempString);
+			}
+			
+			//bw.newLine();
+	    	//bw.write(submittedFeedback);
+	        bw.close();
+	    } catch (IOException e1) {
+	        e1.printStackTrace();
+	    }
 	}
 	
 	/**
@@ -146,6 +182,7 @@ public class ViewFeedbackGui extends Application {
 		returnButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
+				saveFeedback();
 				primaryStage.close();
 			}
 		});
@@ -157,6 +194,7 @@ public class ViewFeedbackGui extends Application {
 			@Override
 			public void handle(ActionEvent e) {
 				try {
+					saveFeedback();
 					start(primaryStage);
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
@@ -228,6 +266,14 @@ public class ViewFeedbackGui extends Application {
 	 */
 	private VBox tableVBoxCreation(){
 		
+		final Boolean rowVoted[][] = new Boolean[feedback.size()][2];
+		
+		for (int i = 0; i < feedback.size(); i++)
+		{
+			rowVoted[i][0] = false;
+			rowVoted[i][1] = false;
+		}
+		
 		// Sets up three columns to contain the information in the text file 
        TableColumn<Feedback,String> nameCol = new TableColumn<Feedback,String>("Name");
        nameCol.setMinWidth(110);
@@ -235,14 +281,120 @@ public class ViewFeedbackGui extends Application {
        nameCol.setCellValueFactory(new PropertyValueFactory<Feedback, String>("name"));
        
        TableColumn<Feedback,String> commentCol = new TableColumn<Feedback,String>("Comment");
-       commentCol.setMinWidth(500);
-       commentCol.setMaxWidth(500);
+       commentCol.setMinWidth(300);
+       commentCol.setMaxWidth(300);
        commentCol.setCellValueFactory(new PropertyValueFactory<Feedback, String>("comment"));
        
        TableColumn<Feedback,String> ratingCol = new TableColumn<Feedback,String>("Rating");
-       ratingCol.setMinWidth(100);
-       ratingCol.setMaxWidth(100);
+       ratingCol.setMinWidth(60);
+       ratingCol.setMaxWidth(60);
        ratingCol.setCellValueFactory(new PropertyValueFactory<Feedback, String>("rating"));
+       
+       TableColumn<Feedback,String> scoreCol = new TableColumn<Feedback,String>("Score");
+       scoreCol.setMinWidth(60);
+       scoreCol.setMaxWidth(60);
+       scoreCol.setCellValueFactory(new PropertyValueFactory<Feedback, String>("score"));
+       
+       TableColumn<Feedback,String> upvoteCol = new TableColumn<Feedback,String>("Vote");
+       upvoteCol.setCellValueFactory(new PropertyValueFactory<Feedback,String>("DUMMY"));
+       
+       Callback<TableColumn<Feedback, String>, TableCell<Feedback, String>> cellFactory =
+       new Callback<TableColumn<Feedback, String>, TableCell<Feedback, String>>()
+       {
+           @Override
+           public TableCell<Feedback,String> call( final TableColumn<Feedback, String> param )
+           {
+               final TableCell<Feedback, String> cell = new TableCell<Feedback, String>()
+               {
+
+                   final Button btn = new Button("Up");
+
+                   @Override
+                   public void updateItem( String item, boolean empty )
+                   {
+                       super.updateItem( item, empty );
+                       if ( empty )
+                       {
+                           setGraphic( null );
+                           setText( null );
+                       }
+                       else
+                       {
+                           btn.setOnAction(new EventHandler<ActionEvent>(){
+
+							@Override
+							public void handle(ActionEvent arg0) {
+								
+								if (rowVoted[getIndex()][0] == false){
+									int score = Integer.parseInt(feedback.get(getIndex()).getScore());
+									score += 1;
+									feedback.get(getIndex()).setScore(Integer.toString(score));
+									rowVoted[getIndex()][0] = true;
+									table.getItems().set(getIndex(), feedback.get(getIndex()));
+								}
+							}
+                        	   
+                           } );
+                           setGraphic(btn);
+                           setText(null);
+                       }
+                   }
+               };
+               return cell;
+           }
+       };
+       
+       upvoteCol.setCellFactory(cellFactory);
+       
+       TableColumn<Feedback,String> downvoteCol = new TableColumn<Feedback,String>("Vote");
+       downvoteCol.setCellValueFactory(new PropertyValueFactory<Feedback,String>("DUMMY"));
+       
+       cellFactory = new Callback<TableColumn<Feedback, String>, TableCell<Feedback, String>>()
+       {
+           @Override
+           public TableCell<Feedback,String> call( final TableColumn<Feedback, String> param )
+           {
+               final TableCell<Feedback, String> cell = new TableCell<Feedback, String>()
+               {
+
+                   final Button btn = new Button("Down");
+
+                   @Override
+                   public void updateItem( String item, boolean empty )
+                   {
+                       super.updateItem( item, empty );
+                       if ( empty )
+                       {
+                           setGraphic( null );
+                           setText( null );
+                       }
+                       else
+                       {
+                           btn.setOnAction(new EventHandler<ActionEvent>(){
+
+							@Override
+							public void handle(ActionEvent arg0) {
+								if (rowVoted[getIndex()][1] == false){
+
+									int score = Integer.parseInt(feedback.get(getIndex()).getScore());
+									score -= 1;
+									feedback.get(getIndex()).setScore(Integer.toString(score));
+									rowVoted[getIndex()][1] = true;
+									table.getItems().set(getIndex(), feedback.get(getIndex()));
+								}
+							}
+                        	   
+                           } );
+                           setGraphic(btn);
+                           setText(null);
+                       }
+                   }
+               };
+               return cell;
+           }
+       };
+       
+       downvoteCol.setCellFactory(cellFactory);
        
        // Fills table with contents of "feedback" list
        table.setEditable(false);
@@ -252,6 +404,9 @@ public class ViewFeedbackGui extends Application {
        table.getColumns().add(0, nameCol);
        table.getColumns().add(1, commentCol);
        table.getColumns().add(2, ratingCol);
+       table.getColumns().add(3, scoreCol);
+       table.getColumns().add(4, upvoteCol);
+       table.getColumns().add(5, downvoteCol);
 
        // Creates VBox and adds table to it
        VBox tableVBox = new VBox();
@@ -297,17 +452,19 @@ public class ViewFeedbackGui extends Application {
 		
 	}
 	
-	// Feedback class is used to store name, comment and rating of each individual comment
+	// Feedback class is used to store name, comment, rating and score of each individual feedback
 	public static class Feedback {
 		 
         private final SimpleStringProperty name;
         private final SimpleStringProperty comment;
         private final SimpleStringProperty rating;
+        private final SimpleStringProperty score;
  
-        public Feedback(String uName, String uComment, String uRating) {
+        public Feedback(String uName, String uComment, String uRating, String uScore) {
             this.name = new SimpleStringProperty(uName);
             this.comment = new SimpleStringProperty(uComment);
             this.rating = new SimpleStringProperty(uRating);
+            this.score = new SimpleStringProperty(uScore);
         }
  
         public String getName() {
@@ -332,6 +489,14 @@ public class ViewFeedbackGui extends Application {
  
         public void setRating(String uName) {
         	rating.set(uName);
+        }
+        
+        public String getScore() {
+            return score.get();
+        }
+ 
+        public void setScore(String uScore) {
+        	score.set(uScore);
         }
     }
 }
