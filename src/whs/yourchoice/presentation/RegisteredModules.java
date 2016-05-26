@@ -12,9 +12,9 @@ import java.util.List;
 /**
  * Class that stores, searches and removes modules in a list
  * 
- * @author ws659 skq501
+ * @author ws659, skq501, ch1092
  * 
- * @version 0.1 20/04/16
+ * @version 0.2 26/05/16
  *
  */
 public class RegisteredModules {
@@ -66,6 +66,23 @@ public class RegisteredModules {
 		}
 		
 		return moduleNames;
+	}
+	
+	/**
+	 * Method to get filename from a a title
+	 * 
+	 * @param title		-	The title of the module selected
+	 * @return filename	-	The filename associated with the title
+	 */
+	public String getFilenameFromTitle(String title) {
+		
+		for (int i=0; i<moduleList.size(); i++) {
+			if (title.equals(moduleList.get(i).getTitle())) {
+				return moduleList.get(i).getFileName();
+			}
+		}
+		
+		return null;
 	}
 	
 	/**

@@ -16,7 +16,6 @@ import java.security.Key;
 import java.util.List;
 
 import whs.yourchoice.parsers.RegisteredModulesParser;
-import whs.yourchoice.presentation.RegisteredModuleEntry;
 import whs.yourchoice.presentation.RegisteredModules;
 import whs.yourchoice.utilities.encryption.ClientDetails;
 import whs.yourchoice.utilities.encryption.ClientPasswordHandler;
@@ -26,7 +25,7 @@ import whs.yourchoice.utilities.encryption.RsaEncryption;
  * Class for the client's back end handling communications to the server 
  * 
  * @author		ch1092, skq501, cd828
- * @version		v0.10 25/05/2016
+ * @version		v0.11 26/05/2016
  */
 public class Client {
 	
@@ -337,6 +336,17 @@ public class Client {
 	protected List<String> getModulesByYear(String year) {
 		return moduleList.searchModulesByYear(year);
 	}
+	
+	/**
+	 * Method to return the filename of a zip file from the title
+	 * 
+	 * @param title			-	The title of the desired presentation
+	 * @return zippedFile 	-	The filename of the associated zip file
+	 */
+	protected String getFilenameFromTitle(String title) {
+		return moduleList.getFilenameFromTitle(title);
+	}
+		
 }
 		
 

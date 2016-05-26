@@ -24,7 +24,7 @@ import whs.yourchoice.utilities.encryption.ServerPasswordHandler;
  * Class for the server's back end handling communications to the clients. 
  * 
  * @author		ch1092, skq501, cd828
- * @version		v0.10 25/05/2016
+ * @version		v0.11 26/05/2016
  */
 public class Server {
 	
@@ -37,6 +37,7 @@ public class Server {
 	
 	//registered modules variables
 	private final String rmPath = new File("").getAbsolutePath() + "/src/registered_modules.xml";
+	private final String MODULE_FILE_LOCATION = "Zipped_Presentations";
 	private final int BUFFER_SIZE = 1024;
 	
 	private final String clientDetailsLocation = "AdminDetails.txt";
@@ -344,13 +345,12 @@ public class Server {
 						}
 						
 						object = receiveData(client.getID());
-						if (((String) object).equals("Example_Presentation")) {
-							sendData(new File("Example_Presentation.zip"), client.getID());
-						}
-						
+												
+						sendData(new File(MODULE_FILE_LOCATION + "/" + (String) object), client.getID());
+												
 						// Wait for the client to send some data, below is for tests
-						object = receiveData(client.getID());
-						sendData(object, client.getID());
+//						object = receiveData(client.getID());
+//						sendData(object, client.getID());
 					} catch (ClassNotFoundException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
@@ -508,4 +508,5 @@ public class Server {
 		
 		return rsaHandler.rsaEncryptObject(objectToEncrypt, publicKey);
 	}
+	
 }

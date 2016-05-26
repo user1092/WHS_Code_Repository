@@ -7,6 +7,7 @@
 package whs.yourchoice.client;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
@@ -48,13 +49,14 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 
 /**
 * Class for creation of the Client GUI and adding functionality
 *
 * @author cd828, ch1092, ws659
-* @version v0.5 25/05/16
+* @version v0.6 26/05/16
 */
 public class ClientGui extends Application{
 
@@ -158,11 +160,58 @@ public class ClientGui extends Application{
 		progressBar = new ProgressBar(0);
 		progressBar.setProgress(0);
 		
+		// Create a temp folder to hold presentations
+		new File(tempPresentationDirectory).mkdir();
+		
 		autoConnect();
 		
 		contentLayout.getChildren().add(progressBar);
 		
+		// listen to the stage if it closes
+        closeListener(primaryStage);
+		
 		primaryStage.show();
+	}
+	
+	
+	/**
+	 * Method to listen for the stage closing to tidy up
+	 * 
+	 * @param slideStage	-	The stage to listen to
+	 */
+	private void closeListener(Stage slideStage) {
+		// Listen for the stage closing to release all audio players
+        slideStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+        	public void handle(WindowEvent we) {
+        		File f = new File(tempPresentationDirectory);
+        		if (f.exists()) {
+        			// Windows is shit so don't delete Thumbs.db as it will be locked
+	        		if (!(f.getName()).equals("Thumbs.db")) {
+	        			try {
+							delete(f);
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+	        		}
+        		}
+        	}
+        });
+	}
+	
+	/**
+	 * Method to delete a file or folder
+	 * 
+	 * @param f	-	The file/folder to be deleted 
+	 * @throws IOException
+	 */
+	void delete(File f) throws IOException {
+	  if (f.isDirectory()) {
+	    for (File c : f.listFiles())
+	      delete(c);
+	  }
+	  if (!f.delete())
+	    throw new FileNotFoundException("Failed to delete file: " + f);
 	}
 	
 
@@ -213,12 +262,12 @@ public class ClientGui extends Application{
 		courseCombo = constructCourseCombo();
 		Label courseLable = new Label("Course:");
 		
-		//add module selector
-		GridPane.setRowIndex(moduleCombo, 1);
-		GridPane.setColumnIndex(moduleCombo, 2);
-		GridPane.setRowIndex(moduleLable, 1);
-		GridPane.setColumnIndex(moduleLable, 1);
-		modulePane.getChildren().addAll(moduleCombo, moduleLable);
+		//add course selector
+		GridPane.setRowIndex(courseCombo, 1);
+		GridPane.setColumnIndex(courseCombo, 2);
+		GridPane.setRowIndex(courseLable, 1);
+		GridPane.setColumnIndex(courseLable, 1);
+		modulePane.getChildren().addAll(courseCombo, courseLable);
 		
 		//add stream selector
 		GridPane.setRowIndex(streamCombo, 2);
@@ -234,13 +283,15 @@ public class ClientGui extends Application{
 		GridPane.setColumnIndex(yearLable, 1);
 		modulePane.getChildren().addAll(yearCombo, yearLable);
 		
-		//add course selector
-		GridPane.setRowIndex(courseCombo, 4);
-		GridPane.setColumnIndex(courseCombo, 2);
-		GridPane.setRowIndex(courseLable, 4);
-		GridPane.setColumnIndex(courseLable, 1);
-		modulePane.getChildren().addAll(courseCombo, courseLable);
+		//add module selector
+		GridPane.setRowIndex(moduleCombo, 4);
+		GridPane.setColumnIndex(moduleCombo, 2);
+		GridPane.setRowIndex(moduleLable, 4);
+		GridPane.setColumnIndex(moduleLable, 1);
+		modulePane.getChildren().addAll(moduleCombo, moduleLable);
 		
+		// Allow mouse clicks on items on other Panes
+		modulePane.setPickOnBounds(false);
 		
 		contentLayout.getChildren().add(modulePane);
 	}
@@ -786,17 +837,28 @@ public class ClientGui extends Application{
 	 */
 	private void requestModule() {
 		
+		System.out.println(selModule);
+		final String filename = client.getFilenameFromTitle(selModule);
+		System.out.println(filename);
+		
+		final String name = removeFileExtension(filename);
+		final String xmlFilename = name + ".xml";
+		System.out.println(xmlFilename);
+		
+		
 		contentLayout.getChildren().add(progressBar);
 		
 		Task<Void> requestTask = new Task<Void>() {
 			@Override protected Void call() throws Exception {
 				ZipUtilities unzipper = new ZipUtilities();
 				
+				boolean validZip = true;
+				
 				if (!(null == client.serverSocket)) {
 					if (validPassword) {
 						File zippedPresentation = null;
 						try {
-							client.sendData("Example_Presentation");
+							client.sendData(filename);
 						} catch (IOException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
@@ -808,12 +870,21 @@ public class ClientGui extends Application{
 							e1.printStackTrace();
 						}
 						try {
-							unzipper.unzip(zippedPresentation, tempPresentationDirectory);
+							unzipper.unzip(zippedPresentation, tempPresentationDirectory + "/" + name);
+//							unzipper.unzip(zippedPresentation, tempPresentationDirectory);
 						} catch (IOException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
+							validZip = false;
 						}
-						openPresentation(new File(tempPresentationDirectory + "/Example_Presentation.xml"));
+						if (validZip) {
+							openPresentation(new File(tempPresentationDirectory + "/" + name + "/" + xmlFilename));
+//							openPresentation(new File(tempPresentationDirectory + "/" + xmlFilename));
+						}
+						else {
+							System.out.println("Invalid Presentation");
+						}
+						
 					}
 				}				
 				
@@ -822,11 +893,24 @@ public class ClientGui extends Application{
 		};
 		Thread requestThread = new Thread(requestTask);
 		requestThread.setDaemon(true);
-		
-		progressBar.progressProperty().bind(requestTask.progressProperty());
-		
-		requestThread.start();
-		
-		removeProgressBar(requestThread, null);
+				
+		if (!(null == filename)){
+			progressBar.progressProperty().bind(requestTask.progressProperty());
+			requestThread.start();
+			removeProgressBar(requestThread, null);
+		}
+	}
+
+	/**
+	 * @param filename
+	 * @return
+	 */
+	private String removeFileExtension(final String filename) {
+		String name = null;
+		int pos = filename.lastIndexOf(".");
+		if (pos > 0) {
+			name = filename.substring(0, pos);
+		}
+		return name;
 	}
 }
