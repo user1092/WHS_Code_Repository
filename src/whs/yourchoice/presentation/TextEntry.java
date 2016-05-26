@@ -25,7 +25,6 @@ public class TextEntry
 	private String textFontColour = null;
 	private String textContent = null;
 	
-	private boolean interactable = false;
 	private int targetSlide = -10;
 	
 	
@@ -47,23 +46,6 @@ public class TextEntry
 		return targetSlide;
 	}
 	
-	/**
-	* setTextInteractable method. Sets the interactable flag of the text.
-	* @param contents The interactable flag of the text.
-	*/
-	public void setTextInteractable(boolean b)
-	{
-		interactable = b;
-	}
-	
-	/**
-	* getTextInteractable method. Gets the interactable flag of the text.
-	* @return interactable Returns the interactable flag of the text.
-	*/
-	public boolean getTextInteractable()
-	{
-		return interactable;
-	}
 	
 	/**
 	* setTextStartTime method. Sets the start time of the text.

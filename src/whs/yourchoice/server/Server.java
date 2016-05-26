@@ -6,14 +6,13 @@
 
 package whs.yourchoice.server;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 
 import whs.yourchoice.utilities.encryption.ClientDetails;
 import whs.yourchoice.utilities.encryption.ClientPasswordHandler;
@@ -25,7 +24,7 @@ import whs.yourchoice.utilities.encryption.ServerPasswordHandler;
  * Class for the server's back end handling communications to the clients. 
  * 
  * @author		ch1092, skq501, cd828
- * @version		v0.9 24/05/2016
+ * @version		v0.11 26/05/2016
  */
 public class Server {
 	
@@ -38,7 +37,11 @@ public class Server {
 	
 	//registered modules variables
 	private final String rmPath = new File("").getAbsolutePath() + "/src/registered_modules.xml";
+	private final String MODULE_FILE_LOCATION = "Zipped_Presentations";
+	private final int BUFFER_SIZE = 1024;
+	
 	private final String clientDetailsLocation = "AdminDetails.txt";
+	
 	private String serverPrivKeyFileName = "serverPrivKeyFileName.key";
 	
 	/**
@@ -342,13 +345,12 @@ public class Server {
 						}
 						
 						object = receiveData(client.getID());
-						if (((String) object).equals("Example_Presentation")) {
-							sendData(new File("Example_Presentation.zip"), client.getID());
-						}
-						
+												
+						sendData(new File(MODULE_FILE_LOCATION + "/" + (String) object), client.getID());
+												
 						// Wait for the client to send some data, below is for tests
-						object = receiveData(client.getID());
-						sendData(object, client.getID());
+//						object = receiveData(client.getID());
+//						sendData(object, client.getID());
 					} catch (ClassNotFoundException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
@@ -369,17 +371,29 @@ public class Server {
 		listenToClientThread[client.getID()].start();
 	}
 	
-	// not currently happy with variety of Exceptions that can be thrown
+		
+	/**
+	 * Method to send the Registered modules file
+	 * 
+	 * @param clientID
+	 * @throws IOException
+	 */
 	private void sendRMFile(int clientID) throws IOException {
-		File moduleFile = new File(rmPath);
-		byte[] mybytearray = new byte[(int) moduleFile.length()];
-		BufferedInputStream bis = new BufferedInputStream(new FileInputStream(moduleFile));
-		bis.read(mybytearray, 0, mybytearray.length);
-		OutputStream os = clients[clientID].getOutputStream();
-		os.write(mybytearray, 0, mybytearray.length);
-		os.flush();
-		bis.close();
+		
+        File file = new File(rmPath);
+ 
+        FileInputStream fis = new FileInputStream(file);
+        byte [] buffer = new byte[BUFFER_SIZE];
+        Integer bytesRead = 0;
+ 
+        while ((bytesRead = fis.read(buffer)) > 0) {
+        	clients[clientID].getOutputToClient().writeObject(bytesRead);
+        	clients[clientID].getOutputToClient().writeObject(Arrays.copyOf(buffer, buffer.length));
+        }
+        
+        fis.close();
 	}
+	
 
 	/**
 	 * Method to set the administrators password.
@@ -494,4 +508,5 @@ public class Server {
 		
 		return rsaHandler.rsaEncryptObject(objectToEncrypt, publicKey);
 	}
+	
 }

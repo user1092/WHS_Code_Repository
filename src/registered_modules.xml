@@ -9,19 +9,27 @@
         <filename>ele000034.zip</filename>
     </module>
     <module>
-        <code>CHM000068</code>
-        <course>Chemistry</course>
-        <stream>Chemisrty</stream>
-        <year>1</year>
-        <title>Organic Chemistry</title>
-        <filename>chm000068.zip</filename>
+        <code>ELE000054</code>
+        <course>Electronics</course>
+        <stream>Electronics and Computer Engineering</stream>
+        <year>3</year>
+        <title>Further Digital Engineering</title>
+        <filename>ele000054.zip</filename>
     </module>
     <module>
-        <code>PHL000A68</code>
+        <code>PH000079</code>
         <course>Philosophy</course>
-        <stream>Philosophy</stream>
-        <year>2</year>
-        <title>Bhuddist Philosophy</title>
-        <filename>bud_phil.zip</filename>
+        <stream>Bhuddist Philosophy</stream>
+        <year>1</year>
+        <title>Philosophy in the Bhuddist World</title>
+        <filename>bhud_phil.zip</filename>
+    </module>
+	<module>
+        <code>EX0000012</code>
+        <course>Example Course</course>
+        <stream>Example Stream</stream>
+        <year>1</year>
+        <title>Example Title</title>
+        <filename>Example_Presentation.zip</filename>
     </module>
 </registeredModules>

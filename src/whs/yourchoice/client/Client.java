@@ -6,15 +6,14 @@
 
 package whs.yourchoice.client;
 
-import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.security.Key;
+import java.util.List;
 
 import whs.yourchoice.parsers.RegisteredModulesParser;
 import whs.yourchoice.presentation.RegisteredModules;
@@ -26,7 +25,7 @@ import whs.yourchoice.utilities.encryption.RsaEncryption;
  * Class for the client's back end handling communications to the server 
  * 
  * @author		ch1092, skq501, cd828
- * @version		v0.9 20/05/2016
+ * @version		v0.11 26/05/2016
  */
 public class Client {
 	
@@ -41,6 +40,7 @@ public class Client {
 	// Variables for registered modules
 	protected RegisteredModules moduleList;
 	private String modulePath = "src/registered_modules2.xml";
+	private final int BUFFER_SIZE = 1024;
 	
 	private String serverPubKeyFileName = "serverPubKeyFileName.key";
 	private Key privKey;
@@ -183,14 +183,38 @@ public class Client {
 	 * @throws IOException
 	 */
 	private void getModules() throws IOException {
-		byte[] mybytearray = new byte[1024];
-		InputStream is = serverSocket.getInputStream();
+	    
+		Object o = null;
 		FileOutputStream fos = new FileOutputStream(modulePath);
-		BufferedOutputStream bos = new BufferedOutputStream(fos);
-		int bytesRead = is.read(mybytearray, 0, mybytearray.length);
-	    bos.write(mybytearray, 0, bytesRead);
-	    bos.close();
+		
+		byte[] mybytearray = new byte[BUFFER_SIZE];
+		Integer bytesRead = 0;
+		
+		do {
+            try {
+				o = inputFromServer.readObject();
+			} catch (ClassNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+  
+            bytesRead = (Integer)o;
+ 
+            try {
+				o = inputFromServer.readObject();
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+  
+            mybytearray = (byte[])o;
+            
+            fos.write(mybytearray, 0, bytesRead);
+        } while (bytesRead == BUFFER_SIZE);
+	    
+		fos.close();
 	}
+	
 	
 	private void parseModules() {
 		RegisteredModulesParser parser = new RegisteredModulesParser();
@@ -253,5 +277,76 @@ public class Client {
 			e.printStackTrace();
 		}
 	}
+	
+	/**
+	 * Method to add combo boxes to allow the user to select modules
+	 * 
+	 */
+	protected List<String> getRevievedModules(){
+		return moduleList.getAllModules();
+	}
+	
+	/**
+	 * Method to add combo boxes to allow the user to select streams
+	 * 
+	 */
+	protected List<String> getRevievedStreams(){
+		return moduleList.getAllStreams();
+	}
+	
+	/**
+	 * Method to add combo boxes to allow the user to select years
+	 * 
+	 */
+	protected List<String> getRevievedYears(){
+		return moduleList.getAllYears();
+	}
+	
+	/**
+	 * Method to add combo boxes to allow the user to select course
+	 * 
+	 */
+	protected List<String> getRevievedCourses(){
+		return moduleList.getAllCourses();
+	}
+	
+	/**
+	 * Method that lists streams by associated course
+	 * @param String course
+	 * @return List<String> List of streams
+	 */
+	protected List<String> getStreamByCourse(String course) {
+		return moduleList.searchStreamByCourse(course);
+	}
+	
+	/**
+	 * Method that lists years by associated streams
+	 * @param String stream
+	 * @return List<String> List of years
+	 */
+	protected List<String> getYearsByStream(String stream) {
+		return moduleList.searchYearsByStream(stream);
+	}
+	
+	/**
+	 * Method that lists modules by associated years
+	 * @param String year
+	 * @return List<String> List of years
+	 */
+	protected List<String> getModulesByYear(String year) {
+		return moduleList.searchModulesByYear(year);
+	}
+	
+	/**
+	 * Method to return the filename of a zip file from the title
+	 * 
+	 * @param title			-	The title of the desired presentation
+	 * @return zippedFile 	-	The filename of the associated zip file
+	 */
+	protected String getFilenameFromTitle(String title) {
+		return moduleList.getFilenameFromTitle(title);
+	}
 		
 }
+		
+

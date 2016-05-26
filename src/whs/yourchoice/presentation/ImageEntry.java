@@ -24,7 +24,6 @@ public class ImageEntry
 	private float imageWidth = -10;
 	private float imageHeight = -10;
 	
-	private boolean interactable = false;
 	private int targetSlide = -10;
 	
 	
@@ -46,23 +45,6 @@ public class ImageEntry
 		return targetSlide;
 	}
 	
-	/**
-	* setImageInteractable method. Sets the interactable flag of the image.
-	* @param contents The interactable flag of the image.
-	*/
-	public void setImageInteractable(boolean b)
-	{
-		interactable = b;
-	}
-	
-	/**
-	* getImageInteractable method. Gets the interactable flag of the image.
-	* @return interactable Returns the interactable flag of the image.
-	*/
-	public boolean getImageInteractable()
-	{
-		return interactable;
-	}
 	
 	/**
 	* setImageStartTime method. Sets the start time of the image.

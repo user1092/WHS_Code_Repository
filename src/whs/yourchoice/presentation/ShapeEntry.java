@@ -34,7 +34,6 @@ public class ShapeEntry
 	private float shapeShadeY2 = -10;
 	private String shapeShadeColour2 = null;
 	
-	private boolean interactable = false;
 	private int targetSlide = -10;
 	
 	
@@ -56,23 +55,6 @@ public class ShapeEntry
 		return targetSlide;
 	}
 	
-	/**
-	* setShapeInteractable method. Sets the interactable flag of the shape.
-	* @param contents The interactable flag of the shape.
-	*/
-	public void setShapeInteractable(boolean b)
-	{
-		interactable = b;
-	}
-	
-	/**
-	* getShapeInteractable method. Gets the interactable flag of the shape.
-	* @return interactable Returns the interactable flag of the shape.
-	*/
-	public boolean getShapeInteractable()
-	{
-		return interactable;
-	}
 	
 	/**
 	* setShapeStartTime method. Sets the start time of the shape.

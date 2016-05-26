@@ -238,31 +238,31 @@ public class PresentationParser
 						
 						case "text" :
 							
-							ParseText(currentSlide, temporaryChildNodeElement, false, "-10");
+							ParseText(currentSlide, temporaryChildNodeElement, "-10");
 							
 						break;
 						
 						case "shape" :
 							
-							ParseShape(currentSlide, temporaryChildNodeElement, false, "-10");
+							ParseShape(currentSlide, temporaryChildNodeElement, "-10");
 							
 						break;
 						
 						case "polygon" :
 							
-							ParsePolygon(currentSlide, temporaryChildNodeElement, false, "-10");
+							ParsePolygon(currentSlide, temporaryChildNodeElement, "-10");
 							
 						break;
 						
 						case "image" :
 							
-							ParseImage(currentSlide, temporaryChildNodeElement, false, "-10");
+							ParseImage(currentSlide, temporaryChildNodeElement, "-10");
 							
 						break;
 						
 						case "video" :
 							
-							ParseVideo(currentSlide, temporaryChildNodeElement, false, "-10");
+							ParseVideo(currentSlide, temporaryChildNodeElement, "-10");
 							
 						break;
 						
@@ -296,31 +296,31 @@ public class PresentationParser
 							{
 								case "text" :
 									
-									ParseText(currentSlide, interactableNodeElement, true, targetSlide);
+									ParseText(currentSlide, interactableNodeElement, targetSlide);
 									
 								break;
 								
 								case "shape" :
 									
-									ParseShape(currentSlide, interactableNodeElement, true, targetSlide);
+									ParseShape(currentSlide, interactableNodeElement, targetSlide);
 									
 								break;
 								
 								case "polygon" :
 									
-									ParsePolygon(currentSlide, interactableNodeElement, true, targetSlide);
+									ParsePolygon(currentSlide, interactableNodeElement, targetSlide);
 									
 								break;
 								
 								case "image" :
 									
-									ParseImage(currentSlide, interactableNodeElement, true, targetSlide);
+									ParseImage(currentSlide, interactableNodeElement, targetSlide);
 									
 								break;
 								
 								case "video" :
 									
-									ParseVideo(currentSlide, interactableNodeElement, true, targetSlide);
+									ParseVideo(currentSlide, interactableNodeElement, targetSlide);
 									
 								break;
 								
@@ -353,16 +353,14 @@ public class PresentationParser
 	* ParseText method. Parses the contents of the given text node and saves them in an instance of a TextEntry class.
 	* @param currentSlide The slide to which this text node belongs to.
 	* @param temporaryNode The actual text node that needs to be parsed.
-	* @param interactable A flag telling us if this text node is interactable or not.
 	* @param targetSlide The target slide of this text. (if it is not interactable, this parameter is -10).
 	*/
-	protected void ParseText (SlideEntry currentSlide, Node temporaryNode, boolean interactable, String targetSlide)
+	protected void ParseText (SlideEntry currentSlide, Node temporaryNode, String targetSlide)
 	{
 		NamedNodeMap temporaryNodeAttributesList = temporaryNode.getAttributes();
 		
 		TextEntry temporaryText = currentSlide.CreateNewText();
 		
-		temporaryText.setTextInteractable(interactable);
 		temporaryText.setTextTargetSlide(targetSlide);
 		
 		// The complete text content of this node, including bold and italic tags.
@@ -486,16 +484,14 @@ public class PresentationParser
 	* ParseShape method. Parses the contents of the given shape node and saves them in an instance of a ShapeEntry class.
 	* @param currentSlide The slide to which this shape node belongs to.
 	* @param temporaryNode The actual shape node that needs to be parsed.
-	* @param interactable A flag telling us if this shape node is interactable or not.
 	* @param targetSlide The target slide of this shape. (if it is not interactable, this parameter is -10).
 	*/
-	protected void ParseShape (SlideEntry currentSlide, Node temporaryNode, boolean interactable, String targetSlide)
+	protected void ParseShape (SlideEntry currentSlide, Node temporaryNode, String targetSlide)
 	{
 		NamedNodeMap temporaryNodeAttributesList = temporaryNode.getAttributes();
 		
 		ShapeEntry temporaryShape = currentSlide.CreateNewShape();
 		
-		temporaryShape.setShapeInteractable(interactable);
 		temporaryShape.setShapeTargetSlide(targetSlide);
 		
 		for (int i = 0; i < temporaryNodeAttributesList.getLength(); i++) 
@@ -601,16 +597,14 @@ public class PresentationParser
 	* ParsePolygon method. Parses the contents of the given polygon node and saves them in an instance of a PolygonEntry class.
 	* @param currentSlide The slide to which this polygon node belongs to.
 	* @param temporaryNode The actual polygon node that needs to be parsed.
-	* @param interactable A flag telling us if this polygon node is interactable or not.
 	* @param targetSlide The target slide of this polygon. (if it is not interactable, this parameter is -10).
 	*/
-	protected void ParsePolygon (SlideEntry currentSlide, Node temporaryNode, boolean interactable, String targetSlide)
+	protected void ParsePolygon (SlideEntry currentSlide, Node temporaryNode, String targetSlide)
 	{
 		NamedNodeMap temporaryNodeAttributesList = temporaryNode.getAttributes();
 		
 		PolygonEntry temporaryPolygon = currentSlide.CreateNewPolygon();
 		
-		temporaryPolygon.setPolygonInteractable(interactable);
 		temporaryPolygon.setPolygonTargetSlide(targetSlide);
 		
 		for (int i = 0; i < temporaryNodeAttributesList.getLength(); i++) 
@@ -696,16 +690,14 @@ public class PresentationParser
 	* ParseImage method. Parses the contents of the given image node and saves them in an instance of an ImageEntry class.
 	* @param currentSlide The slide to which this image node belongs to.
 	* @param temporaryNode The actual image node that needs to be parsed.
-	* @param interactable A flag telling us if this image node is interactable or not.
 	* @param targetSlide The target slide of this image. (if it is not interactable, this parameter is -10).
 	*/
-	protected void ParseImage (SlideEntry currentSlide, Node temporaryNode, boolean interactable, String targetSlide)
+	protected void ParseImage (SlideEntry currentSlide, Node temporaryNode, String targetSlide)
 	{
 		NamedNodeMap temporaryNodeAttributesList = temporaryNode.getAttributes();
 		
 		ImageEntry temporaryImage = currentSlide.CreateNewImage();
 		
-		temporaryImage.setImageInteractable(interactable);
 		temporaryImage.setImageTargetSlide(targetSlide);
 		
 		for (int i = 0; i < temporaryNodeAttributesList.getLength(); i++) 
@@ -753,16 +745,14 @@ public class PresentationParser
 	* ParseVideo method. Parses the contents of the given video node and saves them in an instance of a VideoEntry class.
 	* @param currentSlide The slide to which this video node belongs to.
 	* @param temporaryNode The actual video node that needs to be parsed.
-	* @param interactable A flag telling us if this video node is interactable or not.
 	* @param targetSlide The target slide of this video. (if it is not interactable, this parameter is -10).
 	*/
-	protected void ParseVideo (SlideEntry currentSlide, Node temporaryNode, boolean interactable, String targetSlide)
+	protected void ParseVideo (SlideEntry currentSlide, Node temporaryNode, String targetSlide)
 	{
 		NamedNodeMap temporaryNodeAttributesList = temporaryNode.getAttributes();
 		
 		VideoEntry temporaryVideo = currentSlide.CreateNewVideo();
 		
-		temporaryVideo.setVideoInteractable(interactable);
 		temporaryVideo.setVideoTargetSlide(targetSlide);
 		
 		for (int i = 0; i < temporaryNodeAttributesList.getLength(); i++) 
