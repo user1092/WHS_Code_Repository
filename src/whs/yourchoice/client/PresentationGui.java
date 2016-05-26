@@ -334,12 +334,8 @@ public class PresentationGui extends Application {
 	 */
 	private void exitTimingThreads() {
 		System.out.println("Exiting Timing Threads");
-		if (currentManualNodeNumber < numberOfNodes) {
-			currentManualNodeNumber = numberOfNodes;
-		}
-		if (currentAutomaticNodeNumber < numberOfNodes) {
-			currentAutomaticNodeNumber = numberOfNodes;
-		}
+		currentManualNodeNumber = numberOfNodes;
+		currentAutomaticNodeNumber = numberOfNodes;
 	}
 	
 	
@@ -1002,6 +998,33 @@ public class PresentationGui extends Application {
 
 	
 	/**
+	 * @param targetSlide
+	 */
+	private void changeSlide(final int targetSlide) {
+		// Set to exit for loop in objectTimingThread and objectManualThread
+		exitTimingThreads();
+		
+		// Stop any running timers if in automatic mode
+		if (automaticMode) {
+			stopAllTimers();
+		}					
+		
+		// Clear the current slide
+		presentationLayout.getChildren().clear();
+		
+		currentSlideNumber = targetSlide;
+		
+		if (!presentationState.equals("Stopped")) {
+			storedCurrentNodeNumber = 0;
+			releaseMediaPlayers();
+			loadSlide(currentSlideNumber);
+		}
+		
+		slideNumberTextField.setText("" + currentSlideNumber);
+	}
+	
+	
+	/**
 	 * Method for loading all objects on current slide within the current presentation
 	 * 
 	 * @param slideId - The slide number in the presentation to be displayed
@@ -1021,12 +1044,13 @@ public class PresentationGui extends Application {
 				
 		System.out.println(currentSlide.getSlideBackgroundColour());
 		
-		displayTexts(currentSlide, duffCanvas);			
-		displayImages(currentSlide);		
+		displayImages(currentSlide);
+		displayTexts(currentSlide, duffCanvas);
 		displayShapes(currentSlide);		
 		displayPolygons(currentSlide);		
 		displayVideos(currentSlide, duffCanvas);		
 		displayAudios(currentSlide);
+		
 		
 		numberOfNodes = objectTimingList.size();
 		
@@ -1070,8 +1094,10 @@ public class PresentationGui extends Application {
 	private void manualSlideMode() {
 		Task<Void> manualSlideTask = new Task<Void>() {
 			@Override protected Void call() throws Exception {
-				storedCurrentSlideNumber = currentSlideNumber;
+				mouseClicked = false;
 				
+				storedCurrentSlideNumber = currentSlideNumber;
+				System.out.println("currentManualNodeNumber " + currentManualNodeNumber + "numberOfNodes " + numberOfNodes);
 				while ((currentManualNodeNumber < numberOfNodes) || 
 						((!mouseClicked) && (!automaticMode) && 
 								(currentSlideNumber == storedCurrentSlideNumber)))	{
@@ -1350,9 +1376,8 @@ public class PresentationGui extends Application {
 		// Display all text
 		for(int text = 0; text < numberOfTexts; text++) {
 			Pane tempPane = new Pane();
-			TextEntry currentText = new TextEntry();
 			
-			currentText = currentSlide.getTextList().get(text);
+			final TextEntry currentText = currentSlide.getTextList().get(text);
 			
 			tempPane.getChildren().add(TextHandler.createText(duffCanvas, sourceFile,
 					currentText.getTextContent(), currentText.getTextFont(),
@@ -1366,6 +1391,20 @@ public class PresentationGui extends Application {
 			System.out.println(currentText.getTextContent() + "\n");
 			
 			tempPane.setVisible(false);
+			
+			// Allow mouse clicks through the pane where the video is not located
+			tempPane.setPickOnBounds(false);
+			
+			tempPane.setOnMouseClicked(new EventHandler<MouseEvent>(){				 
+				@Override
+				public void handle(MouseEvent arg0) {
+					System.out.println("Hello");
+					System.out.println(currentText.getTextTargetSlide());
+					if (currentText.getTextTargetSlide() >= 0) {
+						changeSlide(currentText.getTextTargetSlide());
+					}
+				}
+			});
 			
 			// Add pane to objectTimingList 
 			TimingEntry tempTextTimingEntryAppear = new TimingEntry(tempPane, currentText.getTextStartTime(), currentText.getTextDuration(), true);
@@ -1391,7 +1430,7 @@ public class PresentationGui extends Application {
 			ImageHandler imageHandler = new ImageHandler();
 			Images tempImage = new Images();
 			
-			ImageEntry currentImage = currentSlide.getImageList().get(image);
+			final ImageEntry currentImage = currentSlide.getImageList().get(image);
 			
 			tempImage = new Images("file:" + presentation.getPath() + "/" +  currentImage.getImageSourceFile(),
 													currentImage.getImageStartTime(),
@@ -1407,6 +1446,20 @@ public class PresentationGui extends Application {
 			System.out.println("image entry: " + image + "\n");
 			
 			tempCanvas.setVisible(false);
+			
+			// Allow mouse clicks through the pane where the video is not located
+			tempCanvas.setPickOnBounds(false);
+			
+			tempCanvas.setOnMouseClicked(new EventHandler<MouseEvent>(){				 
+				@Override
+				public void handle(MouseEvent arg0) {
+					System.out.println("Hello");
+					System.out.println(currentImage.getImageTargetSlide());
+					if (currentImage.getImageTargetSlide() >= 0) {
+						changeSlide(currentImage.getImageTargetSlide());
+					}
+				}
+			});
 			
 			// Add canvas to objectTimingList 
 			TimingEntry tempImageTimingEntryAppear = new TimingEntry(tempCanvas, currentImage.getImageStartTime(), currentImage.getImageDuration(), true);
@@ -1428,7 +1481,7 @@ public class PresentationGui extends Application {
 		
 		// Display all shapes
 		for(int shape = 0; shape < numberOfShapes; shape++) {
-			ShapeEntry currentShape = currentSlide.getShapeList().get(shape);
+			final ShapeEntry currentShape = currentSlide.getShapeList().get(shape);
 			
 			ShapeGraphic tempShape = new ShapeGraphic(currentShape.getShapeStartTime(),
 														currentShape.getShapeDuration(),
@@ -1451,6 +1504,20 @@ public class PresentationGui extends Application {
 			
 			tempPane.setVisible(false);
 			
+			// Allow mouse clicks through the pane where the video is not located
+			tempPane.setPickOnBounds(false);
+			
+			tempPane.setOnMouseClicked(new EventHandler<MouseEvent>(){				 
+				@Override
+				public void handle(MouseEvent arg0) {
+					System.out.println("Hello");
+					System.out.println(currentShape.getShapeTargetSlide());
+					if (currentShape.getShapeTargetSlide() >= 0) {
+						changeSlide(currentShape.getShapeTargetSlide());
+					}
+				}
+			});
+			
 			// Add pane to objectTimingList 
 			TimingEntry tempShapeTimingEntryAppear = new TimingEntry(tempPane, currentShape.getShapeStartTime(), currentShape.getShapeDuration(), true);
 			TimingEntry tempShapeTimingEntryDisappear = new TimingEntry(tempPane, currentShape.getShapeStartTime(), currentShape.getShapeDuration(), false);
@@ -1471,7 +1538,7 @@ public class PresentationGui extends Application {
 		
 		// Display all polygons
 		for(int polygon = 0; polygon < numberOfPolygons; polygon++) {
-			PolygonEntry currentPolygon = currentSlide.getPolygonList().get(polygon);
+			final PolygonEntry currentPolygon = currentSlide.getPolygonList().get(polygon);
 						
 			PolygonGraphic tempPolygon = new PolygonGraphic(currentPolygon.getPolygonStartTime(),
 															currentPolygon.getPolygonDuration(),
@@ -1498,6 +1565,20 @@ public class PresentationGui extends Application {
 
 			tempPane.setVisible(false);
 			
+			// Allow mouse clicks through the pane where the video is not located
+			tempPane.setPickOnBounds(false);
+			
+			tempPane.setOnMouseClicked(new EventHandler<MouseEvent>(){				 
+				@Override
+				public void handle(MouseEvent arg0) {
+					System.out.println("Hello");
+					System.out.println(currentPolygon.getPolygonTargetSlide());
+					if (currentPolygon.getPolygonTargetSlide() >= 0) {
+						changeSlide(currentPolygon.getPolygonTargetSlide());
+					}
+				}
+			});
+			
 			// Add pane to objectTimingList 
 			TimingEntry tempPolygonTimingEntryAppear = new TimingEntry(tempPane, currentPolygon.getPolygonStartTime(), currentPolygon.getPolygonDuration(), true);
 			TimingEntry tempPolygonTimingEntryDisappear = new TimingEntry(tempPane, currentPolygon.getPolygonStartTime(), currentPolygon.getPolygonDuration(), false);
@@ -1519,7 +1600,7 @@ public class PresentationGui extends Application {
 				
 		// Display all videos
 		for(int video = 0; video < numberOfVideos; video++) {
-			VideoEntry currentVideo = currentSlide.getVideoList().get(video);
+			final VideoEntry currentVideo = currentSlide.getVideoList().get(video);
 			
 			File tempFile = new File(presentation.getPath() + "/" + currentVideo.getVideoSourceFile());
 			String videoPath = tempFile.toURI().toASCIIString();
@@ -1540,6 +1621,17 @@ public class PresentationGui extends Application {
 			
 			// Allow mouse clicks through the pane where the video is not located
 			tempPane.setPickOnBounds(false);
+			
+			tempPane.setOnMouseClicked(new EventHandler<MouseEvent>(){				 
+				@Override
+				public void handle(MouseEvent arg0) {
+					System.out.println("Hello");
+					System.out.println(currentVideo.getVideoTargetSlide());
+					if (currentVideo.getVideoTargetSlide() >= 0) {
+						changeSlide(currentVideo.getVideoTargetSlide());
+					}
+				}
+			});
 			
 			presentationLayout.getChildren().add(tempPane);
 			

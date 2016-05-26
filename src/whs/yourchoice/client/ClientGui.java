@@ -185,15 +185,12 @@ public class ClientGui extends Application{
         	public void handle(WindowEvent we) {
         		File f = new File(tempPresentationDirectory);
         		if (f.exists()) {
-        			// Windows is shit so don't delete Thumbs.db as it will be locked
-	        		if (!(f.getName()).equals("Thumbs.db")) {
-	        			try {
-							delete(f);
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-	        		}
+        			try {
+						delete(f);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
         		}
         	}
         });
@@ -206,12 +203,15 @@ public class ClientGui extends Application{
 	 * @throws IOException
 	 */
 	void delete(File f) throws IOException {
-	  if (f.isDirectory()) {
-	    for (File c : f.listFiles())
-	      delete(c);
-	  }
-	  if (!f.delete())
-	    throw new FileNotFoundException("Failed to delete file: " + f);
+		// Windows is shit so don't delete Thumbs.db as it will be locked
+		if (!(f.getName()).equals("Thumbs.db")) {
+			if (f.isDirectory()) {
+				for (File c : f.listFiles())
+					delete(c);
+			}
+			if (!f.delete())
+				throw new FileNotFoundException("Failed to delete file: " + f);
+		}
 	}
 	
 

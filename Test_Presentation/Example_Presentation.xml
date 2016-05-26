@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Presentation xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="PWS.xsd">
+
+    <documentInfo>
+	
+        <Title>Your Choice</Title>
+		
+        <Author>Woolly Hat Software</Author>
+		
+        <Version>v1.0</Version>
+			
+        <Comment>I dont think this comment is going to be parsed anyway so I am just going to write some random stuff here because why not? </Comment>
+		
+    </documentInfo>
+	
+    <defaults>
+	
+        <backgroundColour>DDFFDD</backgroundColour>
+		
+        <font>Arial</font>
+		
+        <fontsize>12</fontsize>
+		
+        <fontColour>000000</fontColour>
+		
+        <lineColour>FF0000</lineColour>
+		
+        <fillColour>DDDDFF</fillColour>
+		
+    </defaults>
+	
+    <slide slideID="0" duration="30000" nextSlide="1">
+	
+		<text duration="4000" ystart="0.1" starttime="1000" xstart="0.0" fontsize="18" font="Arial" fontColour="000000">The animal names should be bold, the colour names should be italic, and the names of our team should be both bold and italic. </text>
+		
+		<text duration="7000" ystart="0.4" starttime="2000" xstart="0.0" fontsize="18" font="Arial" fontColour="000000">Yesterday, <b><i>Antonio</i></b> saw a <i>white</i> <b>cat</b>. He was sitting in a <i>red</i> carpet next to <b><i>Chris</i></b> and <b><i>Coz</i></b>. The <b>cat</b> then went next to <b><i>Sabrina's</i></b> <i>black</i> shoes and fell asleep. </text>
+		
+        <shape width="0.1" duration="10000" ystart="0.6" type="circle" starttime="2000" xstart="0.5" height="0.3">
+            <shading x2="0.80" x1="0.60" y2="0.65" y1="0.90" colour2="FF0000" colour1="00FF00" />
+        </shape>
+		
+		<video ystart="0.6" loop="true" xstart="0.05" sourceFile="avengers-featurehp.mp4" duration="3000" starttime="6000" />
+		
+		<image width="0.1" duration="5000" ystart="0.8" sourceFile="dog.png" starttime="6000" xstart="0.8" height="0.1" />
+		
+		<polygon duration="3500" starttime="3500" sourceFile="ArrowShape.csv" lineColour="000000" fillColour="007766">
+			<shading x2="0.3" x1="0.25" y2="0.2" y1="0.1" colour2="4455FF" colour1="FF4455" />
+		</polygon>
+		
+		<audio loop="true" sourceFile="jetairplane16sec.aac" duration="10000" starttime="6000" />
+		
+    </slide>
+	
+	<slide slideID="1" duration="30000" nextSlide="2">
+		<text duration="-1" ystart="0.1" starttime="0" xstart="0.4" fontsize="18" font="Arial" fontColour="000000"> Video Slide </text>
+		
+		<video ystart="0.6" loop="true" xstart="0.05" sourceFile="avengers-featurehp.mp4" duration="25000" starttime="2000" />
+		
+		<video ystart="0.05" loop="true" xstart="0.05" sourceFile="avengers-featurehp.mp4" duration="-1" starttime="0" />
+		
+		<video ystart="0.05" loop="true" xstart="0.6" sourceFile="avengers-featurehp.mp4" duration="21000" starttime="4000" />
+		
+    </slide>
+	
+	<slide slideID="2" duration="30000" nextSlide="3">
+		<text duration="-1" ystart="0.1" starttime="0" xstart="0.4" fontsize="18" font="Arial" fontColour="000000"> Audio Slide </text>
+				
+		<audio loop="true" sourceFile="jetairplane16sec.aac" duration="3000" starttime="-1" />
+		
+		<audio loop="true" sourceFile="lh.mp3" duration="9000" starttime="-1" />
+		
+    </slide>
+	
+	<slide slideID="3" duration="30000" nextSlide="4">
+		<text duration="10000" ystart="0.1" starttime="1000" xstart="0.4" fontsize="18" font="Arial" fontColour="000000"> Image Slide </text>
+		
+		<image width="1.0" duration="7000" ystart="0.2" sourceFile="house.jpg" starttime="2000" xstart="0.0" height="0.8" />		
+		
+		<image width="0.3" duration="1000" ystart="0.6" sourceFile="dog.png" starttime="5000" xstart="0.3" height="0.3" />
+		
+    </slide>
+	
+	<slide slideID="4" duration="30000" nextSlide="5">
+		<text duration="-1" ystart="0.1" starttime="0" xstart="0.4" fontsize="18" font="Arial" fontColour="000000"> Shape and Polygon Slide </text>
+				
+		<polygon duration="-1" starttime="-1" sourceFile="ArrowShape.csv" lineColour="000000" fillColour="007766">
+			<shading x2="0.3" x1="0.25" y2="0.2" y1="0.1" colour2="4455FF" colour1="FF4455" />
+		</polygon>
+		
+		<polygon duration="-1" starttime="-1" sourceFile="Shape.csv" lineColour="000000" fillColour="007766">
+			<shading x2="0.3" x1="0.25" y2="0.2" y1="0.1" colour2="FF55FF" colour1="224455" />
+		</polygon>
+		
+		<shape width="0.1" duration="-1" ystart="0.5" type="rectangle" starttime="-1" xstart="0.5" height="0.3">
+            <shading x2="0.80" x1="0.60" y2="0.65" y1="0.90" colour2="FF0000" colour1="00FF00" />
+        </shape>
+		
+		<shape width="0.1" duration="-1" ystart="0.75" type="circle" starttime="-1" xstart="0.5" height="0.3">
+            <shading x2="0.80" x1="0.60" y2="0.65" y1="0.90" colour2="FF0000" colour1="00FF00" />
+        </shape>
+		
+    </slide>
+
+	<slide slideID="5" duration="30000" nextSlide="-1">
+		<interactable targetSlide="0">
+			<text duration="-1" ystart="0.1" starttime="0" xstart="0.1" fontsize="18" font="Arial" fontColour="000000"> Click Me for slide 0</text>
+		</interactable>	
+		
+		<interactable targetSlide="2">
+			<polygon duration="-1" starttime="-1" sourceFile="Shape.csv" lineColour="000000" fillColour="007766">
+				<shading x2="0.3" x1="0.25" y2="0.2" y1="0.1" colour2="FF55FF" colour1="224455" />
+			</polygon>
+		</interactable>
+		
+		<interactable targetSlide="4">
+			<shape width="0.1" duration="-1" ystart="0.75" type="circle" starttime="-1" xstart="0.5" height="0.3">
+				<shading x2="0.80" x1="0.60" y2="0.65" y1="0.90" colour2="FF0000" colour1="00FF00" />
+			</shape>
+		</interactable>	
+		
+		<interactable targetSlide="3">
+			<image width="0.3" duration="0" ystart="0.6" sourceFile="dog.png" starttime="0" xstart="0.3" height="0.3" />
+		</interactable>
+		
+		<interactable targetSlide="1">
+			<video ystart="0.05" loop="true" xstart="0.6" sourceFile="avengers-featurehp.mp4" duration="-1" starttime="0" />
+		</interactable>
+		
+    </slide>
+	
+</Presentation>
