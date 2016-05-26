@@ -372,7 +372,7 @@ public class ClientGui extends Application{
 					selYear = newYear;
 					if (!selCourse.equals("") && !selStream.equals("")) {
 						//get a list of matching modules
-						obsModules = FXCollections.observableArrayList(client.getModulesByYear(selYear));
+						obsModules = FXCollections.observableArrayList(client.getResultModules(selCourse, selStream, selYear));
 						moduleCombo.setItems(obsModules);
 						moduleCombo.setDisable(false);
 					}

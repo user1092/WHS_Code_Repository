@@ -346,6 +346,17 @@ public class Client {
 	protected String getFilenameFromTitle(String title) {
 		return moduleList.getFilenameFromTitle(title);
 	}
+	
+	/**
+	 * returns all relevant modules when all combo boxes selected
+	 * @param String course
+	 * @param String stream
+	 * @param String year
+	 * @return List<String> results
+	 */
+	protected List<String> getResultModules(String course, String stream, String year) {
+		return moduleList.searchResultModules(course, stream, year);
+	}
 		
 }
 		
