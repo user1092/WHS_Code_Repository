@@ -24,4 +24,12 @@
         <title>Philosophy in the Bhuddist World</title>
         <filename>bhud_phil.zip</filename>
     </module>
+	<module>
+        <code>EX0000012</code>
+        <course>Example Course</course>
+        <stream>Example Stream</stream>
+        <year>1</year>
+        <title>Example Title</title>
+        <filename>Example_Presentation.zip</filename>
+    </module>
 </registeredModules>
