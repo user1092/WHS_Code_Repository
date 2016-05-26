@@ -25,6 +25,7 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -60,10 +61,14 @@ import javafx.stage.WindowEvent;
 */
 public class ClientGui extends Application{
 
+	private final int WINDOW_HEIGHT = 600;
+	private final int WINDOW_WIDTH = 800;
+	
 	private Stage primaryStage;
 	private StackPane contentLayout;
 	private BorderPane loginLayout;
 	private GridPane modulePane;
+	private StackPane moduleLayout;
 
 	private Button loginButton;
 	private Button connectButton;
@@ -125,6 +130,7 @@ public class ClientGui extends Application{
 		BorderPane guiLayout = new BorderPane();
 		contentLayout = new StackPane();
 		loginLayout = new BorderPane();
+		moduleLayout = new StackPane();
 		
 		Scene scene = new Scene(guiLayout);
 		
@@ -153,8 +159,9 @@ public class ClientGui extends Application{
 		
 		//main stage set up with appropriate scene and size
 		primaryStage.setScene(scene);
-		primaryStage.setHeight(600);
-		primaryStage.setWidth(800);
+		primaryStage.setHeight(WINDOW_HEIGHT);
+		primaryStage.setWidth(WINDOW_WIDTH);
+		primaryStage.setResizable(false);
 		primaryStage.setTitle("YourChoice");
 		
 		progressBar = new ProgressBar(0);
@@ -185,12 +192,15 @@ public class ClientGui extends Application{
         	public void handle(WindowEvent we) {
         		File f = new File(tempPresentationDirectory);
         		if (f.exists()) {
-        			try {
-						delete(f);
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+        			// Windows is shit so don't delete Thumbs.db as it will be locked
+	        		if (!(f.getName()).equals("Thumbs.db")) {
+	        			try {
+							delete(f);
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+	        		}
         		}
         	}
         });
@@ -203,15 +213,12 @@ public class ClientGui extends Application{
 	 * @throws IOException
 	 */
 	void delete(File f) throws IOException {
-		// Windows is shit so don't delete Thumbs.db as it will be locked
-		if (!(f.getName()).equals("Thumbs.db")) {
-			if (f.isDirectory()) {
-				for (File c : f.listFiles())
-					delete(c);
-			}
-			if (!f.delete())
-				throw new FileNotFoundException("Failed to delete file: " + f);
-		}
+	  if (f.isDirectory()) {
+	    for (File c : f.listFiles())
+	      delete(c);
+	  }
+	  if (!f.delete())
+	    throw new FileNotFoundException("Failed to delete file: " + f);
 	}
 	
 
@@ -243,8 +250,7 @@ public class ClientGui extends Application{
 	 */
 	private GridPane moduleGPCreation() {
 		GridPane modulePane = new GridPane();
-		modulePane.setPadding(new Insets(10, 0, 10, 0));
-		
+		modulePane.setPadding(new Insets(120, 0, 0, 250));
 		return modulePane;
 	}
 	
@@ -254,6 +260,9 @@ public class ClientGui extends Application{
 	private void addModuleSelection() {
 		modulePane = moduleGPCreation();
 		moduleCombo = constructModuleCombo();
+		// empty pane to add gaps between combo boxes
+		modulePane.setVgap(10);
+	    
 		Label moduleLable = new Label("Module:");
 		streamCombo = constructStreamCombo();
 		Label streamLable = new Label("Stream:");
@@ -293,7 +302,7 @@ public class ClientGui extends Application{
 		// Allow mouse clicks on items on other Panes
 		modulePane.setPickOnBounds(false);
 		
-		contentLayout.getChildren().add(modulePane);
+		moduleLayout.getChildren().add(modulePane);
 	}
 	
 	/**
@@ -363,7 +372,7 @@ public class ClientGui extends Application{
 					selYear = newYear;
 					if (!selCourse.equals("") && !selStream.equals("")) {
 						//get a list of matching modules
-						obsModules = FXCollections.observableArrayList(client.getModulesByYear(selYear));
+						obsModules = FXCollections.observableArrayList(client.getResultModules(selCourse, selStream, selYear));
 						moduleCombo.setItems(obsModules);
 						moduleCombo.setDisable(false);
 					}
@@ -375,6 +384,7 @@ public class ClientGui extends Application{
 	
 	/**
 	 * Creates a combobox for user to select course
+	 * 
 	 * @return ComboBox courseCombo
 	 */
 	private ComboBox<String> constructCourseCombo(){
@@ -456,7 +466,10 @@ public class ClientGui extends Application{
 		Button requestModuleButton = new Button("Request Module");
 		requestModuleButton.setDisable(false);
 		requestModuleButton.setPrefSize(150, 20);
-		contentLayout.getChildren().add(requestModuleButton);
+		moduleLayout.setPadding(new Insets(0, 0, 50, 0));
+		moduleLayout.setAlignment(requestModuleButton, Pos.BOTTOM_CENTER);
+		moduleLayout.getChildren().add(requestModuleButton);
+		contentLayout.getChildren().add(moduleLayout);
 		requestModuleButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
@@ -845,7 +858,7 @@ public class ClientGui extends Application{
 		final String xmlFilename = name + ".xml";
 		System.out.println(xmlFilename);
 		
-		
+		contentLayout.getChildren().clear();
 		contentLayout.getChildren().add(progressBar);
 		
 		Task<Void> requestTask = new Task<Void>() {
@@ -897,7 +910,7 @@ public class ClientGui extends Application{
 		if (!(null == filename)){
 			progressBar.progressProperty().bind(requestTask.progressProperty());
 			requestThread.start();
-			removeProgressBar(requestThread, null);
+			removeProgressBar(requestThread, moduleLayout);
 		}
 	}
 
