@@ -46,7 +46,7 @@ public class PolygonEntry
 	* getTextTargetSlide method. Gets the target slide of the polygon.
 	* @return targetSlide Returns the target slide of the polygon.
 	*/
-	public int getTextTargetSlide()
+	public int getPolygonTargetSlide()
 	{
 		return targetSlide;
 	}
