@@ -167,6 +167,9 @@ public class PresentationGui extends Application {
 	private int storedCurrentSlideNumber = 0;
 	private Thread slideAutomaticThread;
 	private Thread slideManualThread;
+	
+	private boolean interactableClicked = false;
+	private boolean ignoredClick = false;
 
 	/**
 	 * Constructor requires a presentation to display
@@ -219,8 +222,11 @@ public class PresentationGui extends Application {
 		// Mouse Handler for manual mode
 		subPresentationLayout.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override public void handle(MouseEvent e) {
-				if ((!automaticMode) && (presentationState.equals("Playing"))) {
+				if ((!automaticMode) && (presentationState.equals("Playing")) && !(interactableClicked)) {
 					mouseClicked = true;
+				}
+				else {
+					ignoredClick = true;
 				}
 			}
 		});
@@ -522,35 +528,14 @@ public class PresentationGui extends Application {
 		// Instantiation of next slide button
 		nextSlideButton = new Button();
 		nextSlideButton.setGraphic(nextSlideView);
-		nextSlideButton.setMaxSize(35, 30);
-		nextSlideButton.setPrefSize(35, 30);
-		nextSlideButton.setMinSize(35, 30);
+		nextSlideButton.setMaxSize(40, 30);
+		nextSlideButton.setPrefSize(40, 30);
+		nextSlideButton.setMinSize(40, 30);
 		nextSlideButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
 				if (currentSlideNumber < (presentation.getTotalSlideNumber() - 1)) {
-					
-					// Set to exit for loop in objectTimingThread and objectManualThread
-					exitTimingThreads();
-					
-					// Stop any running timers if in automatic mode
-					if (automaticMode) {
-						stopAllTimers();
-					}					
-					
-					// Clear the current slide
-					presentationLayout.getChildren().clear();									
-					//currentSlideNumber++;
-					
-					currentSlideNumber = presentation.getSlideList().get(currentSlideNumber).getSlideNext();
-					
-					if (!presentationState.equals("Stopped")) {
-						storedCurrentNodeNumber = 0;
-						releaseMediaPlayers();
-						loadSlide(currentSlideNumber);
-					}
-					
-					slideNumberTextField.setText("" + currentSlideNumber);
+					changeSlide(presentation.getSlideList().get(currentSlideNumber).getSlideNext());
 				}
 			}
 		});
@@ -567,32 +552,15 @@ public class PresentationGui extends Application {
 		// Instantiation of previous slide button
 		previousSlideButton = new Button();
 		previousSlideButton.setGraphic(previousSlideView);
-		previousSlideButton.setMaxSize(35, 30);
-		previousSlideButton.setPrefSize(35, 30);
-		previousSlideButton.setMinSize(35, 30);
+		previousSlideButton.setMaxSize(40, 30);
+		previousSlideButton.setPrefSize(40, 30);
+		previousSlideButton.setMinSize(40, 30);
 		previousSlideButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
 				if (currentSlideNumber > 0) {
-					
-					// Set to exit for loop in objectTimingThread and objectManualThread
-					exitTimingThreads();
-					
-					// Stop any running timers if in automatic mode
-					if (automaticMode) {
-						stopAllTimers();
-					}
-					
-					presentationLayout.getChildren().clear();
-					currentSlideNumber--;
-					
-					if (!presentationState.equals("Stopped")) {
-						storedCurrentNodeNumber = 0;
-						releaseMediaPlayers();
-						loadSlide(currentSlideNumber);
-					}
-					
-					slideNumberTextField.setText("" + currentSlideNumber);
+					int slideNumber = currentSlideNumber - 1;
+					changeSlide(slideNumber);
 				}
 			}
 		});
@@ -704,9 +672,9 @@ public class PresentationGui extends Application {
 		// Instantiation of mute button
 		final ToggleButton muteButton = new ToggleButton();
 		muteButton.setGraphic(unmutedView);
-		muteButton.setMaxSize(50, 30);
-		muteButton.setPrefSize(50, 30);
-		muteButton.setMinSize(50, 30);
+		muteButton.setMaxSize(40, 30);
+		muteButton.setPrefSize(40, 30);
+		muteButton.setMinSize(40, 30);
 		muteButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
@@ -998,7 +966,9 @@ public class PresentationGui extends Application {
 
 	
 	/**
-	 * @param targetSlide
+	 * Method to change Slide according to the passed number
+	 * 
+	 * @param targetSlide	-	The slide that the presentation should change to
 	 */
 	private void changeSlide(final int targetSlide) {
 		// Set to exit for loop in objectTimingThread and objectManualThread
@@ -1014,6 +984,30 @@ public class PresentationGui extends Application {
 		
 		currentSlideNumber = targetSlide;
 		
+		// Ensure all Threads are dead before continuing
+		if (automaticMode) {
+			while (objectAutomaticThread.isAlive() || slideAutomaticThread.isAlive()) {
+				try {
+					Thread.sleep(50);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		else {
+			while (objectManualThread.isAlive() || slideManualThread.isAlive()) {
+				try {
+					Thread.sleep(50);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		storedCurrentSlideNumber = currentSlideNumber;
+		
 		if (!presentationState.equals("Stopped")) {
 			storedCurrentNodeNumber = 0;
 			releaseMediaPlayers();
@@ -1021,6 +1015,32 @@ public class PresentationGui extends Application {
 		}
 		
 		slideNumberTextField.setText("" + currentSlideNumber);
+		
+		// Wait until the mouse click is registered by the mouse listener
+		Task<Void> stopMouseTask = new Task<Void>() {
+			@Override protected Void call() throws Exception {
+				while (!(ignoredClick)) {
+					try {
+						Thread.sleep(50);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				ignoredClick = false;
+				interactableClicked = false;
+				return null;
+			}
+		};
+		
+		// Add task to a thread
+		Thread stopMouseThread = new Thread(stopMouseTask);
+		stopMouseThread.setDaemon(true);
+		if (interactableClicked) {
+			stopMouseThread.start();
+		}
+		
+		
 	}
 	
 	
@@ -1040,9 +1060,9 @@ public class PresentationGui extends Application {
 		// Retrieve the slide information that was requested
 		SlideEntry currentSlide = presentation.getSlideList().get(slideId);
 		
-		presentationLayout.setStyle("-fx-background-color: #" + currentSlide.getSlideBackgroundColour() + ";");
+		windowLayout.setStyle("-fx-background-color: #" + currentSlide.getSlideBackgroundColour() + ";");
 				
-		System.out.println(currentSlide.getSlideBackgroundColour());
+		System.out.println("Background colour: " + currentSlide.getSlideBackgroundColour());
 		
 		displayImages(currentSlide);
 		displayTexts(currentSlide, duffCanvas);
@@ -1094,16 +1114,17 @@ public class PresentationGui extends Application {
 	private void manualSlideMode() {
 		Task<Void> manualSlideTask = new Task<Void>() {
 			@Override protected Void call() throws Exception {
+				
 				mouseClicked = false;
 				
 				storedCurrentSlideNumber = currentSlideNumber;
-				System.out.println("currentManualNodeNumber " + currentManualNodeNumber + "numberOfNodes " + numberOfNodes);
+				
 				while ((currentManualNodeNumber < numberOfNodes) || 
 						((!mouseClicked) && (!automaticMode) && 
 								(currentSlideNumber == storedCurrentSlideNumber)))	{
 					Thread.sleep(20);
 				}
-								
+				
 				mouseClicked = false;
 				
 				// If in manual mode and on the same slide click the next slide button
@@ -1114,6 +1135,11 @@ public class PresentationGui extends Application {
 						}
 					});
 				}
+				
+				System.out.println("Exiting manual slide control");
+				
+				mouseClicked = false;
+				
 				return null;
 			}
 		};
@@ -1398,9 +1424,8 @@ public class PresentationGui extends Application {
 			tempPane.setOnMouseClicked(new EventHandler<MouseEvent>(){				 
 				@Override
 				public void handle(MouseEvent arg0) {
-					System.out.println("Hello");
-					System.out.println(currentText.getTextTargetSlide());
 					if (currentText.getTextTargetSlide() >= 0) {
+						interactableClicked = true;
 						changeSlide(currentText.getTextTargetSlide());
 					}
 				}
@@ -1453,9 +1478,8 @@ public class PresentationGui extends Application {
 			tempCanvas.setOnMouseClicked(new EventHandler<MouseEvent>(){				 
 				@Override
 				public void handle(MouseEvent arg0) {
-					System.out.println("Hello");
-					System.out.println(currentImage.getImageTargetSlide());
 					if (currentImage.getImageTargetSlide() >= 0) {
+						interactableClicked = true;
 						changeSlide(currentImage.getImageTargetSlide());
 					}
 				}
@@ -1510,9 +1534,8 @@ public class PresentationGui extends Application {
 			tempPane.setOnMouseClicked(new EventHandler<MouseEvent>(){				 
 				@Override
 				public void handle(MouseEvent arg0) {
-					System.out.println("Hello");
-					System.out.println(currentShape.getShapeTargetSlide());
 					if (currentShape.getShapeTargetSlide() >= 0) {
+						interactableClicked = true;
 						changeSlide(currentShape.getShapeTargetSlide());
 					}
 				}
@@ -1571,9 +1594,8 @@ public class PresentationGui extends Application {
 			tempPane.setOnMouseClicked(new EventHandler<MouseEvent>(){				 
 				@Override
 				public void handle(MouseEvent arg0) {
-					System.out.println("Hello");
-					System.out.println(currentPolygon.getPolygonTargetSlide());
 					if (currentPolygon.getPolygonTargetSlide() >= 0) {
+						interactableClicked = true;
 						changeSlide(currentPolygon.getPolygonTargetSlide());
 					}
 				}
@@ -1625,9 +1647,8 @@ public class PresentationGui extends Application {
 			tempPane.setOnMouseClicked(new EventHandler<MouseEvent>(){				 
 				@Override
 				public void handle(MouseEvent arg0) {
-					System.out.println("Hello");
-					System.out.println(currentVideo.getVideoTargetSlide());
 					if (currentVideo.getVideoTargetSlide() >= 0) {
+						interactableClicked = true;
 						changeSlide(currentVideo.getVideoTargetSlide());
 					}
 				}
