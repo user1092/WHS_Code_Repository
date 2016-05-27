@@ -372,8 +372,6 @@ public class Client {
 	protected List<String> getResultModules(String course, String stream, String year) {
 		List<String> resultModules;
 		
-		System.out.println(course + " : " + stream + " : " + year);
-		
 		if (year.equals("")) {
 			resultModules = moduleList.getModulesByCourseStream(course, stream);
 		}

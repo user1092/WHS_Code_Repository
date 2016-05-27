@@ -339,7 +339,7 @@ public class ClientGui extends Application{
 			@Override
 			public void changed(ObservableValue o, String oldStream, String newStream) {
 				//moduleCombo.setDisable(true);
-				if (!newStream.equals("")) {
+				if (!(null == newStream)) {
 					selStream = newStream;
 					selYear = "";
 					yearCombo.setValue("");
@@ -367,7 +367,7 @@ public class ClientGui extends Application{
 		yearCombo.valueProperty().addListener(new ChangeListener<String>() {
 			@Override
 			public void changed(ObservableValue o, String oldYear, String newYear) {
-				if (!newYear.equals("")) {
+				if (!(null == newYear)) {
 					selYear = newYear;
 					//get a list of matching modules
 					obsModules = FXCollections.observableArrayList(client.getResultModules(selCourse, selStream, selYear));
@@ -399,12 +399,14 @@ public class ClientGui extends Application{
 				yearCombo.setDisable(false);
 				moduleCombo.setDisable(false);
 				selCourse = newCourse;
-				if (!newCourse.equals("")) {
+				if (!(null == newCourse)) {
 					//get a list of matching streams
 					obsStreams = FXCollections.observableArrayList(client.getStreamByCourse(selCourse));
 					streamCombo.setItems(obsStreams);
+					selYear = "";
 					obsYear = FXCollections.observableArrayList(client.getYearsByCourse(selCourse));
 					yearCombo.setItems(obsYear);
+					yearCombo.setValue("");
 					obsModules = FXCollections.observableArrayList(client.getModulesByCourse(selCourse));
 					moduleCombo.setItems(obsModules);
 					
