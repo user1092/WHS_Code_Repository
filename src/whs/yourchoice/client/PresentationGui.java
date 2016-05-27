@@ -56,6 +56,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToolBar;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -74,7 +75,7 @@ import javafx.util.StringConverter;
 * Class for creation of the presentation window and adding functionality
 *
 * @author cd828 & ch1092
-* @version v0.11 25/05/16
+* @version v0.12 27/05/16
 */
 public class PresentationGui extends Application {
 	
@@ -87,6 +88,9 @@ public class PresentationGui extends Application {
 	private final int CONTROL_BAR_HEIGHT = 60;
 	private final int PRESENTATION_WIDTH = WINDOW_WIDTH;
 	private final int PRESENTATION_HEIGHT = WINDOW_HEIGHT - (CONTROL_BAR_HEIGHT/2) - CONTROL_BAR_HEIGHT;
+	// Definitions for button sizes
+	private final int BUTTON_HEIGHT = 30;
+	private final int BUTTON_WIDTH = 40;
 	// Values for the video player
 	//TODO May consider implementing in the xml file
 	private final float VIDEO_WIDTH = 0.3f;
@@ -118,12 +122,6 @@ public class PresentationGui extends Application {
     private Button previousSlideButton;
     private TextField slideNumberTextField;
     private Button nextSlideButton;
-    private Button aboutPresentationButton;
-    private Image aboutPresentationImage;
-    private ImageView aboutPresentationView;
-    private Button viewFeedbackButton;
-    private Image viewFeedbackImage;
-    private ImageView viewFeedbackView;
         
 	private ToggleButton playButton;
 	private Image playImage;
@@ -470,9 +468,9 @@ public class PresentationGui extends Application {
 		
 		HBox slideButtonsHBox = createSlideButtonsHBox();
 		
-		createAboutPresentationButton();
+		Button aboutPresentationButton = createAboutPresentationButton();
 		
-		createViewFeedbackButton();
+		Button viewFeedbackButton = createViewFeedbackButton();
 		
 		// Instantiation of the separator on the control bar
 		Separator separator = new Separator();
@@ -527,10 +525,11 @@ public class PresentationGui extends Application {
 		ImageView nextSlideView = new ImageView(nextSlideImage);
 		// Instantiation of next slide button
 		nextSlideButton = new Button();
+		nextSlideButton.setTooltip(new Tooltip("Next Slide"));
 		nextSlideButton.setGraphic(nextSlideView);
-		nextSlideButton.setMaxSize(40, 30);
-		nextSlideButton.setPrefSize(40, 30);
-		nextSlideButton.setMinSize(40, 30);
+		nextSlideButton.setMaxSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+		nextSlideButton.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+		nextSlideButton.setMinSize(BUTTON_WIDTH, BUTTON_HEIGHT);
 		nextSlideButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
@@ -551,10 +550,11 @@ public class PresentationGui extends Application {
 		ImageView previousSlideView = new ImageView(previousSlideImage);
 		// Instantiation of previous slide button
 		previousSlideButton = new Button();
+		previousSlideButton.setTooltip(new Tooltip("Previous Slide"));
 		previousSlideButton.setGraphic(previousSlideView);
-		previousSlideButton.setMaxSize(40, 30);
-		previousSlideButton.setPrefSize(40, 30);
-		previousSlideButton.setMinSize(40, 30);
+		previousSlideButton.setMaxSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+		previousSlideButton.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+		previousSlideButton.setMinSize(BUTTON_WIDTH, BUTTON_HEIGHT);
 		previousSlideButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
@@ -610,9 +610,10 @@ public class PresentationGui extends Application {
 	 */
 	private ToggleButton createModeButton() {
 		final ToggleButton modeButton = new ToggleButton("Automatic");
-		modeButton.setMaxSize(80, 30);
-		modeButton.setPrefSize(80, 30);
-		modeButton.setMinSize(80, 30);
+		modeButton.setMaxSize(80, BUTTON_HEIGHT);
+		modeButton.setPrefSize(80, BUTTON_HEIGHT);
+		modeButton.setMinSize(80, BUTTON_HEIGHT);
+		modeButton.setTooltip(new Tooltip("Toggle Automatic Mode"));
 		modeButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override 
             public void handle(ActionEvent e) {
@@ -671,14 +672,16 @@ public class PresentationGui extends Application {
 		final ImageView unmutedView = new ImageView(unmutedImage);
 		// Instantiation of mute button
 		final ToggleButton muteButton = new ToggleButton();
+		muteButton.setTooltip(new Tooltip("Mute Media"));
 		muteButton.setGraphic(unmutedView);
-		muteButton.setMaxSize(40, 30);
-		muteButton.setPrefSize(40, 30);
-		muteButton.setMinSize(40, 30);
+		muteButton.setMaxSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+		muteButton.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+		muteButton.setMinSize(BUTTON_WIDTH, BUTTON_HEIGHT);
 		muteButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
 				if (muteButton.isSelected() == true) {
+					muteButton.setTooltip(new Tooltip("Unmute Media"));
 					muteButton.setGraphic(muteView);
 					masterMute = true;
 					// Mute all audio players
@@ -691,6 +694,7 @@ public class PresentationGui extends Application {
 	        		}
 				}
 				else {
+					muteButton.setTooltip(new Tooltip("Mute Media"));
 					muteButton.setGraphic(unmutedView);
 					masterMute = false;
 					// Unmute all audio players
@@ -720,16 +724,18 @@ public class PresentationGui extends Application {
 		final ImageView pauseView = new ImageView(pauseImage);
 		// Instantiation of play button
 		playButton = new ToggleButton();
+		playButton.setTooltip(new Tooltip("Play Media"));
 		// Set the image on the button
 		playButton.setSelected(true);
 		playButton.setGraphic(pauseView);
-		playButton.setMaxSize(40, 30);
-		playButton.setPrefSize(40, 30);
-		playButton.setMinSize(40, 30);
+		playButton.setMaxSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+		playButton.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+		playButton.setMinSize(BUTTON_WIDTH, BUTTON_HEIGHT);
 		playButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
 				if (playButton.isSelected()) {
+					playButton.setTooltip(new Tooltip("Pause Media"));
 					playButton.setGraphic(pauseView);
 					
 					if (presentationState.equals("Paused")) {
@@ -767,6 +773,7 @@ public class PresentationGui extends Application {
 				}
 				else {
 					playButton.setGraphic(playView);
+					playButton.setTooltip(new Tooltip("Play Media"));
 					// Set all audio players to pause 
 					for(int audio = 0; audio < audioPlayerList.size(); audio++) {
             			audioPlayerList.get(audio).pauseAudio();
@@ -832,11 +839,12 @@ public class PresentationGui extends Application {
 		ImageView stopView = new ImageView(stopImage);
 		// Instantiation of play button
 		Button stopButton = new Button();
+		stopButton.setTooltip(new Tooltip("Stop Media"));
 		// Set the image on the button
 		stopButton.setGraphic(stopView);
-		stopButton.setMaxSize(40, 30);
-		stopButton.setPrefSize(40, 30);
-		stopButton.setMinSize(40, 30);
+		stopButton.setMaxSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+		stopButton.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+		stopButton.setMinSize(BUTTON_WIDTH, BUTTON_HEIGHT);
 		stopButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {				
@@ -856,6 +864,8 @@ public class PresentationGui extends Application {
 				
 				// Set playButton back to wait to play
 				playButton.setSelected(false);
+
+				playButton.setTooltip(new Tooltip("Play Media"));
 				playButton.setGraphic(playView);
 			}
 		});
@@ -876,17 +886,23 @@ public class PresentationGui extends Application {
 		fullscreenView = new ImageView(fullscreenImage);
 		// Instantiation of full screen button
 		fullScreenButton = new ToggleButton();
+		fullScreenButton.setTooltip(new Tooltip("Exit Fullscreen"));
 		// Set the image on the button
 		fullScreenButton.setGraphic(exitFullscreenView);
+		fullScreenButton.setMaxSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+		fullScreenButton.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+		fullScreenButton.setMinSize(BUTTON_WIDTH, BUTTON_HEIGHT);
 		
 		fullScreenButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
 				if (fullScreenButton.isSelected() == true) {
+					fullScreenButton.setTooltip(new Tooltip("Fullscreen"));
 					fullScreenButton.setGraphic(fullscreenView);
 					slideStage.setFullScreen(false);
 				}
 				else {
+					fullScreenButton.setTooltip(new Tooltip("Exit Fullscreen"));
 					fullScreenButton.setGraphic(exitFullscreenView);
 					slideStage.setFullScreen(true);
 				}
@@ -898,17 +914,17 @@ public class PresentationGui extends Application {
 	/**
 	 * Method for the setup of the about presentation button
 	 */
-	private void createAboutPresentationButton() {
-		// Image for next slide button
-		//TODO set the image, if required!
-//		aboutPresentationImage = new Image(getClass().getResourceAsStream("resources/nextbutton.png"));
-//		aboutPresentationView = new ImageView(aboutPresentationImage);
+	private Button createAboutPresentationButton() {
+		// Image for about presentation button
+		Image aboutPresentationImage = new Image(getClass().getResourceAsStream("resources/about.png"));
+		ImageView aboutPresentationView = new ImageView(aboutPresentationImage);
 		// Instantiation of next slide button
-		aboutPresentationButton = new Button("About Presentation");
-//		aboutPresentationButton.setGraphic(aboutPresentationView);
-		aboutPresentationButton.setMaxSize(120, 30);
-		aboutPresentationButton.setPrefSize(120, 30);
-		aboutPresentationButton.setMinSize(120, 30);
+		Button aboutPresentationButton = new Button();
+		aboutPresentationButton.setTooltip(new Tooltip("About Presentation"));
+		aboutPresentationButton.setGraphic(aboutPresentationView);
+		aboutPresentationButton.setMaxSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+		aboutPresentationButton.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+		aboutPresentationButton.setMinSize(BUTTON_WIDTH, BUTTON_HEIGHT);
 		aboutPresentationButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
@@ -925,24 +941,24 @@ public class PresentationGui extends Application {
 	 	    	 });
 			}
 		});
-		
+		return aboutPresentationButton;
 	}
 
 	
 	/**
 	 * Method for the setup of the about presentation button
 	 */
-	private void createViewFeedbackButton() {
-		// Image for next slide button
-		//TODO set the image, if required!
-//		viewFeedbackImage = new Image(getClass().getResourceAsStream("resources/nextbutton.png"));
-//		viewFeedbackView = new ImageView(viewFeedbackImage);
+	private Button createViewFeedbackButton() {
+		// Image for view feedback button
+		Image viewFeedbackImage = new Image(getClass().getResourceAsStream("resources/feedback.png"));
+		ImageView viewFeedbackView = new ImageView(viewFeedbackImage);
 		// Instantiation of next slide button
-		viewFeedbackButton = new Button("View Feedback");
-//		viewFeedbackButton.setGraphic(aboutPresentationView);
-		viewFeedbackButton.setMaxSize(120, 30);
-		viewFeedbackButton.setPrefSize(120, 30);
-		viewFeedbackButton.setMinSize(120, 30);
+		Button viewFeedbackButton = new Button();
+		viewFeedbackButton.setTooltip(new Tooltip("View Feedback"));
+		viewFeedbackButton.setGraphic(viewFeedbackView);
+		viewFeedbackButton.setMaxSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+		viewFeedbackButton.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+		viewFeedbackButton.setMinSize(BUTTON_WIDTH, BUTTON_HEIGHT);
 		viewFeedbackButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
@@ -961,7 +977,7 @@ public class PresentationGui extends Application {
 	 	    	 });
 			}
 		});
-		
+		return viewFeedbackButton;
 	}
 
 	
