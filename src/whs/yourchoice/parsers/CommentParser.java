@@ -22,7 +22,7 @@ import whs.yourchoice.client.ViewFeedbackGui.Feedback;
 * Class for parsing a text file and extracting user comments
 *
 * @author jcl513, gw679
-* @version v0.1 03/05/16
+* @version v0.2 27/05/16
 */
 public class CommentParser {
 	
@@ -41,7 +41,7 @@ public class CommentParser {
 		int newLinesNeeded = 0;
 		
 		// Character limit to dictate line wrapping
-		int characterLimit = 85;
+		int characterLimit = 70;
 		int location = 0;
 		String tempString = "";
 		
@@ -59,17 +59,26 @@ public class CommentParser {
 			br = new BufferedReader(new FileReader(textFilePath));
 			String line;
 			while ((line = br.readLine()) != null) {
-				
-			    // Regex code to split a line of the text file by commas, only if the comma
-				// is followed by an even number of quotation marks
-				// This means that commas inside quotation marks won't cause a line split
-				String[] tokens = line.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)", -1);;
-				
-				// Each line should generate three tokens which are then appended to the list
-				tokenList.add(tokens[0]);
-				tokenList.add(tokens[1]);
-				tokenList.add(tokens[2]);
-				tokenList.add(tokens[3]);
+
+			    if (line.isEmpty() == false)
+			    {
+			    	System.out.println("Full line detected");
+			    	// Regex code to split a line of the text file by commas, only if the comma
+					// is followed by an even number of quotation marks
+					// This means that commas inside quotation marks won't cause a line split
+					String[] tokens = line.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)", -1);;
+					
+					// Each line should generate three tokens which are then appended to the list
+					tokenList.add(tokens[0]);
+					tokenList.add(tokens[1]);
+					tokenList.add(tokens[2]);
+					tokenList.add(tokens[3]);
+			    }
+			    // Parser ignores empty lines at the start of a text file
+			    else
+			    {
+			    	System.out.println("Empty line detected");
+			    }
 			}
 
 		} catch (FileNotFoundException e) {
@@ -92,7 +101,7 @@ public class CommentParser {
 			// Store the current item in tempString for re-formatting
 			tempString = tokenList.get(i);			
 			remainder = i%4;
-			System.out.println(tempString);
+
 			switch(remainder)
 			{
 				// Current item is a name
@@ -160,7 +169,7 @@ public class CommentParser {
 	}
 	
 	/**
-	 * Function to return average of ratings found in comments text file
+	 * Function to return average of ratings found in feedback text file
 	 * @return avgRating - Float, the average module rating
 	 */
 	public float getAverageRating()
@@ -170,7 +179,7 @@ public class CommentParser {
 	
 	/**
 	 * Function to return list of comments
-	 * @return comments - List of instances of Comment class, containing information
+	 * @return comments - List of instances of Feedback class, containing information
 	 * 						from text file
 	 */
 	public ObservableList<Feedback> getComments()

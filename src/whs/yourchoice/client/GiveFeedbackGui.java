@@ -344,11 +344,12 @@ public class GiveFeedbackGui {
 					submittedComment = commentTextArea.getText();
 
 					submittedFeedback = formatSubmittedFeedback(submittedName, submittedComment, submittedRating);
+					
+							
+					// Writes new feedback into text file
+				    try (BufferedWriter bw = new BufferedWriter(new FileWriter(textFilePath, true))){
 
-					// For now the text filed is updated from here but may need to
-					// be done from the server in the future
-				    try (BufferedWriter bw = new BufferedWriter(new FileWriter("src/DemoModuleComments.txt", true))){
-				        bw.newLine();
+				    	bw.newLine();
 				    	bw.write(submittedFeedback);
 				        bw.close();
 				    } catch (IOException e1) {
@@ -387,6 +388,11 @@ public class GiveFeedbackGui {
 	 */
 	private void launchViewFeedbackGui(Stage stage, String moduleName, 
 										String textFilePath, Client client) {
+		
+		// Format strings to pass back to ViewFeedbackGui
+		textFilePath = removeFileExtension(textFilePath);
+		moduleName = removeTitleEnding(moduleName);
+		
 		ViewFeedbackGui viewFeedbackGui = new ViewFeedbackGui(moduleName, textFilePath, client);
 		try {
 			viewFeedbackGui.start(stage);
@@ -575,6 +581,37 @@ public class GiveFeedbackGui {
 		
 		return formattedFeedback;
 	}
+	
+	/**
+	 * Method to remove the file extension from the text file path
+	 * so that it can be passed by to ViewFeedbackGui in the correct format
+	 * 
+	 * @param String - the passed text filename
+	 * @return String - the filename with ".txt" removed
+	 */
+	private String removeFileExtension(final String filename) {
+		String name = null;
+		int pos = filename.lastIndexOf(".");
+		if (pos > 0) {
+			name = filename.substring(0, pos);
+		}
+		name = name.substring(16, name.length());
+		return name;
+	}
+	
+	/**
+	 * Method to remove "feedback" from the end of the module title
+	 * so that it can be passed by to ViewFeedbackGui in the correct format
+	 * 
+	 * @param String - the passed module title
+	 * @return String - the filename with "feedback" removed
+	 */
+	private String removeTitleEnding(final String moduleTitle) {
+		String name = moduleTitle;
+		name = name.substring(0, moduleTitle.length() - 9);
+		return name;
+	}
+	
 	
 	/**
 	 * Method to set up the action listeners and logic for the 5 star buttons
