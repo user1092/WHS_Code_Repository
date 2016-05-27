@@ -35,6 +35,9 @@ public class PresentationEntry
 	
 	private String presentationPath;
 	
+	private String presentationFilename;
+	private String feedbackFilename;
+	
 	private List<SlideEntry> slideList = new ArrayList<SlideEntry>();
 	
 	/**
@@ -269,4 +272,40 @@ public class PresentationEntry
 	public String getPath() {
 		return presentationPath;
 	}	
+	
+	/**
+	 * Method to retrieve the feedback filename (.txt file)
+	 * 
+	 * @return feedbackFilename	-	The name of the text file
+	 */
+	public String getFeedbackFilename() {
+		return feedbackFilename;
+	}
+
+	/**
+	 * Method to set the feedback filename
+	 * 
+	 * @param feedbackFilename	-	The name of the text file
+	 */
+	public void setFeedbackFilename(String feedbackFilename) {
+		this.feedbackFilename = feedbackFilename;
+	}
+
+	/**
+	 * Method to retrieve the name of the presentation file
+	 * 
+	 * @return presentationFilename	-	The name of the presentation
+	 */
+	public String getPresentationFilename() {
+		return presentationFilename;
+	}
+
+	/**
+	 * Method to set the name of the presentation file
+	 * 
+	 * @param presentationFilename	-	The name of the presentation
+	 */
+	public void setPresentationFilename(String presentationFilename) {
+		this.presentationFilename = presentationFilename;
+	}
 }
