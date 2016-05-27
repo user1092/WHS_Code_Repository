@@ -328,6 +328,10 @@ public class Client {
 		return moduleList.searchYearsByStream(stream);
 	}
 	
+	protected List<String> getModulesByCourse(String course) {
+		return moduleList.searchModuleByCourse(course);
+	}
+	
 	/**
 	 * Method that lists modules by associated years
 	 * @param String year
@@ -335,6 +339,15 @@ public class Client {
 	 */
 	protected List<String> getModulesByYear(String year) {
 		return moduleList.searchModulesByYear(year);
+	}
+	
+	/**
+	 * Method that lists modules by associated years
+	 * @param String year
+	 * @return List<String> List of years
+	 */
+	protected List<String> getYearsByCourse(String course) {
+		return moduleList.searchYearsByCourse(course);
 	}
 	
 	/**
@@ -347,6 +360,8 @@ public class Client {
 		return moduleList.getFilenameFromTitle(title);
 	}
 	
+	
+	
 	/**
 	 * returns all relevant modules when all combo boxes selected
 	 * @param String course
@@ -355,7 +370,20 @@ public class Client {
 	 * @return List<String> results
 	 */
 	protected List<String> getResultModules(String course, String stream, String year) {
-		return moduleList.searchResultModules(course, stream, year);
+		List<String> resultModules;
+		
+		System.out.println(course + " : " + stream + " : " + year);
+		
+		if (year.equals("")) {
+			resultModules = moduleList.getModulesByCourseStream(course, stream);
+		}
+		else if (stream.equals("")) {
+			resultModules = moduleList.getModulesByCourseYear(course, year);
+		}
+		else {
+			resultModules = moduleList.searchResultModules(course, stream, year);
+		}
+		return resultModules;	
 	}
 		
 }

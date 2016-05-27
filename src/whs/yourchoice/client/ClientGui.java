@@ -79,10 +79,10 @@ public class ClientGui extends Application{
 	private ComboBox<String> streamCombo;
 	private ComboBox<String> yearCombo;
 	private ComboBox<String> courseCombo;
-	private String selModule;
-	private String selStream;
-	private String selYear;
-	private String selCourse;
+	private String selModule = "";
+	private String selStream = "";
+	private String selYear = "";
+	private String selCourse = "";
 	ObservableList<String> obsStreams;
 	ObservableList<String> obsYear;
 	ObservableList<String> obsModules;
@@ -338,17 +338,16 @@ public class ClientGui extends Application{
 		streamCombo.valueProperty().addListener(new ChangeListener<String>() {
 			@Override
 			public void changed(ObservableValue o, String oldStream, String newStream) {
-				yearCombo.setDisable(true);
-				moduleCombo.setDisable(true);
+				//moduleCombo.setDisable(true);
 				if (!newStream.equals("")) {
 					selStream = newStream;
-					System.out.println(selStream);
-					if (!selCourse.equals("")) {
-						//get a list of matching years
-						obsYear = FXCollections.observableArrayList(client.getYearsByStream(selStream));
-						yearCombo.setItems(obsYear);
-						yearCombo.setDisable(false);
-					}
+					selYear = "";
+					yearCombo.setValue("");
+					obsYear = FXCollections.observableArrayList(client.getYearsByStream(selStream));
+					yearCombo.setItems(obsYear);
+					obsModules = FXCollections.observableArrayList(client.getResultModules(selCourse, selStream, selYear));
+					moduleCombo.setItems(obsModules);
+					yearCombo.setDisable(false);
 				}
 			}
 		});
@@ -370,12 +369,10 @@ public class ClientGui extends Application{
 			public void changed(ObservableValue o, String oldYear, String newYear) {
 				if (!newYear.equals("")) {
 					selYear = newYear;
-					if (!selCourse.equals("") && !selStream.equals("")) {
-						//get a list of matching modules
-						obsModules = FXCollections.observableArrayList(client.getResultModules(selCourse, selStream, selYear));
-						moduleCombo.setItems(obsModules);
-						moduleCombo.setDisable(false);
-					}
+					//get a list of matching modules
+					obsModules = FXCollections.observableArrayList(client.getResultModules(selCourse, selStream, selYear));
+					moduleCombo.setItems(obsModules);
+					moduleCombo.setDisable(false);
 				}
 			}
 		});
@@ -398,14 +395,19 @@ public class ClientGui extends Application{
 		courseCombo.valueProperty().addListener(new ChangeListener<String>() {
 			@Override
 			public void changed(ObservableValue o, String oldCourse, String newCourse) {
-				streamCombo.setDisable(true);
-				yearCombo.setDisable(true);
-				moduleCombo.setDisable(true);
+				streamCombo.setDisable(false);
+				yearCombo.setDisable(false);
+				moduleCombo.setDisable(false);
 				selCourse = newCourse;
 				if (!newCourse.equals("")) {
 					//get a list of matching streams
 					obsStreams = FXCollections.observableArrayList(client.getStreamByCourse(selCourse));
 					streamCombo.setItems(obsStreams);
+					obsYear = FXCollections.observableArrayList(client.getYearsByCourse(selCourse));
+					yearCombo.setItems(obsYear);
+					obsModules = FXCollections.observableArrayList(client.getModulesByCourse(selCourse));
+					moduleCombo.setItems(obsModules);
+					
 					streamCombo.setDisable(false);
 				}
 			}
