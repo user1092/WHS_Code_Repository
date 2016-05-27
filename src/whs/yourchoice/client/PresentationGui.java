@@ -130,7 +130,7 @@ public class PresentationGui extends Application {
 	private Image fullscreenImage;
 	private ImageView fullscreenView;
 	
-	private PresentationEntry presentation;
+	private PresentationEntry presentation = new PresentationEntry();
 	private Client client;
 	
 	// Location of where VLC is installed
@@ -967,7 +967,9 @@ public class PresentationGui extends Application {
 	 	    			try {				 	        	  
 //	 	     				new MetaDataGui(presentation).start(new Stage());
 	 	    				// TODO CHANGE THE FILENAME
-	 	    				new ViewFeedbackGui(presentation.getPresentationTitle(), "src/DemoModuleComments.txt", client).start(new Stage());
+	 	    				new ViewFeedbackGui(presentation.getPresentationTitle(), 
+	 	    								presentation.getFeedbackFilename(), 
+	 	    								client).start(new Stage());
 	 	     			}
 	 	    			catch (Exception e) {
 	 	     				// TODO Auto-generated catch block
