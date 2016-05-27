@@ -724,10 +724,16 @@ public class ClientGui extends Application{
 	 * @param xmlFile	-	The xml file that contains the presentation
 	 */
 	private void openPresentation(File xmlFile) {
-		PresentationParser parser = new PresentationParser();		
+		PresentationParser parser = new PresentationParser();	
 		
 		System.out.println(xmlFile.getParent());
 		presentation = parser.parsePresention(xmlFile.getAbsolutePath(), xmlFile.getParent());
+		
+		String xmlFilename = xmlFile.getName();
+		String name = removeFileExtension(xmlFilename);
+		presentation.setFeedbackFilename(name);
+		presentation.setPresentationFilename(xmlFilename);
+		
 		Platform.runLater(new Runnable() {
 			 public void run() {             
 				try {				 	        	  
