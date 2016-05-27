@@ -220,6 +220,80 @@ public class RegisteredModules {
 	}
 	
 	/**
+	 * Returns modules by matching course
+	 * @param course String
+	 * @return results List<String> Modules matching course search
+	 */
+	public List<String> searchYearsByCourse(String course) {
+		List<String> results = new LinkedList<String>();
+		
+		for (int i=0; i<moduleList.size(); i++) {
+			if (course.equals(moduleList.get(i).getCourse())) {
+				results.add(Integer.toString(moduleList.get(i).getYear()));
+			}
+		}
+		results = removeDuplicates(results);
+		return results;
+	}
+	
+	/**
+	 * Returns modules by course
+	 * @param String course
+	 * @return List<String>
+	 */
+	public List<String> searchModuleByCourse(String course) {
+		List<String> results = new LinkedList<String>();
+			
+		for (int i=0; i<moduleList.size(); i++) {
+			if (course.equals(moduleList.get(i).getCourse())) {
+				results.add(moduleList.get(i).getTitle
+						());
+			}
+		}
+		results = removeDuplicates(results);
+		return results;
+	}
+	
+	/**
+	 * Returns modules by course and stream
+	 * @param String course
+	 * @param String stream
+	 * @return List<String> results
+	 */
+	public List<String> getModulesByCourseStream(String course, String stream) {
+		List<String> results = new LinkedList<String>();
+		
+		for (int i=0; i<moduleList.size(); i++) {
+			if (course.equals(moduleList.get(i).getCourse()) 
+					&& stream.equals(moduleList.get(i).getStream())) {
+				results.add(moduleList.get(i).getTitle());
+			}
+		}
+		results = removeDuplicates(results);
+		return results;
+	}
+	
+	/**
+	 * Returns modules by course and year
+	 * @param String course
+	 * @param String year
+	 * @return List<String> results
+	 */
+	public List<String> getModulesByCourseYear(String course, String year) {
+		List<String> results = new LinkedList<String>();
+		
+		for (int i=0; i<moduleList.size(); i++) {
+			if (course.equals(moduleList.get(i).getCourse()) 
+					&& year.equals(Integer.toString(moduleList.get(i).getYear()))) {
+				
+				results.add(moduleList.get(i).getTitle());
+			}
+		}
+		results = removeDuplicates(results);
+		return results;
+	}
+	
+	/**
 	 * returns all relevant modules when all combo boxes selected
 	 * @param String course
 	 * @param String stream
