@@ -39,7 +39,7 @@ public class Client {
 	
 	// Variable assigned by the server to identify the client
 	private int iD = -1;
-	
+	private boolean serverState = false;
 	// Variables for registered modules
 	protected RegisteredModules moduleList;
 	private String modulePath = "src/registered_modules2.xml";
@@ -81,12 +81,12 @@ public class Client {
 			outputToServer.close();
 			inputFromServer.close();
 			serverSocket.close();
+			serverState = false;
 			System.out.println("Socket successfully closed \n");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 	}
 
 	
@@ -165,6 +165,9 @@ public class Client {
 			if(-1 == iD) {
 				System.out.println("Server Full, Try Again later");
 				closeSocket();
+			}
+			else {
+				serverState = true;
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -413,6 +416,9 @@ public class Client {
 		return resultModules;	
 	}
 		
+	public boolean isServerConnected() {
+		return serverState;
+	}
 }
 		
 

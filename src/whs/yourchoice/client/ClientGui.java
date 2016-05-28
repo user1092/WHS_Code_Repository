@@ -24,8 +24,10 @@ import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.VPos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -37,8 +39,13 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -67,13 +74,15 @@ public class ClientGui extends Application{
 	private Stage primaryStage;
 	private StackPane contentLayout;
 	private BorderPane loginLayout;
+	private BorderPane centrePane;
 	private GridPane modulePane;
 	private StackPane moduleLayout;
 
 	private Button loginButton;
-	private Button connectButton;
-	private Button disconnectButton;
+	private MenuItem connect;
+	private MenuItem disconnect;
 	private Button requestModuleButton;
+	private VBox logVBox;
 	
 	private ComboBox<String> moduleCombo;
 	private ComboBox<String> streamCombo;
@@ -92,6 +101,7 @@ public class ClientGui extends Application{
 	
 	// text box to show the file browse status
 	private Text actionStatus;
+	private Label serverStatus;
 	
 	private PasswordField passwordTextField;
 	
@@ -128,6 +138,7 @@ public class ClientGui extends Application{
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		BorderPane guiLayout = new BorderPane();
+		centrePane = new BorderPane();
 		contentLayout = new StackPane();
 		loginLayout = new BorderPane();
 		moduleLayout = new StackPane();
@@ -142,20 +153,21 @@ public class ClientGui extends Application{
 		
 		//Button box set up
 		HBox buttonHBox = buttonHBoxCreation();
+		
 		//Log box set up
-		HBox logHBox = logHBoxCreation();
+		logVBoxCreation();
 		
 		MenuBar menuBar = createMenuBar();
 		
 		VBox loginVBox = loginVBoxCreation();
-		
-		loginLayout.setBottom(buttonHBox);
 		loginLayout.setCenter(loginVBox);
 				
 		//place the boxes inside the layout created
-		guiLayout.setTop(menuBar);
-		guiLayout.setRight(logHBox);
+		centrePane.setTop(logVBox);
+		centrePane.setCenter(loginLayout);
+		centrePane.setBottom(buttonHBox);
 		guiLayout.setCenter(contentLayout);
+		guiLayout.setTop(menuBar);
 		
 		//main stage set up with appropriate scene and size
 		primaryStage.setScene(scene);
@@ -171,6 +183,8 @@ public class ClientGui extends Application{
 		new File(tempPresentationDirectory).mkdir();
 		
 		autoConnect();
+		
+//		serverStatusLabelSetup();
 		
 		contentLayout.getChildren().add(progressBar);
 		
@@ -229,17 +243,13 @@ public class ClientGui extends Application{
 	 */
 	private HBox buttonHBoxCreation() {
 		HBox buttonHBox = new HBox();
-		buttonHBox.setPadding(new Insets(0, 0, 10, 235));
+		buttonHBox.setPadding(new Insets(0, 0, 100, 350));
 		buttonHBox.setSpacing(10);
 		buttonHBox.setStyle("-fx-background-colour: #336699;");
 
 		loginButtonSetup();
 		
-		connectButtonSetup();
-		
-		disconnectButtonSetup();
-		
-		buttonHBox.getChildren().addAll(loginButton, connectButton, disconnectButton);
+		buttonHBox.getChildren().add(loginButton);
 		
 		return buttonHBox;	
 	}
@@ -452,9 +462,13 @@ public class ClientGui extends Application{
 						}
 						if (validPassword) {
 							contentLayout.getChildren().clear();
+							centrePane.getChildren().remove(logVBox);
 							requestModuleButtonSetup();
 							addModuleSelection();
-							//constructModuleCombo();
+//							constructModuleCombo();
+						}
+						else {
+							wrongPasswordMessage();
 						}
 					}
 				}
@@ -467,7 +481,7 @@ public class ClientGui extends Application{
 	 * Method to create a request module button and place it on the content layout
 	 */
 	private void requestModuleButtonSetup() {
-		Button requestModuleButton = new Button("Request Module");
+		requestModuleButton = new Button("Request Module");
 		requestModuleButton.setDisable(false);
 		requestModuleButton.setPrefSize(150, 20);
 		moduleLayout.setPadding(new Insets(0, 0, 50, 0));
@@ -481,63 +495,6 @@ public class ClientGui extends Application{
 			}
 		});
 	}
-		
-	
-	/**
-	 * Method to setup the connect button
-	 */
-	private void connectButtonSetup() {
-		connectButton = new Button("Connect");
-		connectButton.setDisable(autoConnect);
-		connectButton.setPrefSize(100, 20);
-		//action event that happens when the connect button is pressed
-		//ip address and port from text boxes is stored and shown in the console
-		connectButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				try {
-					client.openSocket(configureWindow.getIpAddress(), configureWindow.getPort());
-				} catch (UnknownHostException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-					connectButton.setDisable(false);
-					disconnectButton.setDisable(true);
-				} catch (IOException e2) {
-					System.out.println("Could not connect to server");
-					connectButton.setDisable(false);
-					disconnectButton.setDisable(true);
-				}
-				
-				if (!(null == client.serverSocket)) {
-					if(!client.serverSocket.isClosed()) {
-						connectButton.setDisable(true);
-						disconnectButton.setDisable(false);
-					}
-				}
-				
-			}
-		});
-	}
-	
-
-	/**
-	 * Method to setup the disconnect button
-	 */
-	private void disconnectButtonSetup() {
-		disconnectButton = new Button("Disconnect");
-		disconnectButton.setDisable(!autoConnect);
-		disconnectButton.setPrefSize(100, 20);
-		disconnectButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				client.closeSocket();
-				if(client.serverSocket.isClosed()) {
-					connectButton.setDisable(false);
-					disconnectButton.setDisable(true);
-				}
-			}
-		});
-	}
 	
 	
 	/**
@@ -545,19 +502,53 @@ public class ClientGui extends Application{
 	 * 
 	 * @return HBox  -  The box that contains the log for the file explorer
 	 */
-	private HBox logHBoxCreation() {
-		HBox logHBox = new HBox();
-		logHBox.setPadding(new Insets(10, 10, 10, 10));
-		logHBox.setSpacing(5);
-		logHBox.setStyle("-fx-background-colour: #336699;");
+	private void logVBoxCreation() {
+		logVBox = new VBox();
+		logVBox.setSpacing(5);
+		logVBox.setPadding(new Insets(10, 10, 10, 10));
+		logVBox.setStyle("-fx-background-colour: #336699;");
 		// Status message text
 		actionStatus = new Text();
-		actionStatus.setFont(Font.font("Courier", FontWeight.NORMAL, 14));
+//		serverStatus = new Label("Server not connected");
+		actionStatus.setFont(Font.font("Courier", FontWeight.NORMAL, 11));
 		actionStatus.setFill(Color.BLACK);
-		logHBox.getChildren().add(actionStatus);
-		return logHBox;
+		logVBox.getChildren().addAll(actionStatus);
 	}
 	
+	/**
+	 * Unimplemented method which changes the server status label depending on whether 
+	 * the server is connected or not
+	 */
+	private void serverStatusLabelSetup() {
+		String serverConnected = ("Server connected");
+		String serverNotConnected = ("Server not connected");
+		Task<Void> serverStatusTask = new Task<Void>() {
+			@Override protected Void call() throws Exception {
+				while (true) {
+					if (client.isServerConnected()){
+						Platform.runLater(new Runnable() {
+							public void run() {
+								serverStatus.setText(serverConnected);
+								serverStatus.setBackground(new Background(new BackgroundFill(Color.LIGHTSEAGREEN, CornerRadii.EMPTY, Insets.EMPTY)));
+							}
+						});
+					}
+					else {
+						Platform.runLater(new Runnable() {
+							public void run() {
+								serverStatus.setText(serverNotConnected);
+								serverStatus.setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
+							}
+						});
+					}
+				}
+			}
+		};
+		// Add task to a thread
+		Thread serverStatusThread = new Thread(serverStatusTask);
+		serverStatusThread.setDaemon(true);
+		serverStatusThread.start();
+	}
 	
 	/**
 	 * Method for the creation of the HBox that contains the password label and text field
@@ -566,7 +557,6 @@ public class ClientGui extends Application{
 	 */
 	private HBox passwordHBoxCreation() {
 		HBox passwordHBox = new HBox();
-		passwordHBox.setPadding(new Insets(10, 10, 10, 10));
 		passwordHBox.setSpacing(5);
 		passwordHBox.setStyle("-fx-background-colour: #336699;");
 		Label passwordLabel = new Label("Password:");
@@ -706,13 +696,54 @@ public class ClientGui extends Application{
 					actionStatus.setText("File selection cancelled.");
 				}
 			}
-
-			
         }); 
+        
+        connect = new MenuItem("Connect");
+		//action event that happens when the connect menu item is pressed
+		//ip address and port from text boxes is stored and shown in the console
+        connect.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent e) {
+            	try {
+					client.openSocket(configureWindow.getIpAddress(), configureWindow.getPort());
+					if (-1 == getID()) {
+						serverFullMessage();
+					}
+				} catch (UnknownHostException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+					connect.setDisable(false);
+					disconnect.setDisable(true);
+				} catch (IOException e2) {
+					noConnectionMessage();
+					
+					System.out.println("Could not connect to server");
+					connect.setDisable(false);
+					disconnect.setDisable(true);
+				}
+				
+				if (!(null == client.serverSocket)) {
+					if(!client.serverSocket.isClosed()) {
+						connect.setDisable(true);
+						disconnect.setDisable(false);
+					}
+				}
+            }
+        });
+        
+        disconnect = new MenuItem("Disconnect");
+        disconnect.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent e) {
+            	client.closeSocket();
+				if(client.serverSocket.isClosed()) {
+					connect.setDisable(false);
+					disconnect.setDisable(true);
+				}
+            }
+        });
         Menu optionsMenu = new Menu("Options");
         optionsMenu.getItems().addAll(configureServer);
 		Menu fileMenu = new Menu("File");
-		fileMenu.getItems().addAll(openFile);
+		fileMenu.getItems().addAll(openFile, connect, disconnect);
 		menuBar.getMenus().addAll(fileMenu, optionsMenu);
 		return menuBar;
 	}
@@ -731,6 +762,7 @@ public class ClientGui extends Application{
 		
 		String xmlFilename = xmlFile.getName();
 		String name = removeFileExtension(xmlFilename);
+//		presentation.setFeedbackFilename(name + ".txt");
 		presentation.setFeedbackFilename(name);
 		presentation.setPresentationFilename(xmlFilename);
 		
@@ -770,30 +802,36 @@ public class ClientGui extends Application{
 						client.openSocket(configureWindow.getIpAddress(), configureWindow.getPort());
 						Platform.runLater(new Runnable() {
 							@Override public void run() {
-								connectButton.setDisable(true);
-								disconnectButton.setDisable(false);
+								// menu items
+								connect.setDisable(true);
+								disconnect.setDisable(false);
 							}
 						});
-						if(-1 == getID()) {
-							client.closeSocket();
+						
+						if(-1 == getID()) {							
 							Platform.runLater(new Runnable() {
 								@Override public void run() {
-									connectButton.setDisable(false);
-									disconnectButton.setDisable(true);
+									// menu items
+									connect.setDisable(false);
+									disconnect.setDisable(true);
+									serverFullMessage();
 								}
 							});
 						}
 					} catch (UnknownHostException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
-						connectButton.setDisable(false);
-						disconnectButton.setDisable(true);
+						// menu items
+						connect.setDisable(false);
+						disconnect.setDisable(true);
 					} catch (IOException e) {
 						System.out.println("Could not connect to server");
 						Platform.runLater(new Runnable() {
 							@Override public void run() {
-								connectButton.setDisable(false);
-								disconnectButton.setDisable(true);
+								// menu items
+								connect.setDisable(false);
+								disconnect.setDisable(true);
+								noConnectionMessage();
 							}
 						});
 					}
@@ -807,7 +845,7 @@ public class ClientGui extends Application{
 			
 			autoConnectThread.start();
 						
-			removeProgressBar(autoConnectThread, loginLayout);
+			removeProgressBar(autoConnectThread, centrePane);
 		}
 	}
 
@@ -869,6 +907,7 @@ public class ClientGui extends Application{
 		System.out.println(xmlFilename);
 		
 		contentLayout.getChildren().clear();
+		centrePane.getChildren().remove(logVBox);
 		contentLayout.getChildren().add(progressBar);
 		
 		Task<Void> requestTask = new Task<Void>() {
@@ -907,10 +946,8 @@ public class ClientGui extends Application{
 						else {
 							System.out.println("Invalid Presentation");
 						}
-						
 					}
-				}				
-				
+				}		
 				return null;
 			}
 		};
@@ -924,6 +961,7 @@ public class ClientGui extends Application{
 		}
 	}
 
+	
 	/**
 	 * @param filename
 	 * @return
@@ -935,5 +973,43 @@ public class ClientGui extends Application{
 			name = filename.substring(0, pos);
 		}
 		return name;
+	}
+	
+	
+	/**
+	 * Method to call error message when the server is full
+	 */
+	private void serverFullMessage(){
+		Alert serverFullAlert = new Alert(AlertType.ERROR);
+		serverFullAlert.setTitle("Error Message");
+		serverFullAlert.setHeaderText("Server Full");
+		serverFullAlert.setContentText("Please wait until a "
+											+ "client disconnects and try again.");
+		serverFullAlert.showAndWait();
+	}
+	
+	
+	/**
+	 * Method to call an error message when the server sockets are not open
+	 */
+	private void noConnectionMessage(){
+		Alert noConnectionAlert = new Alert(AlertType.ERROR);
+		noConnectionAlert.setTitle("Error Message");
+		noConnectionAlert.setHeaderText("Server Not Available");
+		noConnectionAlert.setContentText("Server not available at the moment. "
+											+ "Please try to reconnect at a later time.");
+		noConnectionAlert.showAndWait();
+	}
+	
+	/**
+	 * Method to call an error message when the password entered is incorrect
+	 */
+	private void wrongPasswordMessage(){
+		Alert wrongPasswordAlert = new Alert(AlertType.ERROR);
+		wrongPasswordAlert.setTitle("Error Message");
+		wrongPasswordAlert.setHeaderText("Wrong Password");
+		wrongPasswordAlert.setContentText("The password entered is incorrect. "
+											+ "Please try again.");
+		wrongPasswordAlert.showAndWait();
 	}
 }
