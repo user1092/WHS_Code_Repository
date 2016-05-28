@@ -21,8 +21,8 @@ import whs.yourchoice.client.ViewFeedbackGui.Feedback;
 /**
 * Class for parsing a text file and extracting user comments
 *
-* @author jcl513, gw679
-* @version v0.2 27/05/16
+* @author jcl513, gw679, ch1092
+* @version v0.3 28/05/16
 */
 public class CommentParser {
 	
@@ -62,7 +62,7 @@ public class CommentParser {
 
 			    if (line.isEmpty() == false)
 			    {
-			    	System.out.println("Full line detected");
+//			    	System.out.println("Full line detected");
 			    	// Regex code to split a line of the text file by commas, only if the comma
 					// is followed by an even number of quotation marks
 					// This means that commas inside quotation marks won't cause a line split
@@ -73,6 +73,7 @@ public class CommentParser {
 					tokenList.add(tokens[1]);
 					tokenList.add(tokens[2]);
 					tokenList.add(tokens[3]);
+					tokenList.add(tokens[4]);
 			    }
 			    // Parser ignores empty lines at the start of a text file
 			    else
@@ -99,8 +100,9 @@ public class CommentParser {
 		for (int i=0; i<tokenList.size(); i++)
 		{
 			// Store the current item in tempString for re-formatting
-			tempString = tokenList.get(i);			
-			remainder = i%4;
+			tempString = tokenList.get(i);
+			
+			remainder = i%5;
 
 			switch(remainder)
 			{
@@ -150,15 +152,21 @@ public class CommentParser {
 					ratingCounter++;
 					break;
 					
-				// Current item is a score therefore a new instance of Feedback can be
-				// created
 				case 3:
-					feedback.add(new Feedback(tokenList.get(i-3), tokenList.get(i-2), 
-							tokenList.get(i-1), tokenList.get(i)));
+					// Do nowt
+					
 					break;
+					
+				// Current item is approved therefore a new instance of Feedback can be
+				// created
+				case 4:
+					feedback.add(new Feedback(tokenList.get(i-4), tokenList.get(i-3), 
+							tokenList.get(i-2), tokenList.get(i-1), tokenList.get(i)));
+					break;	
 					
 				default:
 					break;
+					
 			}
 			// Set formatted item into list
 			tokenList.set(i,tempString);
