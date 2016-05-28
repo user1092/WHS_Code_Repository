@@ -41,7 +41,7 @@ import javafx.beans.value.ObservableValue;
  * NOT FOR RELEASE!
  * 
  * @author 		ch1092, skq501
- * @version		v0.2 04/03/2016
+ * @version		v0.3 05/03/2016
  */
 public class AudioPlayerExample extends Application {	
 	
@@ -50,7 +50,7 @@ public class AudioPlayerExample extends Application {
 	 */
 	
 	// Location of where VLC is installed
-	private final String VLC_LIBRARY_LOCATION = new File("").getAbsolutePath() + "/vlc-2.1.0-win64";
+	private final String VLC_LIBRARY_LOCATION = new File("").getAbsolutePath() + "/vlc-2.1.0";
 	// Set VLC video output to a dummy, waveout used as bug with DX
 	private final String[] VLC_ARGS = {"--vout", "dummy", "--aout", "waveout"};//, "-vvv"};
 	
@@ -62,6 +62,10 @@ public class AudioPlayerExample extends Application {
 	// Server details
 	private String host = "127.0.0.1";
 	private int rtpPort = 5555;
+	
+    private Number masterVolume = DEFAULT_START_VOLUME;
+    private static final int DEFAULT_START_VOLUME = 100;
+    private boolean masterMute = false;
 	
 	/*
 	 * End of Audio specific declarations
@@ -123,6 +127,18 @@ public class AudioPlayerExample extends Application {
 			@Override
 			public void handle(ActionEvent e) {
 				audioPlayer.playAudio(audioFile);
+				audioPlayer.playAudio();
+				// Fixes "feature" with vlc where audio is not observed if not playing
+				while(-1 == audioPlayer.getAudioVolume()) {
+					try {
+						Thread.sleep(50);
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+				audioPlayer.setAudioVolume(masterVolume.intValue());
+				audioPlayer.muteAudio(masterMute);
 			}
 		});
 		
@@ -131,7 +147,19 @@ public class AudioPlayerExample extends Application {
 		playButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
-				audioPlayer.playAudio();			
+				audioPlayer.playAudio();
+				audioPlayer.playAudio();
+				// Fixes "feature" with vlc where audio is not observed if not playing
+				while(-1 == audioPlayer.getAudioVolume()) {
+					try {
+						Thread.sleep(50);
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+				audioPlayer.setAudioVolume(masterVolume.intValue());
+				audioPlayer.muteAudio(masterMute);
 			}
 		});
 		
@@ -158,6 +186,12 @@ public class AudioPlayerExample extends Application {
 		muteButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
+				if (masterMute) {
+					masterMute = false;
+				}
+				else {
+					masterMute = true;
+				}
 				audioPlayer.toggleMuteAudio();
 			}
 		});
@@ -202,6 +236,7 @@ public class AudioPlayerExample extends Application {
 		volumeSlider.valueProperty().addListener(new ChangeListener<Number>() {
             public void changed(ObservableValue<? extends Number> ov,
                 Number old_val, Number new_val) {
+            		masterVolume = new_val;
                     audioPlayer.setAudioVolume(new_val.intValue());
             }
         });

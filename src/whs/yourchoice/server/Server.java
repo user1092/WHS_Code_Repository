@@ -38,9 +38,10 @@ public class Server {
 	//registered modules variables
 	private final String rmPath = new File("").getAbsolutePath() + "/src/registered_modules.xml";
 	private final String MODULE_FILE_LOCATION = "Zipped_Presentations";
+	private final String MODULE_FEEDBACK_FILE_LOCATION = "Module_Feedback";
 	private final int BUFFER_SIZE = 1024;
 	
-	private final String clientDetailsLocation = "AdminDetails.txt";
+	private final String userDetailsLocation = "AdminDetails.txt";
 	
 	private String serverPrivKeyFileName = "serverPrivKeyFileName.key";
 	
@@ -217,7 +218,7 @@ public class Server {
 					e1.printStackTrace();
 				}
 				try {
-					sendRMFile(currentClient.getID());
+					sendRequestedFile(currentClient.getID(), rmPath);
 				}
 				catch (IOException e) {
 					System.out.println("Error sending module list");
@@ -243,7 +244,7 @@ public class Server {
 						e1.printStackTrace();
 					}
 					try {
-						sendRMFile(currentClient.getID());
+						sendRequestedFile(currentClient.getID(), rmPath);
 					}
 					catch (IOException e) {
 						System.out.println("Error sending module list");
@@ -333,6 +334,12 @@ public class Server {
 			public void run() {
 				boolean validPassword = false;
 				Object object = null;
+				
+				String extension = null;
+				String xml = "xml";
+				String txt = "txt";
+				String zip = "zip";
+				
 				while (!serverSocket.isClosed() && client.socketIsConnected()) {
 										
 					try {
@@ -345,8 +352,24 @@ public class Server {
 						}
 						
 						object = receiveData(client.getID());
-												
-						sendData(new File(MODULE_FILE_LOCATION + "/" + (String) object), client.getID());
+						
+						extension = ((String) object).substring(((String) object).lastIndexOf(".") + 1, ((String) object).length());
+						
+						if (extension.equals(zip)){
+							System.out.println("A zip file was requested: " + (String) object);
+							sendData(new File(MODULE_FILE_LOCATION + "/" + (String) object), client.getID());
+						}
+						else {
+							if (extension.equals(txt)) {
+								System.out.println("A txt file was requested: " + (String) object);
+								sendRequestedFile(client.getID(), MODULE_FEEDBACK_FILE_LOCATION + "/" + (String) object);
+							}
+							else {
+								System.out.println("An invalid file was requested");
+							}
+						}
+						
+						
 												
 						// Wait for the client to send some data, below is for tests
 //						object = receiveData(client.getID());
@@ -378,9 +401,9 @@ public class Server {
 	 * @param clientID
 	 * @throws IOException
 	 */
-	private void sendRMFile(int clientID) throws IOException {
+	private void sendRequestedFile(int clientID, String requestedFile) throws IOException {
 		
-        File file = new File(rmPath);
+        File file = new File(requestedFile);
  
         FileInputStream fis = new FileInputStream(file);
         byte [] buffer = new byte[BUFFER_SIZE];
@@ -408,7 +431,7 @@ public class Server {
 		
 		// Clear the current password
 		try {
-			serverPasswordHandler.clearClientDetailsFile(clientDetailsLocation);
+			serverPasswordHandler.clearClientDetailsFile(userDetailsLocation);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -422,7 +445,7 @@ public class Server {
 			e.printStackTrace();
 		}
 		
-		serverPasswordHandler.storeDetails(adminDetails, clientDetailsLocation);
+		serverPasswordHandler.storeDetails(adminDetails, userDetailsLocation);
 	}
 	
 	/**
@@ -464,7 +487,7 @@ public class Server {
 					
 			if (clientDetails.getUserName().equals("Admin")) {
 				ServerPasswordHandler serverPasswordHandler = new ServerPasswordHandler();
-				ClientDetails retrievedClientDetails = serverPasswordHandler.getDetails(clientDetails.getUserName(), clientDetailsLocation);
+				ClientDetails retrievedClientDetails = serverPasswordHandler.getDetails(clientDetails.getUserName(), userDetailsLocation);
 				
 				sendData(encryptData(retrievedClientDetails.getSalt(), client), client.getID());
 				

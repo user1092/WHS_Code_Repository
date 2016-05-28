@@ -47,7 +47,9 @@ import whs.yourchoice.parsers.CommentParser;
 public class ViewFeedbackGui extends Application {
 	
 	// Path name will need changing and adapting for integration
-	private String textFilePath = null;
+	private String textFileName = null;
+	private String moduleFeedbackFilePath = null;
+	private String moduleFileSaveLocation = null;
 	// Module name should be passed to this class so it can be displayed
 	private String moduleName = "Test Module Name";
 	private Client client;
@@ -65,11 +67,13 @@ public class ViewFeedbackGui extends Application {
 	private GiveFeedbackGui feedbackGui;
 	
 	final private String directory = "Module_Feedback/";
+	private String tempDirectory = "temp";
 	
-	public ViewFeedbackGui(String moduleName, String textFilePath, Client client) {
+	public ViewFeedbackGui(String moduleName, String textFileName, Client client) {
 		this.moduleName = moduleName + " Feedback";
-		this.textFilePath = directory + textFilePath + ".txt";
+		this.textFileName = textFileName + ".txt";
 		this.client = client;
+		moduleFileSaveLocation = tempDirectory + "/" + this.textFileName;
 	}
 	
 	
@@ -79,12 +83,14 @@ public class ViewFeedbackGui extends Application {
 	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
+		client.sendData(textFileName);
+		client.receiveRequestedFile(moduleFileSaveLocation);
 		BorderPane guiLayout = new BorderPane();
 		Scene scene = new Scene(guiLayout);
 		
 		// Create parser to parse text file and return a list of type comment
 		commentsParser = new CommentParser();
-		commentsParser.parseTextFile(textFilePath);
+		commentsParser.parseTextFile(moduleFileSaveLocation);
 		avgRating = commentsParser.getAverageRating();
 		feedback = commentsParser.getComments();
 		
@@ -121,7 +127,7 @@ public class ViewFeedbackGui extends Application {
 		String tempString = "";
 		String tempComment = "";
 		
-		try (BufferedWriter bw = new BufferedWriter(new FileWriter(textFilePath, false))){
+		try (BufferedWriter bw = new BufferedWriter(new FileWriter(moduleFileSaveLocation, false))){
 	        
 			// Re-formats each feedback item for writing to the text file
 			// This ensures the parser will parse it correctly upon re-opening
@@ -175,7 +181,7 @@ public class ViewFeedbackGui extends Application {
 			public void handle(ActionEvent e) {
 				feedbackGui = new GiveFeedbackGui();
 				try {
-					feedbackGui.start(primaryStage, moduleName, textFilePath, client);
+					feedbackGui.start(primaryStage, moduleName, moduleFileSaveLocation, client);
 				} catch (Exception e1) {
 					System.out.println("Unable to open give feedback window");
 					e1.printStackTrace();
