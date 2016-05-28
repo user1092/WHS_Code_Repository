@@ -8,6 +8,7 @@ package whs.yourchoice.server;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.security.Key;
@@ -24,7 +25,7 @@ import whs.yourchoice.utilities.encryption.ServerPasswordHandler;
  * Class for the server's back end handling communications to the clients. 
  * 
  * @author		ch1092, skq501, cd828
- * @version		v0.11 26/05/2016
+ * @version		v0.12 28/05/2016
  */
 public class Server {
 	
@@ -336,9 +337,9 @@ public class Server {
 				Object object = null;
 				
 				String extension = null;
-				String xml = "xml";
 				String txt = "txt";
 				String zip = "zip";
+				String update = "update";
 				
 				while (!serverSocket.isClosed() && client.socketIsConnected()) {
 										
@@ -365,7 +366,15 @@ public class Server {
 								sendRequestedFile(client.getID(), MODULE_FEEDBACK_FILE_LOCATION + "/" + (String) object);
 							}
 							else {
-								System.out.println("An invalid file was requested");
+								if (extension.equals(update)) {
+									System.out.println("A update was requested: " + (String) object);
+									String updatedFile = removeFileExtension((String) object);
+									System.out.println("A update file was requested: " + updatedFile);
+									receiveRequestedFile(client.getID(), MODULE_FEEDBACK_FILE_LOCATION + "/" + updatedFile);
+								}
+								else {
+									System.out.println("An invalid file was requested");
+								}
 							}
 						}
 						
@@ -394,9 +403,25 @@ public class Server {
 		listenToClientThread[client.getID()].start();
 	}
 	
+	
+	/**
+	 * Method to remove the file extension from a string
+	 * 
+	 * @param filename	-	The filename to remove the extension
+	 * @return String	-	The filename without an extension
+	 */
+	private String removeFileExtension(final String filename) {
+		String name = null;
+		int pos = filename.lastIndexOf(".");
+		if (pos > 0) {
+			name = filename.substring(0, pos);
+		}
+		return name;
+	}
+	
 		
 	/**
-	 * Method to send the Registered modules file
+	 * Method to send the requested file
 	 * 
 	 * @param clientID
 	 * @throws IOException
@@ -417,6 +442,43 @@ public class Server {
         fis.close();
 	}
 	
+	
+	/**
+	 * Method to get a byte array and save as file
+	 * @throws IOException
+	 */
+	protected void receiveRequestedFile(int clientID, String saveLocation) throws IOException {
+	    
+		Object o = null;
+		FileOutputStream fos = new FileOutputStream(saveLocation);
+		
+		byte[] mybytearray = new byte[BUFFER_SIZE];
+		Integer bytesRead = 0;
+		
+		do {
+            try {
+				o = clients[clientID].getInputFromClient().readObject();
+			} catch (ClassNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+  
+            bytesRead = (Integer)o;
+ 
+            try {
+				o = clients[clientID].getInputFromClient().readObject();
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+  
+            mybytearray = (byte[])o;
+            
+            fos.write(mybytearray, 0, bytesRead);
+        } while (bytesRead == BUFFER_SIZE);
+	    
+		fos.close();
+	}
 
 	/**
 	 * Method to set the administrators password.

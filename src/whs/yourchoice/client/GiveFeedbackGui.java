@@ -29,14 +29,15 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 /**
 * Class for creation of the give feedback window which
 * allows user to enter a name comment and rating for the
 * current module which is then saved in a text file
 *
-* @author jcl513, gw679
-* @version v0.2 25/05/16
+* @author jcl513, gw679, ch1092
+* @version v0.3 28/05/16
 */
 public class GiveFeedbackGui {
 	
@@ -78,22 +79,22 @@ public class GiveFeedbackGui {
 	
 	// Path name will need changing and adapting for integration
 	private String textFilePath = null;
-	// Module name should be passed to this class so it can be displayed
-	private String moduleName;
-	private Client client;
 	private Stage stage;
+	// Bodge as close listener didn't work
+	private boolean openGui;
 	
 	// Give feedback gui requires a stage to display on
 	// moduleName is the name of the current module to be displayed
 	public void start(Stage primaryStage, String moduleName, 
 						String textFilePath, Client client) throws Exception {
+		openGui = true;
 		this.textFilePath = textFilePath;
-		this.moduleName = moduleName;
-		this.client = client;
 		this.stage = primaryStage;
 		
 		BorderPane guiLayout = new BorderPane();
 		Scene scene = new Scene(guiLayout);
+		
+		closeListener(primaryStage);
 				
 		// Import and set background image
 		String background = ClientGui.class.getResource("resources/SlideBackground.jpg").toExternalForm();
@@ -319,7 +320,7 @@ public class GiveFeedbackGui {
 		Button submitButton = new Button("Submit Feedback");
 		submitButton.setPrefSize(150, 30);
 		
-		Button closeButton = new Button ("Close");
+		final Button closeButton = new Button ("Close");
 		closeButton.setPrefSize(150,30);
 		
 		submitButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -345,7 +346,6 @@ public class GiveFeedbackGui {
 
 					submittedFeedback = formatSubmittedFeedback(submittedName, submittedComment, submittedRating);
 					
-							
 					// Writes new feedback into text file
 				    try (BufferedWriter bw = new BufferedWriter(new FileWriter(textFilePath, true))){
 
@@ -357,7 +357,9 @@ public class GiveFeedbackGui {
 				    }
 					
 				    // View feedback gui is reopened after feedback is submitted
-				    launchViewFeedbackGui(stage, moduleName, textFilePath, client);
+//				    launchViewFeedbackGui(stage, moduleName, textFilePath, client);
+				    openGui = false;
+				    stage.close();
 				}
 			}
 		});
@@ -366,10 +368,13 @@ public class GiveFeedbackGui {
 		closeButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
-				launchViewFeedbackGui(stage, moduleName, textFilePath, client);
+//				launchViewFeedbackGui(stage, moduleName, textFilePath, client);
+				((Stage)(closeButton.getScene().getWindow())).close();
+				openGui = false;
+				stage.close();
 			}
 		});
-		
+				
 		// Creates a HBox, adds the buttons and returns it
 		HBox buttonsHBox = new HBox();
 		buttonsHBox.setPadding(new Insets(10, 10, 10, 10));
@@ -381,26 +386,15 @@ public class GiveFeedbackGui {
 		return buttonsHBox;
 	}
 	
-	/**
-	 * Method to re-launch view feedback window in place of give feedback window
-	 * 
-	 * @param Stage - The stage to display the view feedback window in
-	 */
-	private void launchViewFeedbackGui(Stage stage, String moduleName, 
-										String textFilePath, Client client) {
-		
-		// Format strings to pass back to ViewFeedbackGui
-		textFilePath = removeFileExtension(textFilePath);
-		moduleName = removeTitleEnding(moduleName);
-		
-		ViewFeedbackGui viewFeedbackGui = new ViewFeedbackGui(moduleName, textFilePath, client);
-		try {
-			viewFeedbackGui.start(stage);
-		} catch (Exception e1) {
-			System.out.println("Unable to re-launch View Feedback Window");
-			e1.printStackTrace();
+	private void closeListener(Stage slideStage) {
+			// Listen for the stage closing to release all audio players
+	        slideStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+	        	public void handle(WindowEvent we) {
+	        		openGui = false;
+	        	}
+	        });
 		}
-	}
+	
 	
 	/**
 	 * Method to check whether the user has completed all fields
@@ -577,41 +571,11 @@ public class GiveFeedbackGui {
 		// into text file by surrounding name and comment with quotation marks
 		// and inserting a comma between each field
 		formattedFeedback = "\"" + name + "\",\"" + comment 
-				+ "\"," + rating + "," + "0,"; 
+				+ "\"," + rating + "," + "0,false"; 
 		
 		return formattedFeedback;
 	}
-	
-	/**
-	 * Method to remove the file extension from the text file path
-	 * so that it can be passed by to ViewFeedbackGui in the correct format
-	 * 
-	 * @param String - the passed text filename
-	 * @return String - the filename with ".txt" removed
-	 */
-	private String removeFileExtension(final String filename) {
-		String name = null;
-		int pos = filename.lastIndexOf(".");
-		if (pos > 0) {
-			name = filename.substring(0, pos);
-		}
-		name = name.substring(16, name.length());
-		return name;
-	}
-	
-	/**
-	 * Method to remove "feedback" from the end of the module title
-	 * so that it can be passed by to ViewFeedbackGui in the correct format
-	 * 
-	 * @param String - the passed module title
-	 * @return String - the filename with "feedback" removed
-	 */
-	private String removeTitleEnding(final String moduleTitle) {
-		String name = moduleTitle;
-		name = name.substring(0, moduleTitle.length() - 9);
-		return name;
-	}
-	
+
 	
 	/**
 	 * Method to set up the action listeners and logic for the 5 star buttons
@@ -909,5 +873,9 @@ public class GiveFeedbackGui {
 				}
 			}
 		});
+	}
+
+	public boolean isOpen() {
+		return openGui;
 	}
 }

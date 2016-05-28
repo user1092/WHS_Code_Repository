@@ -6,6 +6,8 @@
 
 package whs.yourchoice.client;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -13,6 +15,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.security.Key;
+import java.util.Arrays;
 import java.util.List;
 
 import whs.yourchoice.parsers.RegisteredModulesParser;
@@ -25,7 +28,7 @@ import whs.yourchoice.utilities.encryption.RsaEncryption;
  * Class for the client's back end handling communications to the server 
  * 
  * @author		ch1092, skq501, cd828
- * @version		v0.11 26/05/2016
+ * @version		v0.12 28/05/2016
  */
 public class Client {
 	
@@ -44,6 +47,7 @@ public class Client {
 	
 	private String serverPubKeyFileName = "serverPubKeyFileName.key";
 	private Key privKey;
+	
 	
 	/**
 	 * Method to open socket, in order to connect to the server. 
@@ -179,7 +183,29 @@ public class Client {
 	}
 	
 	/**
-	 * Method to get module list and save as file
+	 * Method to send a requested file
+	 * 
+	 * @param clientID
+	 * @throws IOException
+	 */
+	protected void sendRequestedFile(String requestedFile) throws IOException {
+		
+        File file = new File(requestedFile);
+ 
+        FileInputStream fis = new FileInputStream(file);
+        byte [] buffer = new byte[BUFFER_SIZE];
+        Integer bytesRead = 0;
+ 
+        while ((bytesRead = fis.read(buffer)) > 0) {
+        	outputToServer.writeObject(bytesRead);
+        	outputToServer.writeObject(Arrays.copyOf(buffer, buffer.length));
+        }
+        
+        fis.close();
+	}
+	
+	/**
+	 * Method to get a byte array and save as file
 	 * @throws IOException
 	 */
 	protected void receiveRequestedFile(String saveLocation) throws IOException {
@@ -216,6 +242,9 @@ public class Client {
 	}
 	
 	
+	/**
+	 * Method to parse the modules available
+	 */
 	private void parseModules() {
 		RegisteredModulesParser parser = new RegisteredModulesParser();
 		moduleList = parser.parseModules(modulePath);
