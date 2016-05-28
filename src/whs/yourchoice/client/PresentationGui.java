@@ -90,7 +90,7 @@ public class PresentationGui extends Application {
 	private final int PRESENTATION_HEIGHT = WINDOW_HEIGHT - (CONTROL_BAR_HEIGHT/2) - CONTROL_BAR_HEIGHT;
 	// Definitions for button sizes
 	private final int BUTTON_HEIGHT = 30;
-	private final int BUTTON_WIDTH = 40;
+	private final int BUTTON_WIDTH = 35;
 	// Values for the video player
 	//TODO May consider implementing in the xml file
 	private final float VIDEO_WIDTH = 0.3f;
@@ -415,7 +415,6 @@ public class PresentationGui extends Application {
                  Scale scale = new Scale(scaleWidthRatio, scaleHeightRatio, 0, 0);
                  presentationLayout.getTransforms().add(scale);
                  controlBar.setPrefHeight(CONTROL_BAR_HEIGHT);
-
              }
         });
 
@@ -436,7 +435,6 @@ public class PresentationGui extends Application {
                   Scale scale = new Scale(scaleWidthRatio, scaleHeightRatio, 0, 0);
                   presentationLayout.getTransforms().add(scale);
                   controlBar.setPrefHeight(CONTROL_BAR_HEIGHT);
-
              }
         });
 	}
@@ -724,7 +722,7 @@ public class PresentationGui extends Application {
 		final ImageView pauseView = new ImageView(pauseImage);
 		// Instantiation of play button
 		playButton = new ToggleButton();
-		playButton.setTooltip(new Tooltip("Play Media"));
+		playButton.setTooltip(new Tooltip("Play Presentation"));
 		// Set the image on the button
 		playButton.setSelected(true);
 		playButton.setGraphic(pauseView);
@@ -735,7 +733,7 @@ public class PresentationGui extends Application {
 			@Override
 			public void handle(ActionEvent e) {
 				if (playButton.isSelected()) {
-					playButton.setTooltip(new Tooltip("Pause Media"));
+					playButton.setTooltip(new Tooltip("Pause Presentation"));
 					playButton.setGraphic(pauseView);
 					
 					if (presentationState.equals("Paused")) {
@@ -773,7 +771,7 @@ public class PresentationGui extends Application {
 				}
 				else {
 					playButton.setGraphic(playView);
-					playButton.setTooltip(new Tooltip("Play Media"));
+					playButton.setTooltip(new Tooltip("Play Presentation"));
 					// Set all audio players to pause 
 					for(int audio = 0; audio < audioPlayerList.size(); audio++) {
             			audioPlayerList.get(audio).pauseAudio();
@@ -839,7 +837,7 @@ public class PresentationGui extends Application {
 		ImageView stopView = new ImageView(stopImage);
 		// Instantiation of play button
 		Button stopButton = new Button();
-		stopButton.setTooltip(new Tooltip("Stop Media"));
+		stopButton.setTooltip(new Tooltip("Stop Presentation"));
 		// Set the image on the button
 		stopButton.setGraphic(stopView);
 		stopButton.setMaxSize(BUTTON_WIDTH, BUTTON_HEIGHT);
@@ -865,7 +863,7 @@ public class PresentationGui extends Application {
 				// Set playButton back to wait to play
 				playButton.setSelected(false);
 
-				playButton.setTooltip(new Tooltip("Play Media"));
+				playButton.setTooltip(new Tooltip("Play Presentation"));
 				playButton.setGraphic(playView);
 			}
 		});
@@ -954,7 +952,7 @@ public class PresentationGui extends Application {
 		ImageView viewFeedbackView = new ImageView(viewFeedbackImage);
 		// Instantiation of next slide button
 		Button viewFeedbackButton = new Button();
-		viewFeedbackButton.setTooltip(new Tooltip("View Feedback"));
+		viewFeedbackButton.setTooltip(new Tooltip("View Module Feedback"));
 		viewFeedbackButton.setGraphic(viewFeedbackView);
 		viewFeedbackButton.setMaxSize(BUTTON_WIDTH, BUTTON_HEIGHT);
 		viewFeedbackButton.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
