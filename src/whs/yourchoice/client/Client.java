@@ -63,7 +63,7 @@ public class Client {
 		System.out.println("ID Received" + iD);
 		if (iD > -1) {
 			handleKeys();
-			getModules();
+			receiveRequestedFile(modulePath);
 			parseModules();
 		}
 	}
@@ -182,10 +182,10 @@ public class Client {
 	 * Method to get module list and save as file
 	 * @throws IOException
 	 */
-	private void getModules() throws IOException {
+	protected void receiveRequestedFile(String saveLocation) throws IOException {
 	    
 		Object o = null;
-		FileOutputStream fos = new FileOutputStream(modulePath);
+		FileOutputStream fos = new FileOutputStream(saveLocation);
 		
 		byte[] mybytearray = new byte[BUFFER_SIZE];
 		Integer bytesRead = 0;
