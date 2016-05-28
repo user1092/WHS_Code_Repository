@@ -70,6 +70,9 @@ public class ViewFeedbackGui extends Application {
 	private GiveFeedbackGui feedbackGui;
 	
 	private String tempDirectory = "temp";
+	private boolean adminMode = false;
+	TableColumn<Feedback,String> approvedCol = null;
+	TableColumn<Feedback,String> approveCol = null;
 	
 	public ViewFeedbackGui(String moduleName, String textFileName, Client client) {
 		this.moduleName = moduleName;
@@ -146,7 +149,12 @@ public class ViewFeedbackGui extends Application {
 		commentsParser.parseTextFile(moduleFileSaveLocation);
 		avgRating = commentsParser.getAverageRating();
 		feedback = commentsParser.getComments();
-		approvedFeedback = sortFeedback(feedback);
+		if (!adminMode) {
+			approvedFeedback = sortFeedback(feedback);
+		}
+		else {
+			approvedFeedback = feedback;
+		}
 	}
 	
 	
@@ -458,6 +466,18 @@ public class ViewFeedbackGui extends Application {
        downvoteCol.setMaxWidth(35);
        downvoteCol.setCellValueFactory(new PropertyValueFactory<Feedback,String>("DUMMY"));
        
+       if (adminMode) {
+    	   approvedCol = new TableColumn<Feedback,String>("Approved");
+    	   approvedCol.setMinWidth(50);
+    	   approvedCol.setMaxWidth(50);
+    	   approvedCol.setCellValueFactory(new PropertyValueFactory<Feedback,String>("approved"));
+    	   
+    	   approveCol = new TableColumn<Feedback,String>("Approved");
+    	   approveCol.setMinWidth(50);
+    	   approveCol.setMaxWidth(50);
+    	   approveCol.setCellValueFactory(new PropertyValueFactory<Feedback,String>("DUMMY"));
+       }
+       
        // Create cell factories to set up and down vote columns
        Callback<TableColumn<Feedback, String>, TableCell<Feedback, String>> cellFactory1 =
        new Callback<TableColumn<Feedback, String>, TableCell<Feedback, String>>()
@@ -577,8 +597,86 @@ public class ViewFeedbackGui extends Application {
            }
        };
        
+       
+       Callback<TableColumn<Feedback, String>, TableCell<Feedback, String>> cellFactory3 
+       = new Callback<TableColumn<Feedback, String>, TableCell<Feedback, String>>()
+       {
+           @Override
+           public TableCell<Feedback,String> call( final TableColumn<Feedback, String> param )
+           {
+               final TableCell<Feedback, String> cell = new TableCell<Feedback, String>()
+               {
+
+                   
+
+                   @Override
+                   public void updateItem( String item, boolean empty )
+                   {
+                	   final Button btn = new Button();
+                	   if (getIndex() >= 0 && getIndex() < approvedFeedback.size())
+                	   {
+                		   boolean approved = Boolean.parseBoolean(approvedFeedback.get(getIndex()).getApproved());
+                		   if (approved) {
+//                			   btn = new Button("Disapprove");
+//                			   setText("Disapprove");
+                			   btn.setText("Disapprove");
+                		   }
+                		   else {
+//                			   btn = new Button("Approve");
+//                			   setText("Approve");
+                			   btn.setText("Approve");
+                		   }
+                		   
+                		   btn.setPrefWidth(30);
+                		   btn.setPrefHeight(30);
+                		   btn.setPadding(Insets.EMPTY);
+                	   }
+                	   
+                       super.updateItem( item, empty );
+                       if ( empty )
+                       {
+                           setGraphic( null );
+                           setText( null );
+                       }
+                       else
+                       {
+                           btn.setOnAction(new EventHandler<ActionEvent>(){
+							@Override
+							public void handle(ActionEvent arg0) {
+								System.out.println("button clicked");
+								boolean approved = Boolean.parseBoolean(approvedFeedback.get(getIndex()).getApproved());
+
+								approved = !approved;
+								
+								System.out.println(approved);
+								
+								if (approved) {
+									btn.setText("Disapprove");
+//									setText("Disapprove");
+								}
+								else{
+//									setText("Approve");
+									btn.setText("Approve");
+								}
+								
+								approvedFeedback.get(getIndex()).setApproved(Boolean.toString(approved));
+							}
+                        	   
+                           } );
+                           setGraphic(btn);
+                           setText(null);
+                       }
+                   }
+               };
+               return cell;
+           }
+       };
+       
        upvoteCol.setCellFactory(cellFactory1);
        downvoteCol.setCellFactory(cellFactory2);
+       if (adminMode) {
+    	   approveCol.setCellFactory(cellFactory3);
+       }
        
        // Fills table with contents of "feedback" list
        table.setEditable(false);
@@ -591,6 +689,11 @@ public class ViewFeedbackGui extends Application {
        table.getColumns().add(3, scoreCol);
        table.getColumns().add(4, upvoteCol);
        table.getColumns().add(5, downvoteCol);
+       if (adminMode) {
+    	   table.getColumns().add(6, approvedCol);
+    	   table.getColumns().add(7, approveCol);
+       }
+       
 
        // Creates VBox and adds table to it
        VBox tableVBox = new VBox();
