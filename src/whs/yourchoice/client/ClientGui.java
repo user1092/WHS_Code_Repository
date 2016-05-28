@@ -520,8 +520,8 @@ public class ClientGui extends Application{
 	 * the server is connected or not
 	 */
 	private void serverStatusLabelSetup() {
-		String serverConnected = ("Server connected");
-		String serverNotConnected = ("Server not connected");
+		final String serverConnected = ("Server connected");
+		final String serverNotConnected = ("Server not connected");
 		Task<Void> serverStatusTask = new Task<Void>() {
 			@Override protected Void call() throws Exception {
 				while (true) {
