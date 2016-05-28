@@ -7,13 +7,16 @@
 package whs.yourchoice.client;
 
 import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -41,13 +44,14 @@ import whs.yourchoice.parsers.CommentParser;
 * Class for creation of the module comments window for displaying
 * comments stored in a .txt file
 *
-* @author jcl513, gw679
-* @version v0.4 25/05/16
+* @author jcl513, gw679, ch1092
+* @version v0.5 28/05/16
 */
 public class ViewFeedbackGui extends Application {
 	
 	// Path name will need changing and adapting for integration
-	private String textFilePath = null;
+	private String textFileName = null;
+	private String moduleFileSaveLocation = null;
 	// Module name should be passed to this class so it can be displayed
 	private String moduleName = "Test Module Name";
 	private Client client;
@@ -55,6 +59,7 @@ public class ViewFeedbackGui extends Application {
 	// Table and list of type Comment to fill the table with
 	private TableView<Feedback> table = new TableView<Feedback>();
 	private ObservableList<Feedback> feedback = FXCollections.observableArrayList();
+	private ObservableList<Feedback> approvedFeedback = FXCollections.observableArrayList();
 	
 	// Average module rating according to text file contents
 	private float avgRating;
@@ -64,12 +69,19 @@ public class ViewFeedbackGui extends Application {
 	private CommentParser commentsParser;
 	private GiveFeedbackGui feedbackGui;
 	
-	final private String directory = "Module_Feedback/";
+	private String tempDirectory = "temp";
 	
-	public ViewFeedbackGui(String moduleName, String textFilePath, Client client) {
-		this.moduleName = moduleName + " Feedback";
-		this.textFilePath = directory + textFilePath + ".txt";
+	public ViewFeedbackGui(String moduleName, String textFileName, Client client) {
+		this.moduleName = moduleName;
+		this.textFileName = textFileName;
 		this.client = client;
+		moduleFileSaveLocation = tempDirectory + "/" + this.textFileName;
+		try {
+			requestModuleFeedback();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	
@@ -79,14 +91,11 @@ public class ViewFeedbackGui extends Application {
 	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
+		
 		BorderPane guiLayout = new BorderPane();
 		Scene scene = new Scene(guiLayout);
 		
-		// Create parser to parse text file and return a list of type comment
-		commentsParser = new CommentParser();
-		commentsParser.parseTextFile(textFilePath);
-		avgRating = commentsParser.getAverageRating();
-		feedback = commentsParser.getComments();
+		parseComments();
 		
 		// Import and set background image
 		String background = ClientGui.class.getResource("resources/SlideBackground.jpg").toExternalForm();
@@ -112,7 +121,53 @@ public class ViewFeedbackGui extends Application {
 		primaryStage.setTitle("Module Feedback");
 		primaryStage.show();
 	}
+
+
+	/**
+	 * Method to request the file from the server
+	 * 
+	 * @throws IOException
+	 */
+	private void requestModuleFeedback() throws IOException {
+		System.out.println("textFileName sent: " + textFileName);
+		client.sendData(textFileName);
+		client.receiveRequestedFile(moduleFileSaveLocation);
+	}
+
+
+	/**
+	 * Method to parse the comments held in moduleFileSaveLocation
+	 * 
+	 * @throws FileNotFoundException
+	 */
+	private void parseComments() throws FileNotFoundException {
+		// Create parser to parse text file and return a list of type comment
+		commentsParser = new CommentParser();
+		commentsParser.parseTextFile(moduleFileSaveLocation);
+		avgRating = commentsParser.getAverageRating();
+		feedback = commentsParser.getComments();
+		approvedFeedback = sortFeedback(feedback);
+	}
 	
+	
+	/**
+	 * Method to sort the feedback read so only approved comments are displayed
+	 * 
+	 * @param feedbackToSort
+	 * @return
+	 */
+	private ObservableList<Feedback> sortFeedback(ObservableList<Feedback> feedbackToSort) {
+		ObservableList<Feedback> sortedFeedback = FXCollections.observableArrayList();
+		for (int i = 0; i < feedbackToSort.size(); i++) {
+			if (feedbackToSort.get(i).getApproved().equals("true")) {
+				sortedFeedback.add(feedbackToSort.get(i));
+			}
+		}
+
+		return sortedFeedback;
+	}
+
+
 	/**
 	 * Method to save the list of feedback back into the same text file to save
 	 * any changes to scores etc.
@@ -120,8 +175,8 @@ public class ViewFeedbackGui extends Application {
 	private void saveFeedback(){
 		String tempString = "";
 		String tempComment = "";
-		
-		try (BufferedWriter bw = new BufferedWriter(new FileWriter(textFilePath, false))){
+		//TODO
+		try (BufferedWriter bw = new BufferedWriter(new FileWriter(moduleFileSaveLocation, false))){
 	        
 			// Re-formats each feedback item for writing to the text file
 			// This ensures the parser will parse it correctly upon re-opening
@@ -132,7 +187,8 @@ public class ViewFeedbackGui extends Application {
 				tempString = "\"" 	+ feedback.get(i).getName() + "\",\"" 
 									+ tempComment + "\","
 									+ feedback.get(i).getRating() + ","
-									+ feedback.get(i).getScore() + ",";
+									+ feedback.get(i).getScore() + ","
+									+ feedback.get(i).getApproved() + ",";
 				
 				bw.write(tempString);
 				
@@ -174,8 +230,50 @@ public class ViewFeedbackGui extends Application {
 			@Override
 			public void handle(ActionEvent e) {
 				feedbackGui = new GiveFeedbackGui();
+//				Stage giveFeedbackStage = new Stage();
 				try {
-					feedbackGui.start(primaryStage, moduleName, textFilePath, client);
+					feedbackGui.start(new Stage(), moduleName, moduleFileSaveLocation, client);
+					Task<Void> requestTask = new Task<Void>() {
+						@Override protected Void call() throws Exception {
+							boolean open = true;
+							while (open) {
+								Thread.sleep(50);
+								open = feedbackGui.isOpen();
+							}
+							Platform.runLater(new Runnable() {
+								@Override public void run() {
+									try {
+										refreshComments(primaryStage);
+									} catch (FileNotFoundException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									} catch (Exception e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
+								}
+							});
+							return null;
+						}
+					};
+					// Only works if X is clicked Stage.close() doesn't work
+//					giveFeedbackStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+//			        	public void handle(WindowEvent we) {
+//			        		try {
+//								refreshComments(primaryStage);
+//							} catch (FileNotFoundException e) {
+//								// TODO Auto-generated catch block
+//								e.printStackTrace();
+//							} catch (Exception e) {
+//								// TODO Auto-generated catch block
+//								e.printStackTrace();
+//							}
+//			        	}
+//			        });
+					Thread requestThread = new Thread(requestTask);
+					requestThread.setDaemon(true);
+					requestThread.start();
+					
 				} catch (Exception e1) {
 					System.out.println("Unable to open give feedback window");
 					e1.printStackTrace();
@@ -183,13 +281,25 @@ public class ViewFeedbackGui extends Application {
 			}
 		});
 		
-		Button returnButton = new Button ("Back");
+		Button returnButton = new Button ("Submit");
 		returnButton.setPrefSize(150,30);
 		
 		returnButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
 				saveFeedback();
+				try {
+					client.sendData(textFileName + ".update");
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				try {
+					client.sendRequestedFile(moduleFileSaveLocation);
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				primaryStage.close();
 			}
 		});
@@ -202,13 +312,14 @@ public class ViewFeedbackGui extends Application {
 			@Override
 			public void handle(ActionEvent e) {
 				try {
-					saveFeedback();
-					start(primaryStage);
+					refreshComments(primaryStage);
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 			}
+
+			
 		});
 		
 		// Add everything to HBox and return it
@@ -216,6 +327,19 @@ public class ViewFeedbackGui extends Application {
 		bottomHBox.getChildren().addAll(ratingVBox, commentButton, refreshButton, returnButton);
 		return bottomHBox;	
 	}
+	
+	
+	/**
+	 * @param primaryStage
+	 * @throws FileNotFoundException
+	 * @throws Exception
+	 */
+	private void refreshComments(final Stage primaryStage)
+			throws FileNotFoundException, Exception {
+		parseComments();
+		start(primaryStage);
+	}
+	
 	
 	/**
 	 * Method for the creation of a VBox that contains the title and module name
@@ -229,7 +353,7 @@ public class ViewFeedbackGui extends Application {
 		
 		titleLabel = new Label("Module Comments");
 		titleLabel.setFont(Font.font("Verdana", FontWeight.BOLD, 36));
-		moduleNameLabel = new Label(moduleName);
+		moduleNameLabel = new Label(moduleName + " Feedback");
 		moduleNameLabel.setFont(Font.font("Verdana", FontWeight.BOLD, 20));
 		
 		// Creates a VBox, adds the two labels and returns it
@@ -282,11 +406,11 @@ public class ViewFeedbackGui extends Application {
 		// an integer value storing the votes that the user has placed on that row
 		// rowVoteValue is used to prevent the user from voting a single feedback item
 		// beyond +/- 1
-		final int rowVoteValue[] = new int[feedback.size()];
-		final ImageView upVoteImageView[] = new ImageView[feedback.size()];
-		final ImageView downVoteImageView[] = new ImageView[feedback.size()];
+		final int rowVoteValue[] = new int[approvedFeedback.size()];
+		final ImageView upVoteImageView[] = new ImageView[approvedFeedback.size()];
+		final ImageView downVoteImageView[] = new ImageView[approvedFeedback.size()];
 		
-		for (int i = 0; i < feedback.size(); i++)
+		for (int i = 0; i < approvedFeedback.size(); i++)
 		{
 			rowVoteValue[i] = 0;
 			
@@ -298,6 +422,7 @@ public class ViewFeedbackGui extends Application {
 			downVoteImageView[i].setFitWidth(30);
 			downVoteImageView[i].setFitHeight(30);
 		}
+		
 		
 		
 		// Set up three columns to contain the information in the text file 
@@ -351,7 +476,7 @@ public class ViewFeedbackGui extends Application {
                    {
                 	   // Only sets the button parameters if the button number is within
                 	   // the bound of feedback.size otherwise the button is not required
-                	   if (getIndex() >= 0 && getIndex() < feedback.size())
+                	   if (getIndex() >= 0 && getIndex() < approvedFeedback.size())
                 	   {
                 		   btn.setPrefWidth(30);
                 		   btn.setPrefHeight(30);
@@ -376,11 +501,12 @@ public class ViewFeedbackGui extends Application {
 								// Increments score for corresponding feedback item if the
 								// current row vote value is 0 or -1
 								if (rowVoteValue[getIndex()] != 1){
-									int score = Integer.parseInt(feedback.get(getIndex()).getScore());
+									int score = Integer.parseInt(approvedFeedback.get(getIndex()).getScore());
 									score += 1;
 									rowVoteValue[getIndex()] += 1;
-									feedback.get(getIndex()).setScore(Integer.toString(score));
-									table.getItems().set(getIndex(), feedback.get(getIndex()));
+									approvedFeedback.get(getIndex()).setScore(Integer.toString(score));
+									table.getItems().set(getIndex(), approvedFeedback.get(getIndex()));
+									saveFeedback();
 								}
 							}
                         	   
@@ -409,7 +535,7 @@ public class ViewFeedbackGui extends Application {
                    @Override
                    public void updateItem( String item, boolean empty )
                    {
-                	   if (getIndex() >= 0 && getIndex() < feedback.size())
+                	   if (getIndex() >= 0 && getIndex() < approvedFeedback.size())
                 	   {
                 		   btn.setPrefWidth(30);
                 		   btn.setPrefHeight(30);
@@ -432,11 +558,12 @@ public class ViewFeedbackGui extends Application {
 								// Decrements score for corresponding feedback item if the
 								// current row vote value is 1 or 0
 								if (rowVoteValue[getIndex()] != -1){
-									int score = Integer.parseInt(feedback.get(getIndex()).getScore());
+									int score = Integer.parseInt(approvedFeedback.get(getIndex()).getScore());
 									score -= 1;
 									rowVoteValue[getIndex()] -= 1;
-									feedback.get(getIndex()).setScore(Integer.toString(score));
-									table.getItems().set(getIndex(), feedback.get(getIndex()));
+									approvedFeedback.get(getIndex()).setScore(Integer.toString(score));
+									table.getItems().set(getIndex(), approvedFeedback.get(getIndex()));
+									saveFeedback();
 								}
 							}
                         	   
@@ -455,7 +582,7 @@ public class ViewFeedbackGui extends Application {
        
        // Fills table with contents of "feedback" list
        table.setEditable(false);
-       table.setItems(feedback);
+       table.setItems(approvedFeedback);
        
        table.getColumns().clear();
        table.getColumns().add(0, nameCol);
@@ -516,12 +643,14 @@ public class ViewFeedbackGui extends Application {
         private final SimpleStringProperty comment;
         private final SimpleStringProperty rating;
         private final SimpleStringProperty score;
+        private final SimpleStringProperty approved;
  
-        public Feedback(String uName, String uComment, String uRating, String uScore) {
+        public Feedback(String uName, String uComment, String uRating, String uScore, String uApproved) {
             this.name = new SimpleStringProperty(uName);
             this.comment = new SimpleStringProperty(uComment);
             this.rating = new SimpleStringProperty(uRating);
             this.score = new SimpleStringProperty(uScore);
+            this.approved = new SimpleStringProperty(uApproved);
         }
  
         public String getName() {
@@ -554,6 +683,14 @@ public class ViewFeedbackGui extends Application {
  
         public void setScore(String uScore) {
         	score.set(uScore);
+        }
+
+		public String getApproved() {
+			return approved.get();
+		}
+		
+		public void setApproved(String uApproved) {
+        	approved.set(uApproved);
         }
     }
 	

@@ -8,6 +8,7 @@ package whs.yourchoice.server;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.security.Key;
@@ -24,7 +25,7 @@ import whs.yourchoice.utilities.encryption.ServerPasswordHandler;
  * Class for the server's back end handling communications to the clients. 
  * 
  * @author		ch1092, skq501, cd828
- * @version		v0.11 26/05/2016
+ * @version		v0.12 28/05/2016
  */
 public class Server {
 	
@@ -38,9 +39,10 @@ public class Server {
 	//registered modules variables
 	private final String rmPath = new File("").getAbsolutePath() + "/src/registered_modules.xml";
 	private final String MODULE_FILE_LOCATION = "Zipped_Presentations";
+	private final String MODULE_FEEDBACK_FILE_LOCATION = "Module_Feedback";
 	private final int BUFFER_SIZE = 1024;
 	
-	private final String clientDetailsLocation = "AdminDetails.txt";
+	private final String userDetailsLocation = "AdminDetails.txt";
 	
 	private String serverPrivKeyFileName = "serverPrivKeyFileName.key";
 	
@@ -217,7 +219,7 @@ public class Server {
 					e1.printStackTrace();
 				}
 				try {
-					sendRMFile(currentClient.getID());
+					sendRequestedFile(currentClient.getID(), rmPath);
 				}
 				catch (IOException e) {
 					System.out.println("Error sending module list");
@@ -243,7 +245,7 @@ public class Server {
 						e1.printStackTrace();
 					}
 					try {
-						sendRMFile(currentClient.getID());
+						sendRequestedFile(currentClient.getID(), rmPath);
 					}
 					catch (IOException e) {
 						System.out.println("Error sending module list");
@@ -333,6 +335,12 @@ public class Server {
 			public void run() {
 				boolean validPassword = false;
 				Object object = null;
+				
+				String extension = null;
+				String txt = "txt";
+				String zip = "zip";
+				String update = "update";
+				
 				while (!serverSocket.isClosed() && client.socketIsConnected()) {
 										
 					try {
@@ -345,8 +353,32 @@ public class Server {
 						}
 						
 						object = receiveData(client.getID());
-												
-						sendData(new File(MODULE_FILE_LOCATION + "/" + (String) object), client.getID());
+						
+						extension = ((String) object).substring(((String) object).lastIndexOf(".") + 1, ((String) object).length());
+						
+						if (extension.equals(zip)){
+							System.out.println("A zip file was requested: " + (String) object);
+							sendData(new File(MODULE_FILE_LOCATION + "/" + (String) object), client.getID());
+						}
+						else {
+							if (extension.equals(txt)) {
+								System.out.println("A txt file was requested: " + (String) object);
+								sendRequestedFile(client.getID(), MODULE_FEEDBACK_FILE_LOCATION + "/" + (String) object);
+							}
+							else {
+								if (extension.equals(update)) {
+									System.out.println("A update was requested: " + (String) object);
+									String updatedFile = removeFileExtension((String) object);
+									System.out.println("A update file was requested: " + updatedFile);
+									receiveRequestedFile(client.getID(), MODULE_FEEDBACK_FILE_LOCATION + "/" + updatedFile);
+								}
+								else {
+									System.out.println("An invalid file was requested");
+								}
+							}
+						}
+						
+						
 												
 						// Wait for the client to send some data, below is for tests
 //						object = receiveData(client.getID());
@@ -371,16 +403,32 @@ public class Server {
 		listenToClientThread[client.getID()].start();
 	}
 	
+	
+	/**
+	 * Method to remove the file extension from a string
+	 * 
+	 * @param filename	-	The filename to remove the extension
+	 * @return String	-	The filename without an extension
+	 */
+	private String removeFileExtension(final String filename) {
+		String name = null;
+		int pos = filename.lastIndexOf(".");
+		if (pos > 0) {
+			name = filename.substring(0, pos);
+		}
+		return name;
+	}
+	
 		
 	/**
-	 * Method to send the Registered modules file
+	 * Method to send the requested file
 	 * 
 	 * @param clientID
 	 * @throws IOException
 	 */
-	private void sendRMFile(int clientID) throws IOException {
+	private void sendRequestedFile(int clientID, String requestedFile) throws IOException {
 		
-        File file = new File(rmPath);
+        File file = new File(requestedFile);
  
         FileInputStream fis = new FileInputStream(file);
         byte [] buffer = new byte[BUFFER_SIZE];
@@ -394,6 +442,43 @@ public class Server {
         fis.close();
 	}
 	
+	
+	/**
+	 * Method to get a byte array and save as file
+	 * @throws IOException
+	 */
+	protected void receiveRequestedFile(int clientID, String saveLocation) throws IOException {
+	    
+		Object o = null;
+		FileOutputStream fos = new FileOutputStream(saveLocation);
+		
+		byte[] mybytearray = new byte[BUFFER_SIZE];
+		Integer bytesRead = 0;
+		
+		do {
+            try {
+				o = clients[clientID].getInputFromClient().readObject();
+			} catch (ClassNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+  
+            bytesRead = (Integer)o;
+ 
+            try {
+				o = clients[clientID].getInputFromClient().readObject();
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+  
+            mybytearray = (byte[])o;
+            
+            fos.write(mybytearray, 0, bytesRead);
+        } while (bytesRead == BUFFER_SIZE);
+	    
+		fos.close();
+	}
 
 	/**
 	 * Method to set the administrators password.
@@ -408,7 +493,7 @@ public class Server {
 		
 		// Clear the current password
 		try {
-			serverPasswordHandler.clearClientDetailsFile(clientDetailsLocation);
+			serverPasswordHandler.clearClientDetailsFile(userDetailsLocation);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -422,7 +507,7 @@ public class Server {
 			e.printStackTrace();
 		}
 		
-		serverPasswordHandler.storeDetails(adminDetails, clientDetailsLocation);
+		serverPasswordHandler.storeDetails(adminDetails, userDetailsLocation);
 	}
 	
 	/**
@@ -464,7 +549,7 @@ public class Server {
 					
 			if (clientDetails.getUserName().equals("Admin")) {
 				ServerPasswordHandler serverPasswordHandler = new ServerPasswordHandler();
-				ClientDetails retrievedClientDetails = serverPasswordHandler.getDetails(clientDetails.getUserName(), clientDetailsLocation);
+				ClientDetails retrievedClientDetails = serverPasswordHandler.getDetails(clientDetails.getUserName(), userDetailsLocation);
 				
 				sendData(encryptData(retrievedClientDetails.getSalt(), client), client.getID());
 				
