@@ -37,7 +37,7 @@ public class Server {
 	private final int connectedClientsMaxNumber = 2;
 	
 	//registered modules variables
-	private final String rmPath = new File("").getAbsolutePath() + "/src/registered_modules.xml";
+	private final String rmPath = new File("").getAbsolutePath() + "/registered_modules.xml";
 	private final String MODULE_FILE_LOCATION = "Zipped_Presentations";
 	private final String MODULE_FEEDBACK_FILE_LOCATION = "Module_Feedback";
 	private final int BUFFER_SIZE = 1024;

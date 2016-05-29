@@ -131,6 +131,8 @@ public class ViewFeedbackGui extends Application {
 			primaryStage.setWidth(810);
 		}
 		
+		primaryStage.setResizable(false);
+		
 		primaryStage.setTitle("Module Feedback");
 		primaryStage.show();
 	}

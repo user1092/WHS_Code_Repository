@@ -118,6 +118,7 @@ public class GiveFeedbackGui {
 		primaryStage.setHeight(400);
 		primaryStage.setWidth(600);
 		primaryStage.setTitle("Give Module Feedback");
+		primaryStage.setResizable(false);
 		primaryStage.show();
 	}
 	

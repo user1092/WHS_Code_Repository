@@ -64,6 +64,7 @@ public class ConfigureWindow extends Application {
 		primaryStage.setHeight(250);
 		primaryStage.setWidth(500);
 		primaryStage.setTitle("Configure Server");
+		primaryStage.setResizable(false);
 		primaryStage.show();
 	}
 	

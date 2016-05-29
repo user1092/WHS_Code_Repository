@@ -53,12 +53,12 @@ public class PolygonGraphic {
 	 * Constructor containing the minimal arguments to create a valid shapeEntry.
 	 * 
 	 */
-	public PolygonGraphic(int inStart, int inDuration, String inSourceFile) {
+	public PolygonGraphic(int inStart, int inDuration, String inFillColour, String inLineColour, String inSourceFile) {
 		// assign variables
 			this.startTime = inStart;
 			this.duration = inDuration;
-			this.lineColourString = "ffffff";
-			this.fillColourString = "ffffff";
+			this.lineColourString = inLineColour;
+			this.fillColourString = inFillColour;
 			this.sourceFile = inSourceFile;
 				
 				//set outer line colour, default same as fill colour

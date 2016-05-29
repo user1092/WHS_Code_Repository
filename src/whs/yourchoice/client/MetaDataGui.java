@@ -89,6 +89,7 @@ public class MetaDataGui extends Application {
 		primaryStage.setWidth(WINDOW_WIDTH);
 		primaryStage.setResizable(false);
 		primaryStage.setTitle("About Presentation");
+		primaryStage.setResizable(false);
 		primaryStage.show();
 	}
 	
