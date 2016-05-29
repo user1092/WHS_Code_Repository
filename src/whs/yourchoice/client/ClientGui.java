@@ -471,6 +471,9 @@ public class ClientGui extends Application{
 						}
 					}
 				}
+				else {
+					loginNotConnectedMessage();
+				}
 			}
 		});
 	}
@@ -703,30 +706,9 @@ public class ClientGui extends Application{
 		//ip address and port from text boxes is stored and shown in the console
         connect.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
-            	try {
-					client.openSocket(configureWindow.getIpAddress(), configureWindow.getPort());
-					if (-1 == getID()) {
-						serverFullMessage();
-					}
-				} catch (UnknownHostException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-					connect.setDisable(false);
-					disconnect.setDisable(true);
-				} catch (IOException e2) {
-					noConnectionMessage();
-					
-					System.out.println("Could not connect to server");
-					connect.setDisable(false);
-					disconnect.setDisable(true);
-				}
-				
-				if (!(null == client.serverSocket)) {
-					if(!client.serverSocket.isClosed()) {
-						connect.setDisable(true);
-						disconnect.setDisable(false);
-					}
-				}
+            	contentLayout.getChildren().clear();
+        		contentLayout.getChildren().add(progressBar);
+            	runConnectThread();
             }
         });
         
@@ -797,57 +779,65 @@ public class ClientGui extends Application{
 	 */
 	private void autoConnect() {
 		if (autoConnect) {
-			Task<Void> autoConnectTask = new Task<Void>() {
-				@Override protected Void call() throws Exception {
-					try {
-						client.openSocket(configureWindow.getIpAddress(), configureWindow.getPort());
-						Platform.runLater(new Runnable() {
-							@Override public void run() {
-								// menu items
-								connect.setDisable(true);
-								disconnect.setDisable(false);
-							}
-						});
-						
-						if(-1 == getID()) {							
-							Platform.runLater(new Runnable() {
-								@Override public void run() {
-									// menu items
-									connect.setDisable(false);
-									disconnect.setDisable(true);
-									serverFullMessage();
-								}
-							});
+			runConnectThread();
+		}
+	}
+
+	/**
+	 * Method to run the connect to server thread
+	 */
+	private void runConnectThread() {
+		Task<Void> connectTask = new Task<Void>() {
+			@Override protected Void call() throws Exception {
+				try {
+					client.openSocket(configureWindow.getIpAddress(), configureWindow.getPort());
+					Platform.runLater(new Runnable() {
+						@Override public void run() {
+							// menu items
+							connect.setDisable(true);
+							disconnect.setDisable(false);
+							successfulConnectionMessage();
 						}
-					} catch (UnknownHostException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						// menu items
-						connect.setDisable(false);
-						disconnect.setDisable(true);
-					} catch (IOException e) {
-						System.out.println("Could not connect to server");
+					});
+					
+					if(-1 == getID()) {							
 						Platform.runLater(new Runnable() {
 							@Override public void run() {
 								// menu items
 								connect.setDisable(false);
 								disconnect.setDisable(true);
-								noConnectionMessage();
+								serverFullMessage();
 							}
 						});
 					}
-					return null;
+				} catch (UnknownHostException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					// menu items
+					connect.setDisable(false);
+					disconnect.setDisable(true);
+				} catch (IOException e) {
+					System.out.println("Could not connect to server");
+					Platform.runLater(new Runnable() {
+						@Override public void run() {
+							// menu items
+							connect.setDisable(false);
+							disconnect.setDisable(true);
+							noConnectionMessage();
+						}
+					});
 				}
-			};
-			final Thread autoConnectThread = new Thread(autoConnectTask);
-			autoConnectThread.setDaemon(true);
-			
-			progressBar.progressProperty().bind(autoConnectTask.progressProperty());
-			
-			autoConnectThread.start();
-						
-			removeProgressBar(autoConnectThread, centrePane);
-		}
+				return null;
+			}
+		};
+		final Thread connectThread = new Thread(connectTask);
+		connectThread.setDaemon(true);
+		
+		progressBar.progressProperty().bind(connectTask.progressProperty());
+		
+		connectThread.start();
+					
+		removeProgressBar(connectThread, centrePane);
 	}
 
 
@@ -1001,6 +991,7 @@ public class ClientGui extends Application{
 		noConnectionAlert.showAndWait();
 	}
 	
+	
 	/**
 	 * Method to call an error message when the password entered is incorrect
 	 */
@@ -1011,5 +1002,30 @@ public class ClientGui extends Application{
 		wrongPasswordAlert.setContentText("The password entered is incorrect. "
 											+ "Please try again.");
 		wrongPasswordAlert.showAndWait();
+	}
+	
+	
+	/**
+	 * Method to call an error message when trying to log in before connecting to server.
+	 */
+	private void loginNotConnectedMessage(){
+		Alert loginNotConnectedAlert = new Alert(AlertType.ERROR);
+		loginNotConnectedAlert.setTitle("Error Message");
+		loginNotConnectedAlert.setHeaderText("Not Connected To Server");
+		loginNotConnectedAlert.setContentText("Currently not connected to the server. "
+											+ "Please connect before you can log in.");
+		loginNotConnectedAlert.showAndWait();
+	}
+	
+	
+	/**
+	 * Method to call an information message when successfully connecting to server.
+	 */
+	private void successfulConnectionMessage(){
+		Alert successfulConnectionAlert = new Alert(AlertType.INFORMATION);
+		successfulConnectionAlert.setTitle("Information Dialog");
+		successfulConnectionAlert.setHeaderText("Successful Connection!");
+		successfulConnectionAlert.setContentText("Connection to server has been successful!");
+		successfulConnectionAlert.showAndWait();
 	}
 }
