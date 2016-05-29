@@ -1591,6 +1591,8 @@ public class PresentationGui extends Application {
 						
 			PolygonGraphic tempPolygon = new PolygonGraphic(currentPolygon.getPolygonStartTime(),
 															currentPolygon.getPolygonDuration(),
+															currentPolygon.getPolygonFillColour(), 
+															currentPolygon.getPolygonLineColour(),
 															presentation.getPath() + "/" +
 															currentPolygon.getPolygonSourceFile());
 			

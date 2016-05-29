@@ -72,7 +72,7 @@ public class PolygonGraphicManualTests extends Application {
 		String path = new File("").getAbsolutePath() + "/src/whs/yourchoice/graphics/ArrowShape.csv";
 		
 		//set up shape entry
-		PolygonGraphic polygonEntry = new PolygonGraphic(startTime, duration, path);
+		PolygonGraphic polygonEntry = new PolygonGraphic(startTime, duration, "FFFFFF", "FFFFFF", path);
 		
 		//set up shape and scene
 		polygonEntry.setShading(0.2f, 0.5f, 0.175f, 0.175f, "aa0000", "00aa00");

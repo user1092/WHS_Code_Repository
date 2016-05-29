@@ -42,7 +42,7 @@ public class Client {
 	private boolean serverState = false;
 	// Variables for registered modules
 	protected RegisteredModules moduleList;
-	private String modulePath = "src/registered_modules2.xml";
+	private String modulePath = "registered_modules2.xml";
 	private final int BUFFER_SIZE = 1024;
 	
 	private String serverPubKeyFileName = "serverPubKeyFileName.key";
