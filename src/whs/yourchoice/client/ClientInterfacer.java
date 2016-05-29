@@ -83,4 +83,15 @@ public class ClientInterfacer {
 	public int getID() {
 		return client.getID();
 	}
+
+	/**
+	 * Method to check if the password is valid, if Guest use null as password
+	 * 
+	 * @param userName
+	 * @param password
+	 * @throws IOException 
+	 */
+	public void checkPassword(String userName, String password) throws IOException {
+		client.checkPassword(userName, password);
+	}
 }
