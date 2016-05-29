@@ -25,7 +25,7 @@ import whs.yourchoice.utilities.encryption.ServerPasswordHandler;
  * Class for the server's back end handling communications to the clients. 
  * 
  * @author		ch1092, skq501, cd828
- * @version		v0.12 28/05/2016
+ * @version		v0.13 29/05/2016
  */
 public class Server {
 	
@@ -359,11 +359,13 @@ public class Server {
 						if (extension.equals(zip)){
 							System.out.println("A zip file was requested: " + (String) object);
 							sendData(new File(MODULE_FILE_LOCATION + "/" + (String) object), client.getID());
+							System.out.println("A zip file was sent: " + (String) object);
 						}
 						else {
 							if (extension.equals(txt)) {
 								System.out.println("A txt file was requested: " + (String) object);
 								sendRequestedFile(client.getID(), MODULE_FEEDBACK_FILE_LOCATION + "/" + (String) object);
+								System.out.println("A txt file was sent: " + (String) object);
 							}
 							else {
 								if (extension.equals(update)) {
@@ -373,7 +375,7 @@ public class Server {
 									receiveRequestedFile(client.getID(), MODULE_FEEDBACK_FILE_LOCATION + "/" + updatedFile);
 								}
 								else {
-									System.out.println("An invalid file was requested");
+									System.out.println("An invalid file was requested: " + (String) object);
 								}
 							}
 						}
@@ -433,10 +435,18 @@ public class Server {
         FileInputStream fis = new FileInputStream(file);
         byte [] buffer = new byte[BUFFER_SIZE];
         Integer bytesRead = 0;
- 
-        while ((bytesRead = fis.read(buffer)) > 0) {
-        	clients[clientID].getOutputToClient().writeObject(bytesRead);
-        	clients[clientID].getOutputToClient().writeObject(Arrays.copyOf(buffer, buffer.length));
+        bytesRead = fis.read(buffer);
+        
+        if (bytesRead > 0) {
+        	while (bytesRead > 0) {
+	        	clients[clientID].getOutputToClient().writeObject(bytesRead);
+	        	clients[clientID].getOutputToClient().writeObject(Arrays.copyOf(buffer, buffer.length));
+	        	bytesRead = fis.read(buffer);
+        	}
+        }
+        else {
+        	System.out.println("sending file size 0");
+        	clients[clientID].getOutputToClient().writeObject(0);
         }
         
         fis.close();

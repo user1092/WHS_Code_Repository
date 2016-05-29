@@ -28,7 +28,7 @@ import whs.yourchoice.utilities.encryption.RsaEncryption;
  * Class for the client's back end handling communications to the server 
  * 
  * @author		ch1092, skq501, cd828
- * @version		v0.12 28/05/2016
+ * @version		v0.13 29/05/2016
  */
 public class Client {
 	
@@ -47,6 +47,7 @@ public class Client {
 	
 	private String serverPubKeyFileName = "serverPubKeyFileName.key";
 	private Key privKey;
+	private boolean adminMode = false;
 	
 	
 	/**
@@ -221,24 +222,38 @@ public class Client {
 		
 		do {
             try {
+            	System.out.println("Reading requested file chunk size");
 				o = inputFromServer.readObject();
+				System.out.println("Read requested file chunk size");
 			} catch (ClassNotFoundException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
   
             bytesRead = (Integer)o;
- 
-            try {
-				o = inputFromServer.readObject();
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-  
-            mybytearray = (byte[])o;
             
-            fos.write(mybytearray, 0, bytesRead);
+            if (bytesRead != 0) {
+            	try {
+	            	System.out.println("Reading requested file chunk");
+					o = inputFromServer.readObject();
+					System.out.println("Read requested file chunk");
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+            	
+            	mybytearray = (byte[])o;
+            
+            	fos.write(mybytearray, 0, bytesRead);
+            }
+            else {
+            	File f = new File(saveLocation);
+            	f.createNewFile();
+            }
+ 
+            
+  
+            
         } while (bytesRead == BUFFER_SIZE);
 	    
 		fos.close();
@@ -418,6 +433,22 @@ public class Client {
 		
 	public boolean isServerConnected() {
 		return serverState;
+	}
+
+
+	/**
+	 * @return the adminMode
+	 */
+	public boolean isAdminMode() {
+		return adminMode;
+	}
+
+
+	/**
+	 * @param adminMode the adminMode to set
+	 */
+	public void setAdminMode(boolean adminMode) {
+		this.adminMode = adminMode;
 	}
 }
 		

@@ -1,2 +1,2 @@
-"Chris Huitson","This is the first comment on the Digital Electronics module. Needs more k-maps in my opinion.",3,0,
-"Sabrina","Test",2,1,
+"Chris Huitson","This is the first comment on the Digital Electronics module. Needs more k-maps in my opinion.",3,0,true,
+"Sabrina","Test",2,1,true,
