@@ -75,7 +75,7 @@ import javafx.util.StringConverter;
 * Class for creation of the presentation window and adding functionality
 *
 * @author cd828 & ch1092
-* @version v0.12 27/05/16
+* @version v0.13 29/05/16
 */
 public class PresentationGui extends Application {
 	
@@ -451,6 +451,7 @@ public class PresentationGui extends Application {
 		controlBar.setMaxHeight(CONTROL_BAR_HEIGHT);
 		controlBar.setMinHeight(CONTROL_BAR_HEIGHT);
 		controlBar.setPrefHeight(CONTROL_BAR_HEIGHT);
+		controlBar.setPrefWidth(CONTROL_BAR_WIDTH);
 		
 		Slider volumeSlider = createVolumeSlider();
 		

@@ -45,7 +45,7 @@ import whs.yourchoice.parsers.CommentParser;
 * comments stored in a .txt file
 *
 * @author jcl513, gw679, ch1092
-* @version v0.5 28/05/16
+* @version v0.6 29/05/16
 */
 public class ViewFeedbackGui extends Application {
 	
@@ -73,18 +73,21 @@ public class ViewFeedbackGui extends Application {
 	private boolean adminMode = false;
 	TableColumn<Feedback,String> approvedCol = null;
 	TableColumn<Feedback,String> approveCol = null;
+	TableColumn<Feedback,String> deleteCol = null;
 	
 	public ViewFeedbackGui(String moduleName, String textFileName, Client client) {
 		this.moduleName = moduleName;
 		this.textFileName = textFileName;
 		this.client = client;
 		moduleFileSaveLocation = tempDirectory + "/" + this.textFileName;
+		System.out.println("opened view feedback");
 		try {
 			requestModuleFeedback();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		adminMode = client.isAdminMode();
 	}
 	
 	
@@ -119,8 +122,15 @@ public class ViewFeedbackGui extends Application {
 		
 		// Main stage set up with appropriate scene and size
 		primaryStage.setScene(scene);
-		primaryStage.setHeight(500);
-		primaryStage.setWidth(810);
+		if (adminMode) {
+			primaryStage.setHeight(500);
+			primaryStage.setWidth(1000);
+		}
+		else {
+			primaryStage.setHeight(500);
+			primaryStage.setWidth(810);
+		}
+		
 		primaryStage.setTitle("Module Feedback");
 		primaryStage.show();
 	}
@@ -135,6 +145,7 @@ public class ViewFeedbackGui extends Application {
 		System.out.println("textFileName sent: " + textFileName);
 		client.sendData(textFileName);
 		client.receiveRequestedFile(moduleFileSaveLocation);
+		System.out.println("textFileName received: " + textFileName);
 	}
 
 
@@ -144,6 +155,7 @@ public class ViewFeedbackGui extends Application {
 	 * @throws FileNotFoundException
 	 */
 	private void parseComments() throws FileNotFoundException {
+		System.out.println("parsing comments: " + moduleFileSaveLocation);
 		// Create parser to parse text file and return a list of type comment
 		commentsParser = new CommentParser();
 		commentsParser.parseTextFile(moduleFileSaveLocation);
@@ -155,6 +167,7 @@ public class ViewFeedbackGui extends Application {
 		else {
 			approvedFeedback = feedback;
 		}
+		System.out.println("parsing done: " + moduleFileSaveLocation);
 	}
 	
 	
@@ -183,7 +196,6 @@ public class ViewFeedbackGui extends Application {
 	private void saveFeedback(){
 		String tempString = "";
 		String tempComment = "";
-		//TODO
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter(moduleFileSaveLocation, false))){
 	        
 			// Re-formats each feedback item for writing to the text file
@@ -289,7 +301,7 @@ public class ViewFeedbackGui extends Application {
 			}
 		});
 		
-		Button returnButton = new Button ("Submit");
+		Button returnButton = new Button ("Save and Close");
 		returnButton.setPrefSize(150,30);
 		
 		returnButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -473,210 +485,32 @@ public class ViewFeedbackGui extends Application {
     	   approvedCol.setCellValueFactory(new PropertyValueFactory<Feedback,String>("approved"));
     	   
     	   approveCol = new TableColumn<Feedback,String>("Approved");
-    	   approveCol.setMinWidth(50);
-    	   approveCol.setMaxWidth(50);
+    	   approveCol.setMinWidth(70);
+    	   approveCol.setMaxWidth(70);
     	   approveCol.setCellValueFactory(new PropertyValueFactory<Feedback,String>("DUMMY"));
+    	   
+    	   deleteCol = new TableColumn<Feedback,String>("Delete");
+    	   deleteCol.setMinWidth(70);
+    	   deleteCol.setMaxWidth(70);
+    	   deleteCol.setCellValueFactory(new PropertyValueFactory<Feedback,String>("DUMMY"));
        }
        
        // Create cell factories to set up and down vote columns
-       Callback<TableColumn<Feedback, String>, TableCell<Feedback, String>> cellFactory1 =
-       new Callback<TableColumn<Feedback, String>, TableCell<Feedback, String>>()
-       {
-    	   // Overrides column cell construction to place a button in each cell
-           @Override
-           public TableCell<Feedback,String> call( final TableColumn<Feedback, String> param )
-           {
-               final TableCell<Feedback, String> cell = new TableCell<Feedback, String>()
-               {
-
-                   final Button btn = new Button("");
-                   
-                   @Override
-                   public void updateItem( String item, boolean empty )
-                   {
-                	   // Only sets the button parameters if the button number is within
-                	   // the bound of feedback.size otherwise the button is not required
-                	   if (getIndex() >= 0 && getIndex() < approvedFeedback.size())
-                	   {
-                		   btn.setPrefWidth(30);
-                		   btn.setPrefHeight(30);
-                		   btn.setGraphic(upVoteImageView[getIndex()]);
-                		   btn.setPadding(Insets.EMPTY);
-                	   }
-                	   
-                	   
-                       super.updateItem( item, empty );
-                       if ( empty )
-                       {
-                           setGraphic( null );
-                           setText( null );
-                       }
-                       else
-                       {
-                           btn.setOnAction(new EventHandler<ActionEvent>(){
-
-							@Override
-							public void handle(ActionEvent arg0) {
-								
-								// Increments score for corresponding feedback item if the
-								// current row vote value is 0 or -1
-								if (rowVoteValue[getIndex()] != 1){
-									int score = Integer.parseInt(approvedFeedback.get(getIndex()).getScore());
-									score += 1;
-									rowVoteValue[getIndex()] += 1;
-									approvedFeedback.get(getIndex()).setScore(Integer.toString(score));
-									table.getItems().set(getIndex(), approvedFeedback.get(getIndex()));
-									saveFeedback();
-								}
-							}
-                        	   
-                           } );
-                           setGraphic(btn);
-                           setText(null);
-                       }
-                   }
-                   
-               };
-               return cell;
-           }
-       };
+       Callback<TableColumn<Feedback, String>, TableCell<Feedback, String>> cellFactory1 = upVoteColumnSetup(
+			rowVoteValue, upVoteImageView);
        
-       Callback<TableColumn<Feedback, String>, TableCell<Feedback, String>> cellFactory2 
-       = new Callback<TableColumn<Feedback, String>, TableCell<Feedback, String>>()
-       {
-           @Override
-           public TableCell<Feedback,String> call( final TableColumn<Feedback, String> param )
-           {
-               final TableCell<Feedback, String> cell = new TableCell<Feedback, String>()
-               {
-
-                   final Button btn = new Button("");
-
-                   @Override
-                   public void updateItem( String item, boolean empty )
-                   {
-                	   if (getIndex() >= 0 && getIndex() < approvedFeedback.size())
-                	   {
-                		   btn.setPrefWidth(30);
-                		   btn.setPrefHeight(30);
-                		   btn.setGraphic(downVoteImageView[getIndex()]);
-                		   btn.setPadding(Insets.EMPTY);
-                	   }
-                	   
-                       super.updateItem( item, empty );
-                       if ( empty )
-                       {
-                           setGraphic( null );
-                           setText( null );
-                       }
-                       else
-                       {
-                           btn.setOnAction(new EventHandler<ActionEvent>(){
-
-							@Override
-							public void handle(ActionEvent arg0) {
-								// Decrements score for corresponding feedback item if the
-								// current row vote value is 1 or 0
-								if (rowVoteValue[getIndex()] != -1){
-									int score = Integer.parseInt(approvedFeedback.get(getIndex()).getScore());
-									score -= 1;
-									rowVoteValue[getIndex()] -= 1;
-									approvedFeedback.get(getIndex()).setScore(Integer.toString(score));
-									table.getItems().set(getIndex(), approvedFeedback.get(getIndex()));
-									saveFeedback();
-								}
-							}
-                        	   
-                           } );
-                           setGraphic(btn);
-                           setText(null);
-                       }
-                   }
-               };
-               return cell;
-           }
-       };
+       Callback<TableColumn<Feedback, String>, TableCell<Feedback, String>> cellFactory2 = downVoteColumnSetup(
+			rowVoteValue, downVoteImageView);
        
-       
-       Callback<TableColumn<Feedback, String>, TableCell<Feedback, String>> cellFactory3 
-       = new Callback<TableColumn<Feedback, String>, TableCell<Feedback, String>>()
-       {
-           @Override
-           public TableCell<Feedback,String> call( final TableColumn<Feedback, String> param )
-           {
-               final TableCell<Feedback, String> cell = new TableCell<Feedback, String>()
-               {
-
-                   
-
-                   @Override
-                   public void updateItem( String item, boolean empty )
-                   {
-                	   final Button btn = new Button();
-                	   if (getIndex() >= 0 && getIndex() < approvedFeedback.size())
-                	   {
-                		   boolean approved = Boolean.parseBoolean(approvedFeedback.get(getIndex()).getApproved());
-                		   if (approved) {
-//                			   btn = new Button("Disapprove");
-//                			   setText("Disapprove");
-                			   btn.setText("Disapprove");
-                		   }
-                		   else {
-//                			   btn = new Button("Approve");
-//                			   setText("Approve");
-                			   btn.setText("Approve");
-                		   }
-                		   
-                		   btn.setPrefWidth(30);
-                		   btn.setPrefHeight(30);
-                		   btn.setPadding(Insets.EMPTY);
-                	   }
-                	   
-                       super.updateItem( item, empty );
-                       if ( empty )
-                       {
-                           setGraphic( null );
-                           setText( null );
-                       }
-                       else
-                       {
-                           btn.setOnAction(new EventHandler<ActionEvent>(){
-							@Override
-							public void handle(ActionEvent arg0) {
-								System.out.println("button clicked");
-								boolean approved = Boolean.parseBoolean(approvedFeedback.get(getIndex()).getApproved());
-
-								approved = !approved;
-								
-								System.out.println(approved);
-								
-								if (approved) {
-									btn.setText("Disapprove");
-//									setText("Disapprove");
-								}
-								else{
-//									setText("Approve");
-									btn.setText("Approve");
-								}
-								
-								approvedFeedback.get(getIndex()).setApproved(Boolean.toString(approved));
-							}
-                        	   
-                           } );
-                           setGraphic(btn);
-                           setText(null);
-                       }
-                   }
-               };
-               return cell;
-           }
-       };
+       if (adminMode) {
+    	   Callback<TableColumn<Feedback, String>, TableCell<Feedback, String>> cellFactory3 = approveColumnSetup();
+    	   approveCol.setCellFactory(cellFactory3);
+    	   Callback<TableColumn<Feedback, String>, TableCell<Feedback, String>> cellFactory4 = deleteColumnSetup();
+    	   deleteCol.setCellFactory(cellFactory4);
+       }
        
        upvoteCol.setCellFactory(cellFactory1);
        downvoteCol.setCellFactory(cellFactory2);
-       if (adminMode) {
-    	   approveCol.setCellFactory(cellFactory3);
-       }
        
        // Fills table with contents of "feedback" list
        table.setEditable(false);
@@ -692,6 +526,7 @@ public class ViewFeedbackGui extends Application {
        if (adminMode) {
     	   table.getColumns().add(6, approvedCol);
     	   table.getColumns().add(7, approveCol);
+    	   table.getColumns().add(8, deleteCol);
        }
        
 
@@ -702,6 +537,264 @@ public class ViewFeedbackGui extends Application {
        tableVBox.getChildren().addAll(table);
        
        return tableVBox;
+	}
+
+
+	/**
+	 * @return
+	 */
+	private Callback<TableColumn<Feedback, String>, TableCell<Feedback, String>> approveColumnSetup() {
+		Callback<TableColumn<Feedback, String>, TableCell<Feedback, String>> cellFactory3 
+		   = new Callback<TableColumn<Feedback, String>, TableCell<Feedback, String>>()
+		   {
+		       @Override
+		       public TableCell<Feedback,String> call( final TableColumn<Feedback, String> param )
+		       {
+		           final TableCell<Feedback, String> cell = new TableCell<Feedback, String>()
+		           {
+		               @Override
+		               public void updateItem( String item, boolean empty )
+		               {
+		            	   final Button btn = new Button();
+		            	   if (getIndex() >= 0 && getIndex() < approvedFeedback.size())
+		            	   {
+		            		   boolean approved = Boolean.parseBoolean(approvedFeedback.get(getIndex()).getApproved());
+		            		   if (approved) {
+		            			   btn.setText("Disapprove");
+		            		   }
+		            		   else {
+		            			   btn.setText("Approve");
+		            		   }
+		            		   
+		            		   btn.setPrefWidth(65);
+		            		   btn.setPrefHeight(30);
+		            		   btn.setPadding(Insets.EMPTY);
+		            	   }
+		            	   
+		                   super.updateItem( item, empty );
+		                   if ( empty )
+		                   {
+		                       setGraphic( null );
+		                       setText( null );
+		                   }
+		                   else
+		                   {
+		                       btn.setOnAction(new EventHandler<ActionEvent>(){
+								@Override
+								public void handle(ActionEvent arg0) {
+									boolean approved = Boolean.parseBoolean(approvedFeedback.get(getIndex()).getApproved());
+
+									approved = !approved;
+									
+									if (approved) {
+										btn.setText("Disapprove");
+									}
+									else{
+										btn.setText("Approve");
+									}
+									
+									approvedFeedback.get(getIndex()).setApproved(Boolean.toString(approved));
+								}
+		                    	   
+		                       } );
+		                       setGraphic(btn);
+		                       setText(null);
+		                   }
+		               }
+		           };
+		           return cell;
+		       }
+		   };
+		return cellFactory3;
+	}
+	
+	
+	/**
+	 * @return
+	 */
+	private Callback<TableColumn<Feedback, String>, TableCell<Feedback, String>> deleteColumnSetup() {
+		Callback<TableColumn<Feedback, String>, TableCell<Feedback, String>> cellFactory4 
+		   = new Callback<TableColumn<Feedback, String>, TableCell<Feedback, String>>()
+		   {
+		       @Override
+		       public TableCell<Feedback,String> call( final TableColumn<Feedback, String> param )
+		       {
+		           final TableCell<Feedback, String> cell = new TableCell<Feedback, String>()
+		           {
+		               @Override
+		               public void updateItem( String item, boolean empty )
+		               {
+		            	   final Button btn = new Button();
+		            	   if (getIndex() >= 0 && getIndex() < approvedFeedback.size())
+		            	   {
+		            		   btn.setText("Delete");
+		            		   btn.setPrefWidth(60);
+		            		   btn.setPrefHeight(30);
+		            		   btn.setPadding(Insets.EMPTY);
+		            	   }
+		            	   
+		                   super.updateItem( item, empty );
+		                   if ( empty )
+		                   {
+		                       setGraphic( null );
+		                       setText( null );
+		                   }
+		                   else
+		                   {
+		                       btn.setOnAction(new EventHandler<ActionEvent>(){
+								@Override
+								public void handle(ActionEvent arg0) {
+									approvedFeedback.remove(getIndex());
+								}
+		                    	   
+		                       } );
+		                       setGraphic(btn);
+		                       setText(null);
+		                   }
+		               }
+		           };
+		           return cell;
+		       }
+		   };
+		return cellFactory4;
+	}
+
+
+	/**
+	 * @param rowVoteValue
+	 * @param downVoteImageView
+	 * @return
+	 */
+	private Callback<TableColumn<Feedback, String>, TableCell<Feedback, String>> downVoteColumnSetup(
+			final int[] rowVoteValue, final ImageView[] downVoteImageView) {
+		Callback<TableColumn<Feedback, String>, TableCell<Feedback, String>> cellFactory2 
+		   = new Callback<TableColumn<Feedback, String>, TableCell<Feedback, String>>()
+		   {
+		       @Override
+		       public TableCell<Feedback,String> call( final TableColumn<Feedback, String> param )
+		       {
+		           final TableCell<Feedback, String> cell = new TableCell<Feedback, String>()
+		           {
+
+		               final Button btn = new Button("");
+
+		               @Override
+		               public void updateItem( String item, boolean empty )
+		               {
+		            	   if (getIndex() >= 0 && getIndex() < approvedFeedback.size())
+		            	   {
+		            		   btn.setPrefWidth(30);
+		            		   btn.setPrefHeight(30);
+		            		   btn.setGraphic(downVoteImageView[getIndex()]);
+		            		   btn.setPadding(Insets.EMPTY);
+		            	   }
+		            	   
+		                   super.updateItem( item, empty );
+		                   if ( empty )
+		                   {
+		                       setGraphic( null );
+		                       setText( null );
+		                   }
+		                   else
+		                   {
+		                       btn.setOnAction(new EventHandler<ActionEvent>(){
+
+								@Override
+								public void handle(ActionEvent arg0) {
+									// Decrements score for corresponding feedback item if the
+									// current row vote value is 1 or 0
+									if (rowVoteValue[getIndex()] != -1){
+										int score = Integer.parseInt(approvedFeedback.get(getIndex()).getScore());
+										score -= 1;
+										rowVoteValue[getIndex()] -= 1;
+										approvedFeedback.get(getIndex()).setScore(Integer.toString(score));
+										table.getItems().set(getIndex(), approvedFeedback.get(getIndex()));
+										saveFeedback();
+									}
+								}
+		                    	   
+		                       } );
+		                       setGraphic(btn);
+		                       setText(null);
+		                   }
+		               }
+		           };
+		           return cell;
+		       }
+		   };
+		return cellFactory2;
+	}
+
+
+	/**
+	 * @param rowVoteValue
+	 * @param upVoteImageView
+	 * @return
+	 */
+	private Callback<TableColumn<Feedback, String>, TableCell<Feedback, String>> upVoteColumnSetup(
+			final int[] rowVoteValue, final ImageView[] upVoteImageView) {
+		Callback<TableColumn<Feedback, String>, TableCell<Feedback, String>> cellFactory1 =
+		   new Callback<TableColumn<Feedback, String>, TableCell<Feedback, String>>()
+		   {
+			   // Overrides column cell construction to place a button in each cell
+		       @Override
+		       public TableCell<Feedback,String> call( final TableColumn<Feedback, String> param )
+		       {
+		           final TableCell<Feedback, String> cell = new TableCell<Feedback, String>()
+		           {
+
+		               final Button btn = new Button("");
+		               
+		               @Override
+		               public void updateItem( String item, boolean empty )
+		               {
+		            	   // Only sets the button parameters if the button number is within
+		            	   // the bound of feedback.size otherwise the button is not required
+		            	   if (getIndex() >= 0 && getIndex() < approvedFeedback.size())
+		            	   {
+		            		   btn.setPrefWidth(30);
+		            		   btn.setPrefHeight(30);
+		            		   btn.setGraphic(upVoteImageView[getIndex()]);
+		            		   btn.setPadding(Insets.EMPTY);
+		            	   }
+		            	   
+		            	   
+		                   super.updateItem( item, empty );
+		                   if ( empty )
+		                   {
+		                       setGraphic( null );
+		                       setText( null );
+		                   }
+		                   else
+		                   {
+		                       btn.setOnAction(new EventHandler<ActionEvent>(){
+
+								@Override
+								public void handle(ActionEvent arg0) {
+									
+									// Increments score for corresponding feedback item if the
+									// current row vote value is 0 or -1
+									if (rowVoteValue[getIndex()] != 1){
+										int score = Integer.parseInt(approvedFeedback.get(getIndex()).getScore());
+										score += 1;
+										rowVoteValue[getIndex()] += 1;
+										approvedFeedback.get(getIndex()).setScore(Integer.toString(score));
+										table.getItems().set(getIndex(), approvedFeedback.get(getIndex()));
+										saveFeedback();
+									}
+								}
+		                    	   
+		                       } );
+		                       setGraphic(btn);
+		                       setText(null);
+		                   }
+		               }
+		               
+		           };
+		           return cell;
+		       }
+		   };
+		return cellFactory1;
 	}
 	
 	/**

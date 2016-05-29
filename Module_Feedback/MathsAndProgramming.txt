@@ -1,4 +1,4 @@
-"Michael Sumner","This is the first comment given on the maths and programming module.",4,0,
-"Cos Demetriou","This comment is maximum length to test the line wrapping and also to test the enforced 120 character limit test test tes",5,0,
-"Sabrina Quinn","This is another comment",2,1,
-"Antonio","This module was far too easy",3,1,
+"Michael Sumner","This is the first comment given on the maths and programming module.",4,0,true,
+"Cos Demetriou","This comment is maximum length to test the line wrapping and also to test the enforced 120 character limit test test tes",5,0,true,
+"Sabrina Quinn","This is another comment",2,1,true,
+"Antonio","This module was far too easy",3,1,true,
