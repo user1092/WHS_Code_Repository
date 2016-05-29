@@ -131,6 +131,7 @@ public class PresentationGui extends Application {
 	private ImageView fullscreenView;
 	
 	private PresentationEntry presentation = new PresentationEntry();
+	private boolean localPresentation = true;
 	private Client client;
 	
 	// Location of where VLC is installed
@@ -173,10 +174,12 @@ public class PresentationGui extends Application {
 	 * Constructor requires a presentation to display
 	 * 
 	 * @param passedPresentation	-	The presentation to be played
+	 * @param localPresentation 
 	 */
-	public PresentationGui(PresentationEntry passedPresentation, Client client) {
+	public PresentationGui(PresentationEntry passedPresentation, Client client, boolean localPresentation) {
 		presentation = passedPresentation;
 		this.client = client;
+		this.localPresentation = localPresentation;
 		
 		// Find and load VLC libraries depending on the JVM
 		if("32".equals(System.getProperty("sun.arch.data.model"))) {
@@ -469,13 +472,19 @@ public class PresentationGui extends Application {
 		
 		Button aboutPresentationButton = createAboutPresentationButton();
 		
-		Button viewFeedbackButton = createViewFeedbackButton();
-		
 		// Instantiation of the separator on the control bar
 		Separator separator = new Separator();
 		// Adding all the items on the control bar
 		controlBar.getItems().addAll(slideButtonsHBox, separator, playButton, stopButton, modeButton, volumeSlider, 
-													muteButton, fullScreenButton, aboutPresentationButton, viewFeedbackButton);
+													muteButton, fullScreenButton, aboutPresentationButton);
+	
+		
+		if (!localPresentation) {
+			Button viewFeedbackButton = createViewFeedbackButton();
+			controlBar.getItems().add(viewFeedbackButton);
+		}
+		
+		
 	}
 	
 	
