@@ -82,8 +82,8 @@ public class PresentationGui extends Application {
 	// Definitions for window, presentation and control area sizes
 	private final int WINDOW_MIN_WIDTH = 640;
 	private final int WINDOW_MIN_HEIGHT = 480;
-	private final int WINDOW_WIDTH = 640;
-	private final int WINDOW_HEIGHT = 480;
+	private final int WINDOW_WIDTH = 640*2;
+	private final int WINDOW_HEIGHT = 480*2;
 	private final int CONTROL_BAR_WIDTH = WINDOW_WIDTH;
 	private final int CONTROL_BAR_HEIGHT = 60;
 	private final int PRESENTATION_WIDTH = WINDOW_WIDTH;
