@@ -156,7 +156,7 @@ public class ServerGui {
             @Override
             public void replace(DocumentFilter.FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
                 String string = fb.getDocument().getText(0, fb.getDocument().getLength()) + text;
-
+                
                 if (string.length() <= 20) {
                     super.replace(fb, offset, length, text, attrs);
                 }
@@ -177,8 +177,15 @@ public class ServerGui {
 				
 		setPasswordButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("Password Set");
-				server.setAdminPassword(String.valueOf(passwordField.getPassword()));
+				if (!String.valueOf(passwordField.getPassword()).equals("")) {
+					System.out.println("Password Set");
+					
+					server.setAdminPassword(String.valueOf(passwordField.getPassword()));
+				}
+				else {
+					JOptionPane.showMessageDialog(null, "Please enter a valid password", "Error", JOptionPane.ERROR_MESSAGE);
+				}
+				
 			}
 	    });
 	}
