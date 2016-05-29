@@ -110,6 +110,7 @@ public class ClientGui extends Application{
 	private boolean autoConnect = true;
 	private boolean validPassword = false;
 	private boolean adminMode = false;
+	private boolean localPresentation = true;
 	
 	// Character restrictions on admin password
 	private final static String NUMBERS = "0123456789";
@@ -688,6 +689,7 @@ public class ClientGui extends Application{
 				xmlFile = xmlFileChooser.showOpenDialog(primaryStage);
 				if (xmlFile != null) {
 					actionStatus.setText("File selected: " + xmlFile.getName());
+					localPresentation = true;
 					openPresentation(xmlFile);
 				}
 				else {
@@ -768,7 +770,7 @@ public class ClientGui extends Application{
 		Platform.runLater(new Runnable() {
 			 public void run() {             
 				try {				 	        	  
-					new PresentationGui(presentation, client).start(new Stage());
+					new PresentationGui(presentation, client, localPresentation).start(new Stage());
 				}
 				catch (Exception e) {
 					// TODO Auto-generated catch block
@@ -938,6 +940,7 @@ public class ClientGui extends Application{
 							validZip = false;
 						}
 						if (validZip) {
+							localPresentation = false;
 							openPresentation(new File(tempPresentationDirectory + "/" + name + "/" + xmlFilename));
 						}
 						else {
