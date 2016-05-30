@@ -917,7 +917,9 @@ public class ClientGui extends Application{
 							e1.printStackTrace();
 						}
 						try {
-							zippedPresentation = (File) client.receiveData();
+//							zippedPresentation = (File) client.receiveData();
+							client.receiveRequestedFile(tempPresentationDirectory + "/" + filename);
+							zippedPresentation = new File(tempPresentationDirectory + "/" + filename);
 						} catch (IOException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
