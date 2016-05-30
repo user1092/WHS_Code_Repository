@@ -242,7 +242,7 @@ public class ClientGui extends Application{
 	 */
 	private HBox buttonHBoxCreation() {
 		HBox buttonHBox = new HBox();
-		buttonHBox.setPadding(new Insets(0, 0, 100, 350));
+		buttonHBox.setPadding(new Insets(-80, 0, 0, (WINDOW_WIDTH/2)-75));
 		buttonHBox.setSpacing(10);
 		buttonHBox.setStyle("-fx-background-colour: #336699;");
 
@@ -433,7 +433,7 @@ public class ClientGui extends Application{
 	private void loginButtonSetup() {
 		loginButton = new Button("Login As Guest");
 		loginButton.setDisable(false);
-		loginButton.setPrefSize(100, 20);
+		loginButton.setPrefSize(150, 20);
 		loginButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
