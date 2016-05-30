@@ -73,7 +73,8 @@ public class ImageHandler
 	//this method will read the source file and create the image
 	private Image generateImage() 
 	{
-		return new Image("file:" + imageToHandle.getSourceFile());
+//		return new Image("file:" + imageToHandle.getSourceFile());
+		return new Image(imageToHandle.getSourceFile());
 	}
 
 }
