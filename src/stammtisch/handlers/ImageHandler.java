@@ -69,10 +69,11 @@ public class ImageHandler
 		return ((sizeOfCanvasY*imageToHandle.getHeight()));
 	}
 	
+	//PATCH:  30th May 2016 added in the "file:" string to allow for non repository images.
 	//this method will read the source file and create the image
 	private Image generateImage() 
 	{
-		return new Image(imageToHandle.getSourceFile());
+		return new Image("file:" + imageToHandle.getSourceFile());
 	}
 
 }
