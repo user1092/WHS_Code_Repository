@@ -46,6 +46,7 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -500,8 +501,9 @@ public class PresentationGui extends Application {
 		slideButtonsHBox.setPadding(new Insets(10, 10, 10, 10));
 		slideButtonsHBox.setSpacing(5);
 		slideNumberTextField = new TextField();
-		slideNumberTextField.setPrefWidth(25);
+		slideNumberTextField.setPrefWidth(40);
 		slideNumberTextField.setPrefHeight(30);
+		slideNumberTextField.setAlignment(Pos.CENTER);
 		// TODO fix so a slide number can be entered
 		slideNumberTextField.setEditable(false);
 		// Call method for setting the format of text fields
@@ -618,9 +620,9 @@ public class PresentationGui extends Application {
 	 */
 	private ToggleButton createModeButton() {
 		final ToggleButton modeButton = new ToggleButton("Automatic");
-		modeButton.setMaxSize(80, BUTTON_HEIGHT);
-		modeButton.setPrefSize(80, BUTTON_HEIGHT);
-		modeButton.setMinSize(80, BUTTON_HEIGHT);
+		modeButton.setMaxSize(100, BUTTON_HEIGHT);
+		modeButton.setPrefSize(100, BUTTON_HEIGHT);
+		modeButton.setMinSize(100, BUTTON_HEIGHT);
 		modeButton.setTooltip(new Tooltip("Toggle Automatic Mode"));
 		modeButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override 
