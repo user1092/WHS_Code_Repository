@@ -1545,6 +1545,15 @@ public class PresentationGui extends Application {
 														currentShape.getShapeFillColour(),
 														currentShape.getShapeLineColour());
 			
+			if (null != currentShape.getShapeShadeColour1() || null != currentShape.getShapeShadeColour2()) {
+				tempShape.setShading(currentShape.getShapeShadeX1(), 
+										currentShape.getShapeShadeX2(), 
+										currentShape.getShapeShadeY1(), 
+										currentShape.getShapeShadeY2(), 
+										currentShape.getShapeShadeColour1(), 
+										currentShape.getShapeShadeColour2());
+			}
+			
 			// Scale the shape to the resolution of the presentation area
 			tempShape.setRes(PRESENTATION_WIDTH, PRESENTATION_HEIGHT);
 			
@@ -1598,9 +1607,12 @@ public class PresentationGui extends Application {
 															presentation.getPath() + "/" +
 															currentPolygon.getPolygonSourceFile());
 			
-			tempPolygon.setShading(currentPolygon.getPolygonShadeX1(), currentPolygon.getPolygonShadeX2(),
+			if (null != currentPolygon.getPolygonShadeColour1() || null != currentPolygon.getPolygonShadeColour2()) {
+				tempPolygon.setShading(currentPolygon.getPolygonShadeX1(), currentPolygon.getPolygonShadeX2(),
 									currentPolygon.getPolygonShadeY1(), currentPolygon.getPolygonShadeY2(),
 									currentPolygon.getPolygonShadeColour1(), currentPolygon.getPolygonShadeColour2());
+			}
+			
 			try {
 				tempPolygon.parseCSV();
 			}

@@ -554,41 +554,48 @@ public class PresentationParser
 		}
 		
         NodeList temporaryChildList = temporaryNode.getChildNodes();
-        Node temporaryChildElement = temporaryChildList.item(1);       
-        NamedNodeMap temporaryChildAttributesNodeList = temporaryChildElement.getAttributes();
-        
-        for (int i = 0; i < temporaryChildAttributesNodeList.getLength(); i++) 
-		{
-			Node temporaryChildAttributeElement = temporaryChildAttributesNodeList.item(i);
+        if (temporaryChildList.item(1) != null)
+        {
+	        Node temporaryChildElement = temporaryChildList.item(1);
+	        
+	        //System.out.println("shape shading2: " + temporaryNode.getNodeName());
+	        NamedNodeMap temporaryChildAttributesNodeList = temporaryChildElement.getAttributes();
+	        
+	        System.out.println("shape shading3: " + temporaryChildAttributesNodeList.getLength());
+	        
+	        for (int i = 0; i < temporaryChildAttributesNodeList.getLength(); i++) 
+			{
+				Node temporaryChildAttributeElement = temporaryChildAttributesNodeList.item(i);
+					
+				if (temporaryChildAttributeElement.getNodeName() == "x1")
+				{
+					temporaryShape.setShapeShadeX1(temporaryChildAttributeElement.getNodeValue());
+				}
 				
-			if (temporaryChildAttributeElement.getNodeName() == "x1")
-			{
-				temporaryShape.setShapeShadeX1(temporaryChildAttributeElement.getNodeValue());
-			}
-			
-			if (temporaryChildAttributeElement.getNodeName() == "y1")
-			{
-				temporaryShape.setShapeShadeY1(temporaryChildAttributeElement.getNodeValue());
-			}
-			
-			if (temporaryChildAttributeElement.getNodeName() == "colour1")
-			{
-				temporaryShape.setShapeShadeColour1(temporaryChildAttributeElement.getNodeValue());
-			}
-			
-			if (temporaryChildAttributeElement.getNodeName() == "x2")
-			{
-				temporaryShape.setShapeShadeX2(temporaryChildAttributeElement.getNodeValue());
-			}
-			
-			if (temporaryChildAttributeElement.getNodeName() == "y2")
-			{
-				temporaryShape.setShapeShadeY2(temporaryChildAttributeElement.getNodeValue());
-			}
-			
-			if (temporaryChildAttributeElement.getNodeName() == "colour2")
-			{
-				temporaryShape.setShapeShadeColour2(temporaryChildAttributeElement.getNodeValue());
+				if (temporaryChildAttributeElement.getNodeName() == "y1")
+				{
+					temporaryShape.setShapeShadeY1(temporaryChildAttributeElement.getNodeValue());
+				}
+				
+				if (temporaryChildAttributeElement.getNodeName() == "colour1")
+				{
+					temporaryShape.setShapeShadeColour1(temporaryChildAttributeElement.getNodeValue());
+				}
+				
+				if (temporaryChildAttributeElement.getNodeName() == "x2")
+				{
+					temporaryShape.setShapeShadeX2(temporaryChildAttributeElement.getNodeValue());
+				}
+				
+				if (temporaryChildAttributeElement.getNodeName() == "y2")
+				{
+					temporaryShape.setShapeShadeY2(temporaryChildAttributeElement.getNodeValue());
+				}
+				
+				if (temporaryChildAttributeElement.getNodeName() == "colour2")
+				{
+					temporaryShape.setShapeShadeColour2(temporaryChildAttributeElement.getNodeValue());
+				}
 			}
 		}
     }
@@ -647,41 +654,44 @@ public class PresentationParser
 		}
 		
 		NodeList temporaryChildList = temporaryNode.getChildNodes();
-        Node temporaryChildElement = temporaryChildList.item(1);       
-        NamedNodeMap temporaryChildAttributesNodeList = temporaryChildElement.getAttributes();
-        
-        for (int i = 0; i < temporaryChildAttributesNodeList.getLength(); i++) 
-		{
-			Node temporaryChildAttributeElement = temporaryChildAttributesNodeList.item(i);
+		if (temporaryChildList.item(1) != null)
+        {
+	        Node temporaryChildElement = temporaryChildList.item(1);       
+	        NamedNodeMap temporaryChildAttributesNodeList = temporaryChildElement.getAttributes();
+	        
+	        for (int i = 0; i < temporaryChildAttributesNodeList.getLength(); i++) 
+			{
+				Node temporaryChildAttributeElement = temporaryChildAttributesNodeList.item(i);
+					
+				if (temporaryChildAttributeElement.getNodeName() == "x1")
+				{
+					temporaryPolygon.setPolygonShadeX1(temporaryChildAttributeElement.getNodeValue());
+				}
 				
-			if (temporaryChildAttributeElement.getNodeName() == "x1")
-			{
-				temporaryPolygon.setPolygonShadeX1(temporaryChildAttributeElement.getNodeValue());
-			}
-			
-			if (temporaryChildAttributeElement.getNodeName() == "y1")
-			{
-				temporaryPolygon.setPolygonShadeY1(temporaryChildAttributeElement.getNodeValue());
-			}
-			
-			if (temporaryChildAttributeElement.getNodeName() == "colour1")
-			{
-				temporaryPolygon.setPolygonShadeColour1(temporaryChildAttributeElement.getNodeValue());
-			}
-			
-			if (temporaryChildAttributeElement.getNodeName() == "x2")
-			{
-				temporaryPolygon.setPolygonShadeX2(temporaryChildAttributeElement.getNodeValue());
-			}
-			
-			if (temporaryChildAttributeElement.getNodeName() == "y2")
-			{
-				temporaryPolygon.setPolygonShadeY2(temporaryChildAttributeElement.getNodeValue());
-			}
-			
-			if (temporaryChildAttributeElement.getNodeName() == "colour2")
-			{
-				temporaryPolygon.setPolygonShadeColour2(temporaryChildAttributeElement.getNodeValue());
+				if (temporaryChildAttributeElement.getNodeName() == "y1")
+				{
+					temporaryPolygon.setPolygonShadeY1(temporaryChildAttributeElement.getNodeValue());
+				}
+				
+				if (temporaryChildAttributeElement.getNodeName() == "colour1")
+				{
+					temporaryPolygon.setPolygonShadeColour1(temporaryChildAttributeElement.getNodeValue());
+				}
+				
+				if (temporaryChildAttributeElement.getNodeName() == "x2")
+				{
+					temporaryPolygon.setPolygonShadeX2(temporaryChildAttributeElement.getNodeValue());
+				}
+				
+				if (temporaryChildAttributeElement.getNodeName() == "y2")
+				{
+					temporaryPolygon.setPolygonShadeY2(temporaryChildAttributeElement.getNodeValue());
+				}
+				
+				if (temporaryChildAttributeElement.getNodeName() == "colour2")
+				{
+					temporaryPolygon.setPolygonShadeColour2(temporaryChildAttributeElement.getNodeValue());
+				}
 			}
 		}
 	}
