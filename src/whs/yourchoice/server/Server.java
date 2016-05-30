@@ -8,15 +8,12 @@ package whs.yourchoice.server;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
 
 import whs.yourchoice.utilities.encryption.ClientDetails;
 import whs.yourchoice.utilities.encryption.ClientPasswordHandler;
@@ -431,7 +428,7 @@ public class Server {
 	 * @param clientID
 	 * @throws IOException
 	 */
-	private void sendRequestedFile(int clientID, final String requestedFile) throws IOException {
+	private void sendRequestedFile(int clientID, String requestedFile) throws IOException {
 		
         File file = new File(requestedFile);
         FileInputStream fis = new FileInputStream(file);
