@@ -545,20 +545,20 @@ public class PresentationGui extends Application {
 			public void handle(ActionEvent e) {
 				if (currentSlideNumber < (presentation.getTotalSlideNumber() - 1)) {
 					if (presentation.getSlideList().get(currentSlideNumber).getSlideNext() >= 0) {
-						int slideId;
+						int slideArrayIndex;
 						boolean match = false;
-						for (slideId = 0; slideId < presentation.getSlideList().size(); slideId++) {
+						for (slideArrayIndex = 0; slideArrayIndex < presentation.getSlideList().size(); slideArrayIndex++) {
 							if (presentation.getSlideList().get(currentSlideNumber).getSlideNext() 
-									== presentation.getSlideList().get(slideId).getSlideID()) {
+									== presentation.getSlideList().get(slideArrayIndex).getSlideID()) {
 								match = true;
 								break;
 							}
 						}
 						if (match) {
-							changeSlide(slideId);
+							changeSlide(slideArrayIndex);
 						}
 						else {
-							int slideNumber = currentSlideNumber - 1;
+							int slideNumber = currentSlideNumber + 1;
 							changeSlide(slideNumber);
 						}
 					}
