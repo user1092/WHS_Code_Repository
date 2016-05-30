@@ -358,7 +358,7 @@ public class Server {
 						
 						if (extension.equals(zip)){
 							System.out.println("A zip file was requested: " + (String) object);
-							sendData(new File(MODULE_FILE_LOCATION + "/" + (String) object), client.getID());
+							sendRequestedFile(client.getID(), MODULE_FILE_LOCATION + "/" + (String) object);
 							System.out.println("A zip file was sent: " + (String) object);
 						}
 						else {
@@ -431,27 +431,27 @@ public class Server {
 	private void sendRequestedFile(int clientID, String requestedFile) throws IOException {
 		
         File file = new File(requestedFile);
- 
         FileInputStream fis = new FileInputStream(file);
+		
         byte [] buffer = new byte[BUFFER_SIZE];
         Integer bytesRead = 0;
         bytesRead = fis.read(buffer);
-        
         if (bytesRead > 0) {
         	while (bytesRead > 0) {
 	        	clients[clientID].getOutputToClient().writeObject(bytesRead);
 	        	clients[clientID].getOutputToClient().writeObject(Arrays.copyOf(buffer, buffer.length));
 	        	bytesRead = fis.read(buffer);
+	        	System.out.println("sending file size bytesRead: " + bytesRead);
         	}
         }
         else {
         	System.out.println("sending file size 0");
         	clients[clientID].getOutputToClient().writeObject(0);
         }
-        
         fis.close();
+        System.out.println("fis closed");
 	}
-	
+		
 	
 	/**
 	 * Method to get a byte array and save as file
