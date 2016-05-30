@@ -29,7 +29,7 @@
 		
     </defaults>
 	
-    <slide slideID="0" duration="30000" nextSlide="1">
+    <slide slideID="0" duration="17000" nextSlide="1">
 	
 		<text duration="4000" ystart="0.1" starttime="1000" xstart="0.0" fontsize="18" font="Arial" fontColour="000000">The animal names should be bold, the colour names should be italic, and the names of our team should be both bold and italic. </text>
 		
@@ -51,7 +51,7 @@
 		
     </slide>
 	
-	<slide slideID="1" duration="30000" nextSlide="2">
+	<slide slideID="1" duration="28000" nextSlide="2">
 		<text duration="-1" ystart="0.1" starttime="0" xstart="0.4" fontsize="18" font="Arial" fontColour="000000"> Video Slide </text>
 		
 		<video ystart="0.6" loop="true" xstart="0.05" sourceFile="avengers-featurehp.mp4" duration="25000" starttime="2000" />
@@ -62,7 +62,7 @@
 		
     </slide>
 	
-	<slide slideID="2" duration="30000" nextSlide="3">
+	<slide slideID="2" duration="10000" nextSlide="3">
 		<text duration="-1" ystart="0.1" starttime="0" xstart="0.4" fontsize="18" font="Arial" fontColour="000000"> Audio Slide </text>
 				
 		<audio loop="true" sourceFile="jetairplane16sec.aac" duration="3000" starttime="-1" />
@@ -71,7 +71,7 @@
 		
     </slide>
 	
-	<slide slideID="3" duration="30000" nextSlide="4">
+	<slide slideID="3" duration="12000" nextSlide="4">
 		<text duration="10000" ystart="0.1" starttime="1000" xstart="0.4" fontsize="18" font="Arial" fontColour="000000"> Image Slide </text>
 		
 		<image width="1.0" duration="7000" ystart="0.2" sourceFile="house.jpg" starttime="2000" xstart="0.0" height="0.8" />		
@@ -80,7 +80,7 @@
 		
     </slide>
 	
-	<slide slideID="4" duration="30000" nextSlide="5">
+	<slide slideID="4" duration="4000" nextSlide="5">
 		<text duration="-1" ystart="0.1" starttime="0" xstart="0.4" fontsize="18" font="Arial" fontColour="000000"> Shape and Polygon Slide </text>
 				
 		<polygon duration="-1" starttime="-1" sourceFile="ArrowShape.csv" lineColour="000000" fillColour="007766">
@@ -119,7 +119,7 @@
 		</interactable>	
 		
 		<interactable targetSlide="3">
-			<image width="0.3" duration="0" ystart="0.6" sourceFile="dog.png" starttime="0" xstart="0.3" height="0.3" />
+			<image width="0.3" duration="-1" ystart="0.6" sourceFile="dog.png" starttime="0" xstart="0.3" height="0.3" />
 		</interactable>
 		
 		<interactable targetSlide="1">
