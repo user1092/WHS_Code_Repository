@@ -544,7 +544,25 @@ public class PresentationGui extends Application {
 			@Override
 			public void handle(ActionEvent e) {
 				if (currentSlideNumber < (presentation.getTotalSlideNumber() - 1)) {
-					changeSlide(presentation.getSlideList().get(currentSlideNumber).getSlideNext());
+					if (presentation.getSlideList().get(currentSlideNumber).getSlideNext() >= 0) {
+						int slideId;
+						boolean match = false;
+						for (slideId = 0; slideId < presentation.getSlideList().size(); slideId++) {
+							if (presentation.getSlideList().get(currentSlideNumber).getSlideNext() 
+									== presentation.getSlideList().get(slideId).getSlideID()) {
+								match = true;
+								break;
+							}
+						}
+						if (match) {
+							changeSlide(slideId);
+						}
+						else {
+							int slideNumber = currentSlideNumber - 1;
+							changeSlide(slideNumber);
+						}
+					}
+					
 				}
 			}
 		});
