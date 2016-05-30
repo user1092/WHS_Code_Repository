@@ -75,7 +75,7 @@ public class PresentationParserTests
 		assertEquals(0, currentSlide.getSlideID());
 		assertEquals(5, currentSlide.getSlideDuration());
 		assertEquals(2, currentSlide.getSlideNext());
-		assertEquals("AAAAAA", currentSlide.getSlideBackgroundColour());
+		assertEquals("DDFFDD", currentSlide.getSlideBackgroundColour());
 		
 		currentText = currentSlide.getTextList().get(0);
 		
@@ -86,7 +86,7 @@ public class PresentationParserTests
 		assertEquals("Impact", currentText.getTextFont());
 		assertEquals(30, currentText.getTextFontSize());
 		assertEquals("000000", currentText.getTextFontColour());		
-		assertEquals("This is a very boring text with <b>bold</b>, <i>italic</i> and even <b><i>bold and italic at the same time</i></b>", currentText.getTextContent());
+		assertEquals("I am so happy, the <b>Bold</b> text is finaly working. And so is the <i>Italic one</i>.", currentText.getTextContent());
 		
 		// TODO BROKEN
 //		assertEquals(true, currentText.getTextInteractable());
@@ -137,7 +137,7 @@ public class PresentationParserTests
 		assertEquals(1, currentSlide.getSlideID());
 		assertEquals(-10, currentSlide.getSlideDuration());
 		assertEquals(-10, currentSlide.getSlideNext());
-		assertEquals("BBBBBB", currentSlide.getSlideBackgroundColour());
+		assertEquals("DDFFDD", currentSlide.getSlideBackgroundColour());
 		
 		currentVideo = currentSlide.getVideoList().get(0);
 		
@@ -153,7 +153,7 @@ public class PresentationParserTests
 		assertEquals(2, currentSlide.getSlideID());
 		assertEquals(-10, currentSlide.getSlideDuration());
 		assertEquals(-10, currentSlide.getSlideNext());
-		assertEquals("CCCCCC", currentSlide.getSlideBackgroundColour());
+		assertEquals("DDFFDD", currentSlide.getSlideBackgroundColour());
 		
 		currentText = currentSlide.getTextList().get(0);
 		
